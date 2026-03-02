@@ -1,11 +1,14 @@
 package com.example.math_race.repositories;
 
+import com.example.math_race.entities.BaseEntity;
+import com.example.math_race.entities.UserEntity;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.Date;
 import java.util.List;
 
 @Transactional
@@ -21,6 +24,11 @@ public class BaseRepository {
 
     public void save(Object object) {
         this.sessionFactory.getCurrentSession().saveOrUpdate(object);
+    }
+
+    public void save(BaseEntity baseEntity) {
+        baseEntity.setUpdatedDate(new Date());
+        this.sessionFactory.getCurrentSession().saveOrUpdate(baseEntity);
     }
 
     public void remove(Object object) {
@@ -40,7 +48,7 @@ public class BaseRepository {
 
     public <T> void saveAll(List<T> objects) {
         for (T object : objects) {
-            this.sessionFactory.getCurrentSession().saveOrUpdate(object);
+            save(object);
         }
     }
 

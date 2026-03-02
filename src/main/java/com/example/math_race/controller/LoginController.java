@@ -15,10 +15,6 @@ public class LoginController {
     @Autowired
     private BaseRepository baseRepository;
 
-    @PostConstruct
-    public void init() {
-    }
-
     // http://localhost:8085/test-login
     @RequestMapping("/test-login")
     public String testLogin() {

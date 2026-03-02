@@ -11,8 +11,8 @@ import java.util.Date;
 @AllArgsConstructor
 public class BaseEntity {
     private int id;
-    private Date creationDate;
+    private Date creationDate = new Date();
     private Date updatedDate;
-    private boolean deleted;
+    private boolean deleted = false;
     private Date deletionDate;
 }
