@@ -4,13 +4,20 @@ import org.hibernate.Session;
 import org.hibernate.SessionFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
+import org.springframework.transaction.annotation.Transactional;
+
 import java.util.List;
 
+@Transactional
 @Component
 public class BaseRepository {
 
-    @Autowired
     protected SessionFactory sessionFactory;
+
+    @Autowired
+    public BaseRepository(SessionFactory sf) {
+        this.sessionFactory = sf;
+    }
 
     public void save(Object object) {
         this.sessionFactory.getCurrentSession().saveOrUpdate(object);

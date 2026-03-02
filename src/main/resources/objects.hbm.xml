@@ -3,5 +3,27 @@
         "http://hibernate.sourceforge.net/hibernate-mapping-3.0.dtd">
 
 <hibernate-mapping>
+    <class name="com.example.math_race.entities.UserEntity" table="users" lazy="false">
+        <id name="id" type="int" column="id">
+            <generator class="native"/>
+        </id>
 
+        <property name="username" type="string" column="username"/>
+        <property name="password" type="string" column="password"/>
+        <property name="email" type="string" column="email"/>
+        <property name="active" type="boolean" column="active"/>
+
+        <property name="role" column="role">
+            <type name="org.hibernate.type.EnumType">
+                <param name="enumClass">com.example.math_race.entities.UserRole</param>
+                <param name="useNamed">true</param>
+            </type>
+        </property>
+
+        <property name="creationDate" type="java.util.Date" column="creation_date"/>
+        <property name="updatedDate" type="java.util.Date" column="updated_date"/>
+        <property name="deleted" type="boolean" column="deleted"/>
+        <property name="deletionDate" type="java.util.Date" column="deletion_date"/>
+
+    </class>
 </hibernate-mapping>
