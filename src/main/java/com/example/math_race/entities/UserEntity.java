@@ -12,7 +12,16 @@ public class UserEntity extends BaseEntity {
     private String password;
     private String email;
     private UserRole role;
-    private boolean active;
+    private boolean verified;
+
+    public UserEntity(String username, String password, String email) {
+        super();
+        this.username = username;
+        this.password = password;
+        this.email = email;
+        this.role = UserRole.PLAYER;
+        this.verified = false;
+    }
 
     public boolean isAdmin() {
         return this.role == UserRole.ADMIN;
