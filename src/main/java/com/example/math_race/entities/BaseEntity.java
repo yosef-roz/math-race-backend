@@ -1,18 +1,19 @@
 package com.example.math_race.entities;
 
-import lombok.AllArgsConstructor;
 import lombok.Data;
-import lombok.NoArgsConstructor;
 
 import java.util.Date;
 
 @Data
-@NoArgsConstructor
-@AllArgsConstructor
-public class BaseEntity {
+public abstract class BaseEntity {
     private int id;
-    private Date creationDate = new Date();
+    private Date creationDate;
     private Date updatedDate;
-    private boolean deleted = false;
+    private boolean deleted;
     private Date deletionDate;
+
+    public BaseEntity() {
+        creationDate = new Date();
+        deleted = false;
+    }
 }

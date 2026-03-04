@@ -8,14 +8,14 @@
             <generator class="native"/>
         </id>
 
-        <property name="username" type="string" column="username" unique="true" not-null="true"/>
+        <property name="username" type="string" column="username" not-null="true"/>
         <property name="password" type="string" column="password" not-null="true"/>
-        <property name="email" type="string" column="email" unique="true" not-null="true"/>
+        <property name="email" type="string" column="email" not-null="true"/>
         <property name="verified" type="boolean" column="verified" not-null="true"/>
 
         <property name="role" column="role" not-null="true">
             <type name="org.hibernate.type.EnumType">
-                <param name="enumClass">com.example.math_race.entities.UserRole</param>
+                <param name="enumClass">com.example.math_race.entities.UserEntity$UserRole</param>
                 <param name="useNamed">true</param>
             </type>
         </property>
@@ -35,7 +35,7 @@
 
         <property name="type" column="token_type" not-null="true">
             <type name="org.hibernate.type.EnumType">
-                <param name="enumClass">com.example.math_race.entities.TokenType</param>
+                <param name="enumClass">com.example.math_race.entities.TokenEntity$TokenType</param>
                 <param name="useNamed">true</param>
             </type>
         </property>
@@ -50,6 +50,45 @@
         <property name="revoked" type="boolean" column="is_revoked" not-null="true"/>
         <property name="ipAddress" type="string" column="ip_address"/>
         <property name="userAgent" type="string" column="user_agent"/>
+
+        <property name="creationDate" type="java.util.Date" column="creation_date" not-null="true"/>
+        <property name="updatedDate" type="java.util.Date" column="updated_date"/>
+        <property name="deleted" type="boolean" column="deleted" not-null="true"/>
+        <property name="deletionDate" type="java.util.Date" column="deletion_date"/>
+    </class>
+
+    <class name="com.example.math_race.entities.RaceEntity" table="race_history" lazy="false">
+        <id name="id" type="int" column="id">
+            <generator class="native"/>
+        </id>
+
+        <property name="roomCode" type="string" column="room_code" not-null="true"/>
+        <property name="name" type="string" column="race_name" not-null="true"/>
+        <many-to-one name="host"
+                     class="com.example.math_race.entities.UserEntity"
+                     column="host_id"
+                     not-null="true"
+                     fetch="join"/>
+        <property name="targetScore" type="int" column="target_score" not-null="true"/>
+
+        <bag name="participants" cascade="all-delete-orphan" inverse="true">
+            <key column="race_id"/>
+            <one-to-many class="com.example.math_race.entities.RaceParticipantEntity"/>
+        </bag>
+
+        <property name="creationDate" type="java.util.Date" column="creation_date" not-null="true"/>
+        <property name="updatedDate" type="java.util.Date" column="updated_date"/>
+        <property name="deleted" type="boolean" column="deleted" not-null="true"/>
+        <property name="deletionDate" type="java.util.Date" column="deletion_date"/>
+    </class>
+
+    <class name="com.example.math_race.entities.RaceParticipantEntity" table="race_participant" lazy="false">
+        <id name="id" type="int" column="id">
+            <generator class="native"/>
+        </id>
+
+        <many-to-one name="user" class="com.example.math_race.entities.UserEntity" column="user_id" not-null="false"/>
+        <property name="displayName" type="string" column="display_name" not-null="false"/>
 
         <property name="creationDate" type="java.util.Date" column="creation_date" not-null="true"/>
         <property name="updatedDate" type="java.util.Date" column="updated_date"/>

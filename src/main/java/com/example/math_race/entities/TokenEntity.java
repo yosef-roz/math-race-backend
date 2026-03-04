@@ -1,6 +1,5 @@
 package com.example.math_race.entities;
 
-import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
@@ -8,8 +7,14 @@ import java.util.Date;
 
 @Data
 @NoArgsConstructor
-@AllArgsConstructor
 public class TokenEntity extends BaseEntity {
+
+    public enum TokenType {
+        SESSION,
+        VERIFICATION,
+        PASSWORD_RESET
+    }
+
     private String token;
     private TokenType type;
     private UserEntity user;
@@ -34,6 +39,6 @@ public class TokenEntity extends BaseEntity {
     }
 
     public boolean isValid() {
-        return !revoked && !isExpired() && !isDeleted();
+        return !revoked && !isExpired();
     }
 }

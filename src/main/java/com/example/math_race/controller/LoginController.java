@@ -1,17 +1,17 @@
 package com.example.math_race.controller;
 
-import antlr.Token;
+import com.example.math_race.entities.RaceEntity;
 import com.example.math_race.entities.TokenEntity;
-import com.example.math_race.entities.TokenType;
 import com.example.math_race.entities.UserEntity;
 import com.example.math_race.repositories.BaseRepository;
-import lombok.Data;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import javax.annotation.PostConstruct;
+import java.util.ArrayList;
 import java.util.Date;
+
+import static com.example.math_race.entities.TokenEntity.TokenType.*;
 
 @RestController
 public class LoginController {
@@ -22,10 +22,20 @@ public class LoginController {
     // http://localhost:8085/test-login
     @RequestMapping("/test-login")
     public String testLogin() {
-        UserEntity user = new UserEntity("ryan1299", "xxxx", "r@gmail.com");
-        TokenEntity token = new TokenEntity("token", TokenType.SESSION, user, new Date(), null, null);
+        UserEntity user = new UserEntity(Math.random()+"", "xxxx", Math.random()+"");
+        TokenEntity token = new TokenEntity(Math.random()+"", SESSION, user, new Date(), null, null);
         baseRepository.save(user);
         baseRepository.save(token);
+
+        RaceEntity race = new RaceEntity();
+        race.setName("test");
+        race.setRoomCode("565");
+        race.setTargetScore(200);
+        race.setHost(user);
+
+        baseRepository.save(race);
+
+
         return "השרת של Math Race עובד! הבקשה הגיעה אליי.";
     }
 }
