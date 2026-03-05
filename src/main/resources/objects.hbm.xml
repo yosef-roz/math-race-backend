@@ -72,15 +72,15 @@
         <property name="roomCode" type="string" column="room_code" not-null="true"/>
         <property name="name" type="string" column="race_name" not-null="true"/>
 
-        <bag name="participants" cascade="all-delete-orphan" lazy="false" fetch="join">
-            <key column="race_id"/>
-            <one-to-many class="com.example.math_race.entities.RaceParticipantEntity"/>
-        </bag>
-
         <property name="creationDate" type="java.util.Date" column="creation_date" not-null="true"/>
         <property name="updatedDate" type="java.util.Date" column="updated_date"/>
         <property name="deleted" type="boolean" column="deleted" not-null="true"/>
         <property name="deletionDate" type="java.util.Date" column="deletion_date"/>
+
+        <bag name="participants" cascade="all-delete-orphan" lazy="false" fetch="join">
+            <key column="race_id"/>
+            <one-to-many class="com.example.math_race.entities.RaceParticipantEntity"/>
+        </bag>
     </class>
 
     <class name="com.example.math_race.entities.RaceParticipantEntity" table="race_participant" lazy="false">
