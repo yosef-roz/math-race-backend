@@ -39,6 +39,8 @@ public class LoginController {
         users.add(r1);
         users.add(r2);
 
+        System.out.println("הגיע ?");
+
         for(int i = 0; i < 100; i++) {
             users.add(new RaceParticipantEntity(UUID.randomUUID().toString().substring(0, 6).toUpperCase()));
         }
