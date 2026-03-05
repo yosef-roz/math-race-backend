@@ -57,8 +57,8 @@ public class LoginController {
         System.out.println("סיים לטעון מרוץ!");
 
         System.out.println("טוען שחקן");
-        RaceParticipantEntity n1 = baseRepository.loadObject(RaceParticipantEntity.class, r1.getUser().getId());
-        System.out.println(n1.toString());
+        RaceParticipantEntity n1 = baseRepository.loadObject(RaceParticipantEntity.class, 1);
+        System.out.println(n1.getRace().toString());
         System.out.println("סיים לטעון שחקן");
         return "השרת של Math Race עובד! הבקשה הגיעה אליי.";
     }

@@ -2,6 +2,7 @@ package com.example.math_race.entities;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
+import lombok.ToString;
 
 import java.util.UUID;
 
@@ -9,6 +10,7 @@ import java.util.UUID;
 @AllArgsConstructor
 public class RaceParticipantEntity extends BaseEntity {
 
+    @ToString.Exclude
     private RaceEntity race;
     private String token;
     private UserEntity user;
