@@ -14,10 +14,4 @@ public class MathRaceApplication {
 		System.out.println("  Application 'Math Race' is running successfully!");
 		System.out.println("----------------------------------------------------------\n");
 	}
-
-
-	//
-	//בסוף המרוץ - נכניס לטבללת היסטויירת משחקים את פרטי המשחק
-	// ותיהיה טבלה נוספת של שחקנים לפי דירוג
-	// מזהה pk, מזהה משחק fk, מזהה שחקן fk, דירוג, שם משתמש
 }

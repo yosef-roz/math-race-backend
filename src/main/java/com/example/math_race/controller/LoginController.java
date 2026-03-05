@@ -1,6 +1,7 @@
 package com.example.math_race.controller;
 
 import com.example.math_race.entities.RaceEntity;
+import com.example.math_race.entities.RaceParticipantEntity;
 import com.example.math_race.entities.TokenEntity;
 import com.example.math_race.entities.UserEntity;
 import com.example.math_race.repositories.BaseRepository;
@@ -10,6 +11,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 
 import static com.example.math_race.entities.TokenEntity.TokenType.*;
 
@@ -32,6 +34,15 @@ public class LoginController {
         race.setRoomCode("565");
         race.setTargetScore(200);
         race.setHost(user);
+
+        RaceParticipantEntity r1 = new RaceParticipantEntity(user);
+        RaceParticipantEntity r2 = new RaceParticipantEntity("ryan anderson");
+
+        List<RaceParticipantEntity> users = new ArrayList<>();
+        users.add(r1);
+        users.add(r2);
+
+        race.setParticipants(users);
 
         baseRepository.save(race);
 

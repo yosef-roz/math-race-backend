@@ -8,9 +8,9 @@
             <generator class="native"/>
         </id>
 
-        <property name="username" type="string" column="username" not-null="true"/>
+        <property name="username" type="string" column="username" not-null="true" unique="true"/>
         <property name="password" type="string" column="password" not-null="true"/>
-        <property name="email" type="string" column="email" not-null="true"/>
+        <property name="email" type="string" column="email" not-null="true" unique="true"/>
         <property name="verified" type="boolean" column="verified" not-null="true"/>
 
         <property name="role" column="role" not-null="true">
