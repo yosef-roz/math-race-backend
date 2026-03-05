@@ -47,12 +47,11 @@ public class LoginController {
 
         race.setParticipants(users);
 
-        baseRepository.save(race);
+        System.out.println("שניה לפני");
+
+        baseRepository.saveAll(users);
 
         System.out.println("אני התחלתי ");
-        RaceEntity n = baseRepository.loadObject(RaceEntity.class, race.getId());
-        System.out.println(n.toString());
-        System.out.println("אני סיימתי! ");
 
         return "השרת של Math Race עובד! הבקשה הגיעה אליי.";
     }

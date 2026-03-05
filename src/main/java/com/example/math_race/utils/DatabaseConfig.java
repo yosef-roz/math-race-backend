@@ -19,11 +19,24 @@ public class DatabaseConfig {
 
     @Bean
     public DataSource dataSource() throws Exception {
-        String dbUser = env.getProperty("DB_ROOT");
-        String dbSchema = env.getProperty("DB_SCHEMA");
-        String dbPass = env.getProperty("DB_PASSWORD");
-        String host = env.getProperty("DB_HOST");
-        Integer port = env.getProperty("DB_PORT", Integer.class);
+        String dbUser,dbSchema, dbPass,host;
+        Integer port;
+
+        boolean isLocal = true;
+
+        if (!isLocal) {
+            dbUser = env.getProperty("DB_ROOT");
+            dbSchema = env.getProperty("DB_SCHEMA");
+            dbPass = env.getProperty("DB_PASSWORD");
+            host = env.getProperty("DB_HOST");
+            port = env.getProperty("DB_PORT", Integer.class);
+        }else {
+            dbUser = "root";
+            dbSchema = "math_race_db_loc";
+            dbPass = "1234";
+            host ="localhost";
+            port = 3306;
+        }
 
         ComboPooledDataSource dataSource = new ComboPooledDataSource();
         dataSource.setDriverClass("com.mysql.cj.jdbc.Driver");
