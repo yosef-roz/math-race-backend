@@ -62,8 +62,6 @@
             <generator class="native"/>
         </id>
 
-        <property name="roomCode" type="string" column="room_code" not-null="true"/>
-        <property name="name" type="string" column="race_name" not-null="true"/>
         <many-to-one name="host"
                      class="com.example.math_race.entities.UserEntity"
                      column="host_id"
@@ -71,7 +69,10 @@
                      fetch="join"/>
         <property name="targetScore" type="int" column="target_score" not-null="true"/>
 
-        <bag name="participants" cascade="all-delete-orphan" inverse="true">
+        <property name="roomCode" type="string" column="room_code" not-null="true"/>
+        <property name="name" type="string" column="race_name" not-null="true"/>
+
+        <bag name="participants" cascade="all-delete-orphan" lazy="false" fetch="join">
             <key column="race_id"/>
             <one-to-many class="com.example.math_race.entities.RaceParticipantEntity"/>
         </bag>
@@ -88,7 +89,7 @@
         </id>
 
         <many-to-one name="user" class="com.example.math_race.entities.UserEntity" column="user_id" not-null="false"/>
-        <property name="displayName" type="string" column="display_name" not-null="false"/>
+        <property name="nickname" type="string" column="nick_name" not-null="true"/>
 
         <property name="creationDate" type="java.util.Date" column="creation_date" not-null="true"/>
         <property name="updatedDate" type="java.util.Date" column="updated_date"/>

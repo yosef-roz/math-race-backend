@@ -12,6 +12,7 @@ import org.springframework.web.bind.annotation.RestController;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.UUID;
 
 import static com.example.math_race.entities.TokenEntity.TokenType.*;
 
@@ -29,11 +30,7 @@ public class LoginController {
         baseRepository.save(user);
         baseRepository.save(token);
 
-        RaceEntity race = new RaceEntity();
-        race.setName("test");
-        race.setRoomCode("565");
-        race.setTargetScore(200);
-        race.setHost(user);
+        RaceEntity race = new RaceEntity("test " + Math.random(), user, 100);
 
         RaceParticipantEntity r1 = new RaceParticipantEntity(user);
         RaceParticipantEntity r2 = new RaceParticipantEntity("ryan anderson");
@@ -42,10 +39,18 @@ public class LoginController {
         users.add(r1);
         users.add(r2);
 
+        for(int i = 0; i < 100; i++) {
+            users.add(new RaceParticipantEntity(UUID.randomUUID().toString().substring(0, 6).toUpperCase()));
+        }
+
         race.setParticipants(users);
 
         baseRepository.save(race);
 
+        System.out.println("אני התחלתי ");
+        RaceEntity n = baseRepository.loadObject(RaceEntity.class, race.getId());
+        System.out.println(n.toString());
+        System.out.println("אני סיימתי! ");
 
         return "השרת של Math Race עובד! הבקשה הגיעה אליי.";
     }

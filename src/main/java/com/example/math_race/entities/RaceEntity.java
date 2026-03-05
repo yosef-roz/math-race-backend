@@ -6,6 +6,7 @@ import lombok.NoArgsConstructor;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.UUID;
 
 @Data
 @AllArgsConstructor
@@ -28,8 +29,18 @@ public class RaceEntity extends BaseEntity {
     private RaceStatus status;
 
     public RaceEntity() {
-        status = RaceStatus.PENDING;
+        this.roomCode = UUID.randomUUID().toString().substring(0, 6).toUpperCase(); // הוספת מחולל קוד חדר
+        this.status = RaceStatus.PENDING;
+        this.name = "Race " + UUID.randomUUID().toString().substring(0, 4).toUpperCase(); // הוספת מחוללל שמות
+        this.targetScore = MAX_TARGET_SCORE / 2;
         participants = new ArrayList<>();
+    }
+
+    public RaceEntity(String name, UserEntity user, int targetScore) {
+        this();
+        this.name = name;
+        this.host = user;
+        this.targetScore = targetScore;
     }
 
     public boolean isFinished() {

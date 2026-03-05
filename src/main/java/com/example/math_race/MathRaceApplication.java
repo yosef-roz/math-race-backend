@@ -14,4 +14,9 @@ public class MathRaceApplication {
 		System.out.println("  Application 'Math Race' is running successfully!");
 		System.out.println("----------------------------------------------------------\n");
 	}
+
+	// טבלת משחקים
+	// מזהה, ....
+	// טבלת שחקנים
+	// מזהה, מזהה המשחק fk
 }

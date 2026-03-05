@@ -1,25 +1,35 @@
 package com.example.math_race.entities;
 
+import lombok.AllArgsConstructor;
 import lombok.Data;
-import lombok.NoArgsConstructor;
+
+import java.util.UUID;
 
 @Data
-@NoArgsConstructor
+@AllArgsConstructor
 public class RaceParticipantEntity extends BaseEntity {
 
     private String token;
     private UserEntity user;
-    private String displayName;
+    private String nickname;
     private int currentScore = 0;
 
-    public RaceParticipantEntity(UserEntity user) {
-        this.token = "123"; // הסופת מחולל טוקנים לכאן
-        this.user = user;
+    public RaceParticipantEntity() {
+        this.token = UUID.randomUUID().toString().substring(0, 4); // הוספת מחולל טוקנים
     }
 
-    public RaceParticipantEntity(String displayName) {
-        this.token = "123"; // הסופת מחולל טוקנים לכאן
-        this.displayName = displayName;
+    public RaceParticipantEntity(UserEntity user, String nickname) {
+        this();
+        this.user = user;
+        this.nickname = nickname;
+    }
+
+    public RaceParticipantEntity(UserEntity user) {
+        this(user, user.getUsername());
+    }
+
+    public RaceParticipantEntity(String nickname) {
+        this(null, nickname);
     }
 
     public boolean isGust() {
