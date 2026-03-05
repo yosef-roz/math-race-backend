@@ -2,7 +2,6 @@ package com.example.math_race.entities;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
-import lombok.Setter;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -12,7 +11,7 @@ import java.util.UUID;
 @AllArgsConstructor
 public class RaceEntity extends BaseEntity {
 
-    public static final int MAX_PARTICIPANTS = 50;
+    public static final int MAX_PARTICIPANTS = 1000;
     public static final int MAX_TARGET_SCORE = 1000;
 
     public enum RaceStatus {
@@ -47,27 +46,21 @@ public class RaceEntity extends BaseEntity {
         return status == RaceStatus.FINISHED;
     }
 
-//    public boolean setParticipants(List<RaceParticipantEntity> participants) {
-//        if (participants.size() > MAX_PARTICIPANTS) {
-//            return false;
-//        }
-//
-//        this.participants = new ArrayList<>();
-//        for (RaceParticipantEntity participant : participants) {
-//            addParticipant(participant);
-//        }
-//        return true;
-//    }
-//
-//    public boolean addParticipant(RaceParticipantEntity participant) {
-//        if (participants.size() >= MAX_PARTICIPANTS) {
-//            return false;
-//        }
-//
-//        participants.add(participant);
-////        participant.setRace(this);
-//        return true;
-//    }
+    public boolean setPlayers(List<RaceParticipantEntity> newParticipants) {
+        if (newParticipants.size() > MAX_PARTICIPANTS) {
+            return false;
+        }
+        this.participants = newParticipants;
+        return true;
+    }
+
+    public boolean addPlayer(RaceParticipantEntity participant) {
+        if (participants.size() >= MAX_PARTICIPANTS) {
+            return false;
+        }
+        participants.add(participant);
+        return true;
+    }
 
     public int getParticipantCount() {
         return participants != null ? participants.size() : 0;
