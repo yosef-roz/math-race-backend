@@ -13,11 +13,10 @@ public class ApiResponse<T> {
     private boolean success;
     private Integer errorCode;
     private String message;
-    private long timestamp;
     private T data;
 
     public static <T> ApiResponse<T> ok(T data, String msg) {
-        return new ApiResponse<>(true, null, msg , System.currentTimeMillis(), data);
+        return new ApiResponse<>(true, null, msg , data);
     }
 
     public static <T> ApiResponse<T> ok(T data) {
@@ -25,6 +24,6 @@ public class ApiResponse<T> {
     }
 
     public static <T> ApiResponse<T> error(int code, String msg) {
-        return new ApiResponse<>(false, code, msg, System.currentTimeMillis(), null);
+        return new ApiResponse<>(false, code, msg,null);
     }
 }
