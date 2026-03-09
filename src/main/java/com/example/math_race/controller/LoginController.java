@@ -22,7 +22,6 @@ public class LoginController {
     public ApiResponse<LoginResponse> login(@RequestBody LoginRequest request) {
         if (request.getEmail() == null || request.getEmail().isEmpty()
                 || request.getPassword() == null || request.getPassword().isEmpty()) {
-
         }
 
         LoginResponse response = authService.loginUser(request);

@@ -22,4 +22,18 @@ public class GlobalExceptionHandler {
                 .status(HttpStatus.OK)
                 .body(body);
     }
+
+    @ExceptionHandler(Exception.class)
+    public ResponseEntity<ApiResponse<Void>> handleAllOtherExceptions(Exception ex) {
+        ex.printStackTrace();
+
+        ApiResponse<Void> body = ApiResponse.error(
+                9999,
+                "An unexpected error occurred: " + ex.getMessage()
+        );
+
+        return ResponseEntity
+                .status(HttpStatus.INTERNAL_SERVER_ERROR)
+                .body(body);
+    }
 }
