@@ -5,18 +5,14 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
+import org.springframework.web.servlet.NoHandlerFoundException;
 
 @ControllerAdvice
 public class GlobalExceptionHandler {
 
     @ExceptionHandler(LogicException.class)
     public ResponseEntity<ApiResponse<Void>> handleException(LogicException ex) {
-        ErrorCode errorCode = ex.getErrorCode();
-
-        ApiResponse<Void> body = ApiResponse.error(
-                errorCode.getCode(),
-                errorCode.getMessage()
-        );
+        ApiResponse<Void> body = ApiResponse.error(ex.getErrorCode());
 
         return ResponseEntity
                 .status(HttpStatus.OK)
@@ -27,13 +23,19 @@ public class GlobalExceptionHandler {
     public ResponseEntity<ApiResponse<Void>> handleAllOtherExceptions(Exception ex) {
         ex.printStackTrace();
 
-        ApiResponse<Void> body = ApiResponse.error(
-                9999,
-                "An unexpected error occurred: " + ex.getMessage()
-        );
+        ApiResponse<Void> body = ApiResponse.error(ErrorCode.INTERNAL_ERROR);
 
         return ResponseEntity
                 .status(HttpStatus.INTERNAL_SERVER_ERROR)
+                .body(body);
+    }
+
+    @ExceptionHandler(NoHandlerFoundException.class)
+    public ResponseEntity<ApiResponse<Void>> handleNotFound(NoHandlerFoundException ex) {
+        ApiResponse<Void> body = ApiResponse.error(ErrorCode.NOT_FOUND);
+
+        return ResponseEntity
+                .status(HttpStatus.NOT_FOUND)
                 .body(body);
     }
 }

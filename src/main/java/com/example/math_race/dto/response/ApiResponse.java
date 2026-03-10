@@ -1,5 +1,6 @@
 package com.example.math_race.dto.response;
 
+import com.example.math_race.exception.ErrorCode;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -23,7 +24,7 @@ public class ApiResponse<T> {
         return success(data, "Operation completed successfully!");
     }
 
-    public static <T> ApiResponse<T> error(int code, String msg) {
-        return new ApiResponse<>(false, code, msg,null);
+    public static <T> ApiResponse<T> error(ErrorCode errorCode) {
+        return new ApiResponse<>(false, errorCode.getCode(), errorCode.getMessage(),null);
     }
 }

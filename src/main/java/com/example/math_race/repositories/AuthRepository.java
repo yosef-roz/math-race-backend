@@ -8,10 +8,10 @@ import org.springframework.transaction.annotation.Transactional;
 
 @Transactional
 @Repository
-public class UserRepository extends BaseRepository {
+public class AuthRepository extends BaseRepository {
 
     @Autowired
-    public UserRepository(SessionFactory sf) {
+    public AuthRepository(SessionFactory sf) {
         super(sf);
     }
 
@@ -21,6 +21,16 @@ public class UserRepository extends BaseRepository {
         return getCurrentSession()
                 .createQuery(hql, UserEntity.class)
                 .setParameter("email", email)
+                .uniqueResult();
+    }
+
+    public UserEntity findByEmailOrUsername(String email, String userName) {
+        String hql = "FROM UserEntity where email = :email Or userName = :userName";
+
+        return getCurrentSession()
+                .createQuery(hql, UserEntity.class)
+                .setParameter("email", email)
+                .setParameter("userName", userName)
                 .uniqueResult();
     }
 }

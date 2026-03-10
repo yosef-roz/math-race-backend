@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <style>
+        .button {
+            padding: 10px 20px;
+            background-color: #4CAF50;
+            color: white;
+            text-decoration: none;
+            border-radius: 5px;
+        }
+    </style>
+</head>
+<body dir="rtl">
+<h1 th:text="'שלום ' + ${name} + '!'"></h1>
+<p>תודה שנרשמת ל-Math Race. כדי להתחיל לשחק, לחץ על הכפתור למטה:</p>
+
+<br>
+<a th:href="${verificationUrl}" class="button">אמת את החשבון שלי</a>
+<br><br>
+
+<p>אם הכפתור לא עובד, העתק את הקישור הבא לדפדפן:</p>
+<p th:text="${verificationUrl}"></p>
+</body>
+</html>

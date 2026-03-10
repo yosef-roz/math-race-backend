@@ -1,18 +1,16 @@
 package com.example.math_race.controller;
 
-import com.example.math_race.dto.request.ChangePasswordRequest;
-import com.example.math_race.dto.request.ForgotPasswordRequest;
-import com.example.math_race.dto.request.LoginRequest;
-import com.example.math_race.dto.request.RegisterRequest;
+import com.example.math_race.dto.request.*;
 import com.example.math_race.dto.response.ApiResponse;
 import com.example.math_race.dto.response.LoginResponse;
+import com.example.math_race.exception.ErrorCode;
 import com.example.math_race.service.AuthService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/api/auth")
-public class LoginController {
+public class AuthController {
 
     @Autowired
     private AuthService authService;
@@ -20,8 +18,9 @@ public class LoginController {
     // http://localhost:8085/api/auth/login
     @PostMapping("/login")
     public ApiResponse<LoginResponse> login(@RequestBody LoginRequest request) {
-        if (request.getEmail() == null || request.getEmail().isEmpty()
+        if (request == null || request.getEmail() == null || request.getEmail().isEmpty()
                 || request.getPassword() == null || request.getPassword().isEmpty()) {
+            return ApiResponse.error(ErrorCode.INVALID_INPUT);
         }
 
         LoginResponse response = authService.loginUser(request);
@@ -30,11 +29,28 @@ public class LoginController {
 
     // http://localhost:8085/api/auth/register
     @PostMapping("/register")
-    public void register(@RequestBody RegisterRequest request) {
-        System.out.println("--- Register Request Received ---");
-        System.out.println("Username: " + request.getUsername());
-        System.out.println("Email: " + request.getEmail());
-        System.out.println("Password: " + request.getPassword());
+    public ApiResponse<Void> register(@RequestBody RegisterRequest request) {
+        if (request == null || request.getEmail() == null || request.getEmail().isEmpty()
+            || request.getPassword() == null ||request.getPassword().isEmpty()
+                || request.getUsername() == null || request.getUsername().isEmpty()) {
+            return ApiResponse.error(ErrorCode.INVALID_INPUT);
+        }
+
+        authService.registerUser(request);
+        // בדיקה איתך
+        return ApiResponse.success(null);
+    }
+
+    // http://localhost:8085/api/auth/verify-account
+    @PostMapping("/verify-account")
+    public ApiResponse<Void> verifyAccount(@RequestBody VerifyAccountRequest request) {
+        if (request == null || request.getToken() == null || request.getToken().isEmpty()) {
+            return ApiResponse.error(ErrorCode.INVALID_INPUT);
+        }
+
+        authService.verifyAccount(request);
+        // בדיקה איתך
+        return ApiResponse.success(null);
     }
 
     // http://localhost:8085/api/auth/forgot-password
