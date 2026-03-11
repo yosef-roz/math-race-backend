@@ -17,33 +17,33 @@ public class AuthController {
 
     // http://localhost:8085/api/auth/login
     @PostMapping("/login")
-    public ApiResponse<LoginResponse> login(@RequestBody LoginRequest request) {
+    public ApiResponse<LoginResponse> login(@RequestBody LoginRequest request, RequestMetadata metadata) {
         if (request == null || request.getEmail() == null || request.getEmail().isEmpty()
                 || request.getPassword() == null || request.getPassword().isEmpty()) {
             return ApiResponse.error(ErrorCode.INVALID_INPUT);
         }
 
-        LoginResponse response = authService.loginUser(request);
+        LoginResponse response = authService.loginUser(request, metadata);
         return ApiResponse.success(response);
     }
 
     // http://localhost:8085/api/auth/register
     @PostMapping("/register")
-    public ApiResponse<Void> register(@RequestBody RegisterRequest request) {
+    public ApiResponse<Void> register(@RequestBody RegisterRequest request, RequestMetadata metadata) {
         if (request == null || request.getEmail() == null || request.getEmail().isEmpty()
             || request.getPassword() == null ||request.getPassword().isEmpty()
                 || request.getUsername() == null || request.getUsername().isEmpty()) {
             return ApiResponse.error(ErrorCode.INVALID_INPUT);
         }
 
-        authService.registerUser(request);
+        authService.registerUser(request, metadata);
         // בדיקה איתך
         return ApiResponse.success(null);
     }
 
     // http://localhost:8085/api/auth/verify-account
     @PostMapping("/verify-account")
-    public ApiResponse<Void> verifyAccount(@RequestBody VerifyAccountRequest request) {
+    public ApiResponse<Void> verifyAccount(@RequestBody VerifyAccountRequest request, RequestMetadata metadata) {
         if (request == null || request.getToken() == null || request.getToken().isEmpty()) {
             return ApiResponse.error(ErrorCode.INVALID_INPUT);
         }
@@ -55,15 +55,38 @@ public class AuthController {
 
     // http://localhost:8085/api/auth/forgot-password
     @PostMapping("/forgot-password")
-    public void forgotPassword(@RequestBody ForgotPasswordRequest request) {
-        System.out.println("--- Forgot Password Request Received ---");
-        System.out.println("Email to reset: " + request.getEmail());
+    public ApiResponse<Void> forgotPassword(@RequestBody ForgotPasswordRequest request, RequestMetadata metadata) {
+        if (request == null || request.getEmail() == null || request.getEmail().isEmpty()){
+            return ApiResponse.error(ErrorCode.INVALID_INPUT);
+        }
+
+        authService.userForgotPassword(request, metadata);
+        // בדיקה איתך
+        return ApiResponse.success(null);
+    }
+
+    // http://localhost:8085/api/auth/reset-password
+    @PostMapping("/reset-password")
+    public ApiResponse<Void> resetPassword(@RequestBody ResetPasswordRequest request, RequestMetadata metadata) {
+        if (request == null || request.getToken() == null || request.getToken().isEmpty()
+                || request.getNewPassword() == null || request.getNewPassword().isEmpty()) {
+            return ApiResponse.error(ErrorCode.INVALID_INPUT);
+        }
+
+        authService.userResetPassword(request);
+        // בדיקה איתך
+        return ApiResponse.success(null);
     }
 
     // http://localhost:8085/api/auth/change-password
     @PostMapping("/change-password")
-    public void changePassword(@RequestBody ChangePasswordRequest request) {
-        System.out.println("--- Change Password Request Received ---");
-        System.out.println("New Password: " + request.getNewPassword());
+    public ApiResponse<Void> changePassword(@RequestBody ChangePasswordRequest request, RequestMetadata metadata) {
+        if (request == null || request.getNewPassword() == null || request.getNewPassword().isEmpty()) {
+            return ApiResponse.error(ErrorCode.INVALID_INPUT);
+        }
+
+        authService.userChangePassword(request,metadata);
+        // בדיקה איתך
+        return ApiResponse.success(null);
     }
 }

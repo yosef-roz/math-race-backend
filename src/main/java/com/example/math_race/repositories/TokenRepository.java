@@ -37,4 +37,30 @@ public class TokenRepository extends BaseRepository {
                 .setParameter("tokenType",tokenType)
                 .getResultList();
     }
+
+    public int invalidateTokensByUserAndType(UserEntity user, TokenEntity.TokenType tokenType) {
+        String hql = "update TokenEntity set revoked = true " +
+                "where user.id = :userId and type = :tokenType and revoked = false";
+
+        return getCurrentSession()
+                .createQuery(hql)
+                .setParameter("userId", user.getId())
+                .setParameter("tokenType", tokenType)
+                .executeUpdate();
+    }
+
+    public TokenEntity findLatestActiveToken(UserEntity user, TokenEntity.TokenType tokenType) {
+        String hql = "FROM TokenEntity WHERE user.id = :userId " +
+                "AND type = :tokenType " +
+                "AND revoked = false " +
+                "AND deleted = false " +
+                "ORDER BY creationDate DESC";
+
+        return getCurrentSession()
+                .createQuery(hql, TokenEntity.class)
+                .setParameter("userId", user.getId())
+                .setParameter("tokenType", tokenType)
+                .setMaxResults(1)
+                .uniqueResult();
+    }
 }

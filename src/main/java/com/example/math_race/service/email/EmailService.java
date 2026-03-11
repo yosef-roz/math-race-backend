@@ -1,4 +1,4 @@
-package com.example.math_race.service;
+package com.example.math_race.service.email;
 
 import com.example.math_race.entities.TokenEntity;
 import com.example.math_race.entities.UserEntity;
@@ -32,14 +32,53 @@ public class EmailService {
     @Async
     public void sendVerificationEmail(UserEntity to, TokenEntity token) {
         Context context = new Context();
+
         context.setVariable("name", to.getUsername());
-        context.setVariable("verificationUrl", "http://localhost:5174/auth/verify/" + token.getToken());
+        context.setVariable("verificationUrl", "http://localhost:5174/verify/" + token.getToken());
 
         String htmlContent = templateEngine.process("verify-email", context);
 
         MailRequest mailRequest = new MailRequest(
                 to.getEmail(),
                 "אימות רישום - Math Race",
+                htmlContent,
+                true
+        );
+
+        this.sendEmail(mailRequest);
+    }
+
+    @Async
+    public void sendPasswordResetEmail(UserEntity to, TokenEntity token) {
+        Context context = new Context();
+
+        context.setVariable("name", to.getUsername());
+        context.setVariable("resetUrl", "http://localhost:5174/reset-password/" + token.getToken());
+
+        String htmlContent = templateEngine.process("reset-password", context);
+
+        MailRequest mailRequest = new MailRequest(
+                to.getEmail(),
+                "איפוס סיסמה - Math Race",
+                htmlContent,
+                true
+        );
+
+        this.sendEmail(mailRequest);
+    }
+
+    @Async
+    public void sendPasswordChangedEmail(UserEntity to) {
+        Context context = new Context();
+
+        context.setVariable("name", to.getUsername());
+        context.setVariable("loginUrl", "http://localhost:5174/login");
+
+        String htmlContent = templateEngine.process("password-changed", context);
+
+        MailRequest mailRequest = new MailRequest(
+                to.getEmail(),
+                "הסיסמה שלך שונתה - Math Race",
                 htmlContent,
                 true
         );
