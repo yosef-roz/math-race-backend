@@ -2,6 +2,7 @@ package com.example.math_race.controller;
 
 import com.example.math_race.dto.request.*;
 import com.example.math_race.dto.response.ApiResponse;
+import com.example.math_race.dto.response.CreateGuestIdResponse;
 import com.example.math_race.dto.response.LoginResponse;
 import com.example.math_race.exception.ErrorCode;
 import com.example.math_race.service.AuthService;
@@ -37,7 +38,6 @@ public class AuthController {
         }
 
         authService.registerUser(request, metadata);
-        // בדיקה איתך
         return ApiResponse.success(null);
     }
 
@@ -49,7 +49,6 @@ public class AuthController {
         }
 
         authService.verifyAccount(request);
-        // בדיקה איתך
         return ApiResponse.success(null);
     }
 
@@ -61,7 +60,6 @@ public class AuthController {
         }
 
         authService.userForgotPassword(request, metadata);
-        // בדיקה איתך
         return ApiResponse.success(null);
     }
 
@@ -74,7 +72,6 @@ public class AuthController {
         }
 
         authService.userResetPassword(request);
-        // בדיקה איתך
         return ApiResponse.success(null);
     }
 
@@ -86,7 +83,13 @@ public class AuthController {
         }
 
         authService.userChangePassword(request,metadata);
-        // בדיקה איתך
         return ApiResponse.success(null);
+    }
+
+    @GetMapping("/create-guestId")
+    public ApiResponse<CreateGuestIdResponse> createGuestId(RequestMetadata metadata) {
+        CreateGuestIdResponse createGuestIdResponse = authService.createGuestId();
+
+        return ApiResponse.success(createGuestIdResponse);
     }
 }

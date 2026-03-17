@@ -1,6 +1,7 @@
 package com.example.math_race.service;
 
 import com.example.math_race.dto.request.*;
+import com.example.math_race.dto.response.CreateGuestIdResponse;
 import com.example.math_race.dto.response.LoginResponse;
 import com.example.math_race.entities.TokenEntity;
 import com.example.math_race.entities.UserEntity;
@@ -8,12 +9,13 @@ import com.example.math_race.exception.ErrorCode;
 import com.example.math_race.exception.LogicException;
 import com.example.math_race.repositories.AuthRepository;
 import com.example.math_race.repositories.TokenRepository;
-import com.example.math_race.service.email.EmailService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
+
+import java.util.UUID;
 
 import static com.example.math_race.entities.TokenEntity.TokenType.*;
 
@@ -171,5 +173,20 @@ public class AuthService {
         userRepository.save(user);
 
         tokenRepository.invalidateTokensByUserAndType(user, SESSION);
+    }
+
+    public UserEntity getActiveUserByToken(String tokenUser) {
+        TokenEntity token = tokenRepository.findByToken(tokenUser);
+        if (token != null && token.isValid() && !token.isDeleted() && token.getType() == SESSION &&
+                !token.getUser().isDeleted()) {
+            return token.getUser();
+        }
+        return null;
+    }
+
+    public CreateGuestIdResponse createGuestId(){
+        String newGuestId = "Guest-" + UUID.randomUUID().toString().substring(0,10);
+
+        return new CreateGuestIdResponse(newGuestId,30);
     }
 }

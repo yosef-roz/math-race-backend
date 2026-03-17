@@ -1,4 +1,4 @@
-package com.example.math_race.service.email;
+package com.example.math_race.email;
 
 import lombok.Data;
 import lombok.NoArgsConstructor;

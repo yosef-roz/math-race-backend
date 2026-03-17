@@ -1,14 +1,10 @@
-package com.example.math_race.service.email;
+package com.example.math_race.service;
 
+import com.example.math_race.email.EmailSender;
+import com.example.math_race.email.MailRequest;
 import com.example.math_race.entities.TokenEntity;
 import com.example.math_race.entities.UserEntity;
-import com.example.math_race.exception.ErrorCode;
-import com.example.math_race.exception.LogicException;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.mail.MailAuthenticationException;
-import org.springframework.mail.MailSendException;
-import org.springframework.mail.javamail.JavaMailSender;
-import org.springframework.mail.javamail.MimeMessageHelper;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -24,7 +20,7 @@ import javax.mail.internet.MimeMessage;
 public class EmailService {
 
     @Autowired
-    private JavaMailSender mailSender;
+    private EmailSender emailSender;
 
     @Autowired
     private TemplateEngine templateEngine;
@@ -45,7 +41,7 @@ public class EmailService {
                 true
         );
 
-        this.sendEmail(mailRequest);
+        emailSender.sendEmail(mailRequest);
     }
 
     @Async
@@ -64,7 +60,7 @@ public class EmailService {
                 true
         );
 
-        this.sendEmail(mailRequest);
+        emailSender.sendEmail(mailRequest);
     }
 
     @Async
@@ -83,39 +79,6 @@ public class EmailService {
                 true
         );
 
-        this.sendEmail(mailRequest);
-    }
-
-    @Async
-    public void sendEmail(MailRequest mailRequest) {
-        try {
-            MimeMessage message = mailSender.createMimeMessage();
-            MimeMessageHelper helper = new MimeMessageHelper(message, true, "UTF-8");
-
-            helper.setTo(mailRequest.getTo());
-            helper.setSubject(mailRequest.getSubject());
-            helper.setText(mailRequest.getBody(), mailRequest.isHtml());
-
-            mailSender.send(message);
-
-        } catch (MessagingException e) {
-            throw new LogicException(ErrorCode.EMAIL_INVALID_FORMAT);
-
-        } catch (MailAuthenticationException e) {
-            e.printStackTrace();
-            throw new LogicException(ErrorCode.EMAIL_SEND_FAILED);
-
-        } catch (MailSendException e) {
-            String errorMessage = e.getMessage();
-            if (errorMessage.contains("550") || errorMessage.contains("Invalid Addresses")) {
-                throw new LogicException(ErrorCode.EMAIL_NOT_FOUND);
-            }
-
-            e.printStackTrace();
-            throw new LogicException(ErrorCode.EMAIL_SEND_FAILED);
-        } catch (Exception e) {
-            e.printStackTrace();
-            throw new LogicException(ErrorCode.EMAIL_SEND_FAILED);
-        }
+        emailSender.sendEmail(mailRequest);
     }
 }

@@ -15,9 +15,8 @@ public class RaceHistoryEntity extends BaseEntity {
     private int targetScore;
 
     public RaceHistoryEntity() {
-        this.roomCode = UUID.randomUUID().toString().substring(0, 6).toUpperCase(); // הוספת מחולל קוד חדר
         this.name = "Race " + UUID.randomUUID().toString().substring(0, 4).toUpperCase(); // הוספת מחוללל שמות
-        this.targetScore = 1000; ///צריך בדיקה
+        this.targetScore = 1000;
     }
 
     public RaceHistoryEntity(String name, UserEntity user, int targetScore) {
