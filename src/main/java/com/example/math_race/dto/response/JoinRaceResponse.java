@@ -7,6 +7,7 @@ import lombok.Data;
 @AllArgsConstructor
 public class JoinRaceResponse {
     private String nickname;
+    private String joinToken;
     private String name;
     private String code;
     private String type;

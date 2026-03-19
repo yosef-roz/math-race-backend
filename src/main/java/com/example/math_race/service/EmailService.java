@@ -11,21 +11,25 @@ import org.springframework.transaction.annotation.Transactional;
 import org.thymeleaf.TemplateEngine;
 import org.thymeleaf.context.Context;
 
-import javax.mail.MessagingException;
-import javax.mail.internet.MimeMessage;
+
+import static com.example.math_race.config.AsyncConfig.EMAIL_TASK_EXECUTOR_BEAN_NAME;
 
 
 @Service
-@Transactional(readOnly = true)
 public class EmailService {
 
-    @Autowired
-    private EmailSender emailSender;
+    private final EmailSender emailSender;
+    private final TemplateEngine templateEngine;
+
 
     @Autowired
-    private TemplateEngine templateEngine;
+    public EmailService(EmailSender emailSender, TemplateEngine templateEngine) {
+        this.emailSender = emailSender;
+        this.templateEngine = templateEngine;
+    }
 
-    @Async
+
+    @Async(EMAIL_TASK_EXECUTOR_BEAN_NAME)
     public void sendVerificationEmail(UserEntity to, TokenEntity token) {
         Context context = new Context();
 
@@ -44,7 +48,7 @@ public class EmailService {
         emailSender.sendEmail(mailRequest);
     }
 
-    @Async
+    @Async(EMAIL_TASK_EXECUTOR_BEAN_NAME)
     public void sendPasswordResetEmail(UserEntity to, TokenEntity token) {
         Context context = new Context();
 
@@ -63,7 +67,7 @@ public class EmailService {
         emailSender.sendEmail(mailRequest);
     }
 
-    @Async
+    @Async(EMAIL_TASK_EXECUTOR_BEAN_NAME)
     public void sendPasswordChangedEmail(UserEntity to) {
         Context context = new Context();
 

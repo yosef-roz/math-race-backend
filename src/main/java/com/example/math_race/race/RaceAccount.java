@@ -7,11 +7,12 @@ import lombok.NoArgsConstructor;
 import java.util.Objects;
 
 @Data
-@AllArgsConstructor
 @NoArgsConstructor
+@AllArgsConstructor
 public class RaceAccount {
     private String id;
     private String sessionActive;
+    private String joinToken;
     private String nickname;
 
 
@@ -20,7 +21,11 @@ public class RaceAccount {
     }
 
     public boolean isConnected() {
-        return sessionActive != null;
+        return sessionActive != null && !sessionActive.isEmpty();
+    }
+
+    public boolean containsJoinToken(){
+        return joinToken != null && !joinToken.isEmpty();
     }
 
     @Override
@@ -31,5 +36,10 @@ public class RaceAccount {
 
         RaceAccount that = (RaceAccount) o;
         return Objects.equals(id, that.id);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hashCode(id);
     }
 }

@@ -12,8 +12,17 @@ public class RaceSettings {
     private String raceName;
     private int targetScore;
 
-    public  RaceSettings() {
-        setDefaultName();
+    private final long totalDurationMillis;
+
+    public RaceSettings() {
+       this("",RaceValidator.MIN_SCORES);
+       setDefaultName();
+    }
+
+    public RaceSettings(String raceName, int targetScore) {
+        this.raceName = raceName;
+        this.targetScore = targetScore;
+        this.totalDurationMillis = (long) targetScore * 600;
     }
 
     public void setDefaultName() {

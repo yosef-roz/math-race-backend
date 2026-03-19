@@ -10,4 +10,5 @@ public class CreateRaceResponse {
     private String code;
     private int targetScore;
     private String nickname;
+    private String joinToken;
 }

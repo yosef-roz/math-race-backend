@@ -1,13 +1,11 @@
 package com.example.math_race.controller;
 
-import com.example.math_race.dto.request.CreateRaceRequest;
-import com.example.math_race.dto.request.JoinRaceRequest;
-import com.example.math_race.dto.request.RaceInfoRequest;
-import com.example.math_race.dto.request.RequestMetadata;
+import com.example.math_race.dto.request.*;
 import com.example.math_race.dto.response.ApiResponse;
 import com.example.math_race.dto.response.CreateRaceResponse;
 import com.example.math_race.dto.response.JoinRaceResponse;
 import com.example.math_race.dto.response.RaceInfoResponse;
+import com.example.math_race.dto.wsMessage.ChangeRaceStatusDTO;
 import com.example.math_race.exception.ErrorCode;
 import com.example.math_race.service.RaceService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -18,6 +16,7 @@ import org.springframework.messaging.simp.SimpMessageHeaderAccessor;
 import org.springframework.messaging.simp.SimpMessageType;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.messaging.simp.annotation.SendToUser;
+import org.springframework.messaging.simp.stomp.StompHeaderAccessor;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -29,11 +28,15 @@ import java.security.Principal;
 @RequestMapping("/api/race")
 public class RaceController {
 
-    @Autowired
-    private SimpMessagingTemplate messagingTemplate;
+    private final SimpMessagingTemplate messagingTemplate;
+    private final RaceService raceService;
 
     @Autowired
-    private RaceService raceService;
+    public  RaceController(RaceService raceService, SimpMessagingTemplate messagingTemplate) {
+        this.raceService = raceService;
+        this.messagingTemplate = messagingTemplate;
+    }
+
 
     @MessageMapping("/race/{roomCode}/join9")
     public void handleJoin(@DestinationVariable String roomCode, @Payload Object request,
@@ -92,6 +95,16 @@ public class RaceController {
         // return new Object("ANSWER_RESULT", isCorrect ? "צדקת!" : "טעית...");
     }
 
+
+    @MessageMapping("/race/{roomCode}/host/c")
+    public void handleChangeRaceStatus(@DestinationVariable String roomCode, ChangeRaceStatusDTO request, StompHeaderAccessor accessor) {
+
+    }
+
+    @MessageMapping("/race/{roomCode}/host/sync")
+    public void handleRaceSync(@DestinationVariable String roomCode, StompHeaderAccessor accessor){
+        raceService.sendRaceState(roomCode, accessor);
+    }
 
     // http://localhost:8085/api/race/create
     @PostMapping("/create")

@@ -21,8 +21,12 @@ import static com.example.math_race.entities.TokenEntity.TokenType.*;
 @Transactional(readOnly = true)
 public class TokenService {
 
+    private final TokenRepository tokenRepository;
+
     @Autowired
-    private TokenRepository tokenRepository;
+    public TokenService(TokenRepository tokenRepository) {
+        this.tokenRepository = tokenRepository;
+    }
 
     @Transactional
     public TokenEntity createTokenEntity(UserEntity user, TokenEntity.TokenType tokenType, String ipAddress, String userAgent) {

@@ -1,0 +1,23 @@
+package com.example.math_race.dto.wsMessage;
+
+import com.example.math_race.race.RacePlayer;
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.NoArgsConstructor;
+
+@Data
+@AllArgsConstructor
+@NoArgsConstructor
+public class PlayerProgressDTO {
+    private String id;
+    private String nickname;
+    private int currentScore;
+    private boolean isOnline;
+
+    public PlayerProgressDTO(RacePlayer racePlayer){
+        this.id = racePlayer.getId();
+        this.nickname = racePlayer.getNickname();
+        this.currentScore = racePlayer.getCurrentScore();
+        this.isOnline = racePlayer.isConnected();
+    }
+}

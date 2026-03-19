@@ -23,17 +23,18 @@ import static com.example.math_race.entities.TokenEntity.TokenType.*;
 @Transactional(readOnly = true)
 public class AuthService {
 
-    @Autowired
-    private AuthRepository userRepository;
+    private final AuthRepository userRepository;
+    private final TokenService tokenService;
+    private final EmailService emailService;
+    private final TokenRepository tokenRepository;
 
     @Autowired
-    private TokenService tokenService;
-
-    @Autowired
-    private EmailService emailService;
-
-    @Autowired
-    private TokenRepository tokenRepository;
+    public AuthService(EmailService emailService, AuthRepository userRepository, TokenService tokenService, TokenRepository tokenRepository) {
+        this.emailService = emailService;
+        this.userRepository = userRepository;
+        this.tokenService = tokenService;
+        this.tokenRepository = tokenRepository;
+    }
 
 
     @Transactional

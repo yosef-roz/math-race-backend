@@ -1,18 +1,18 @@
 package com.example.math_race.service;
 
-import com.example.math_race.dto.request.CreateRaceRequest;
-import com.example.math_race.dto.request.JoinRaceRequest;
-import com.example.math_race.dto.request.RaceInfoRequest;
-import com.example.math_race.dto.request.RequestMetadata;
-import com.example.math_race.dto.response.CreateRaceResponse;
-import com.example.math_race.dto.response.JoinRaceResponse;
-import com.example.math_race.dto.response.RaceInfoResponse;
+import com.example.math_race.dto.wsMessage.ChangeRaceStatusDTO;
+import com.example.math_race.dto.wsMessage.WsMessage;
+import com.example.math_race.dto.wsMessage.PlayerJoinedDTO;
+import com.example.math_race.dto.wsMessage.RaceStateDTO;
+import com.example.math_race.dto.request.*;
+import com.example.math_race.dto.response.*;
 import com.example.math_race.entities.UserEntity;
 import com.example.math_race.exception.ErrorCode;
 import com.example.math_race.exception.LogicException;
 import com.example.math_race.race.*;
 import lombok.Getter;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.messaging.simp.stomp.StompHeaderAccessor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -21,21 +21,29 @@ import java.util.Objects;
 import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
 
+import static com.example.math_race.service.WebSocketService.*;
+
 @Service
 @Transactional(readOnly = true)
 public class RaceService {
 
+    private final RaceValidator raceValidator;
+    private final AuthService authService;
+    private final WebSocketService webSocketService;
+    private final RaceEngineService raceEngineService;
+
     @Getter
-    private final Map<String, RaceManager> activeRaces = new ConcurrentHashMap<>();
+    private final Map<String, RaceManager> activeRaces;
 
     @Autowired
-    private RaceValidator raceValidator;
+    public RaceService(RaceValidator raceValidator, AuthService authService, WebSocketService webSocketService, RaceEngineService raceEngineService) {
+        this.raceValidator = raceValidator;
+        this.authService = authService;
+        this.webSocketService = webSocketService;
+        this.raceEngineService = raceEngineService;
+        this.activeRaces = new ConcurrentHashMap<>();
 
-    @Autowired
-    private AuthService authService;
-
-    @Autowired
-    private NotificationService notificationService;
+    }
 
     public CreateRaceResponse creatRace(CreateRaceRequest request, RequestMetadata metadata){
         UserEntity user = authService.getActiveUserByToken(metadata.getAuthorization());
@@ -55,8 +63,10 @@ public class RaceService {
         RaceSettings raceSettings = new RaceSettings(request.getName(), request.getTargetScore());
         raceValidator.validate(raceSettings);
 
+        String joinToken = UUID.randomUUID().toString().substring(0, 10);
+
         RaceManager raceManager = new RaceManager(raceSettings);
-        raceManager.setHost(new RaceHost(user.getId()+"",null,nickname));
+        raceManager.setHost(new RaceHost(user.getId()+"",null,joinToken,nickname));
 
         while (activeRaces.containsKey(raceManager.getRoomCode())){
             raceManager.updateRoomCode();
@@ -67,7 +77,8 @@ public class RaceService {
                 raceSettings.getRaceName(),
                 raceManager.getRoomCode(),
                 raceSettings.getTargetScore(),
-                nickname
+                nickname,
+                joinToken
         );
     }
 
@@ -91,16 +102,11 @@ public class RaceService {
 
         RaceAccount account = raceManager.getAccount(accountId);
 
-        boolean isHost;
         if (account == null) {
-            throw new LogicException(ErrorCode.USER_NOT_IN_RACE);
-        }else {
-            isHost = raceManager.isHost(accountId);
+            throw new LogicException(ErrorCode.NOT_REGISTERED_FOR_RACE);
         }
 
-        return new RaceInfoResponse(isHost,raceManager.getStatus().name(),account.getNickname(),
-                raceManager.getSettings().getRaceName(),raceManager.getRoomCode(),raceManager.getSettings().getTargetScore());
-
+        return new RaceInfoResponse(account,raceManager);
     }
 
     public JoinRaceResponse joinRace(JoinRaceRequest request, RequestMetadata metadata){
@@ -122,6 +128,7 @@ public class RaceService {
 
         RaceManager raceManager = findRaceByAccountId(accountId);
         boolean isHost = false;
+        String joinToken = UUID.randomUUID().toString().substring(0, 10);
 
         if (raceManager == null){
             raceManager = activeRaces.get(request.getRoomCode());
@@ -132,25 +139,84 @@ public class RaceService {
                 throw new LogicException(ErrorCode.RACE_ALREADY_STARTED);
             }
 
-            raceManager.joinRace(new RacePlayer(accountId,null,nickname));
+            raceManager.joinRace(new RacePlayer(accountId,null,joinToken,nickname));
 
         } else if (raceManager.getRoomCode().equals(request.getRoomCode())){
             if (raceManager.getStatus().equals(RaceStatus.FINISHED)){
                 throw new LogicException(ErrorCode.RACE_ALREADY_FINISHED);
             }
 
-            if (raceManager.getHost().getId().equals(accountId)){
+            RaceAccount account = raceManager.getAccount(accountId);
+//            if (account.isConnected()){
+//                webSocketService.sendErrorToQueueSession(QUEUE_NOTIFICATIONS,ErrorCode.DUPLICATE_RACE_CONNECTION,
+//                        accountId,account.getSessionActive());
+//            }
+
+            account.setNickname(nickname);
+            account.setJoinToken(joinToken);
+            if (raceManager.isHost(accountId)){
                 isHost = true;
-                raceManager.setHost(new RaceHost(accountId,null,nickname));
-            }else {
-                raceManager.joinRace(new RacePlayer(accountId, null, nickname));
             }
+
         }else {
             throw new LogicException(ErrorCode.USER_ALREADY_IN_RACE);
         }
 
-        return new JoinRaceResponse(nickname,raceManager.getSettings().getRaceName(),
+        if (!isHost) {
+            sendPlayerJoined(raceManager, accountId);
+        }
+
+        return new JoinRaceResponse(nickname,joinToken,raceManager.getSettings().getRaceName(),
                 raceManager.getRoomCode(),isHost ? "HOST" : "PLAYER",raceManager.getSettings().getTargetScore());
+    }
+
+    public void handleChangeRaceStatus(String roomCode, ChangeRaceStatusDTO request, StompHeaderAccessor accessor){
+        RaceManager raceManager = activeRaces.get(roomCode);
+        boolean succeeded = false;
+        String sendType = "STATUS_CHANGED";
+
+        if (raceManager.getStatus().equals(RaceStatus.PENDING)){
+            if (request.getStatus().equals(RaceStatus.IN_PROGRESS.name()) ||
+                    request.getStatus().equals(RaceStatus.CANCELLED.name())){
+                succeeded = true;
+            }
+
+        } else if (raceManager.getStatus().equals(RaceStatus.IN_PROGRESS)){
+            if (request.getStatus().equals(RaceStatus.PAUSED.name()) ||
+                    request.getStatus().equals(RaceStatus.CANCELLED.name())){
+                succeeded = true;
+            }
+
+        } else if (raceManager.getStatus().equals(RaceStatus.PAUSED)) {
+            if (request.getStatus().equals(RaceStatus.IN_PROGRESS.name())||
+                    request.getStatus().equals(RaceStatus.CANCELLED.name())){
+                succeeded = true;
+            }
+        }
+
+        if (succeeded){
+            webSocketService.sendSuccessToTopic(webSocketService.getRaceUpdatesTopic(roomCode),sendType,
+                    new ChangeRaceStatusDTO(request.getStatus()));
+            webSocketService.sendSuccessToQueueSession(QUEUE_RACE_HOST,sendType,
+                    new ChangeRaceStatusDTO(request.getStatus()),raceManager.getHost().getId(),raceManager.getHost().getSessionActive());
+        }else {
+
+            webSocketService.sendSuccessToQueueSession(QUEUE_RACE_HOST,sendType,
+                    new ChangeRaceStatusDTO(request.getStatus()),raceManager.getHost().getId(),raceManager.getHost().getSessionActive());
+        }
+    }
+
+    public void sendRaceState(String roomCode, StompHeaderAccessor accessor){
+        RaceManager raceManager = activeRaces.get(roomCode);
+
+        webSocketService.sendSuccessToQueueSession(QUEUE_RACE_HOST,"RACE_FULL_STATE",
+                new RaceStateDTO(raceManager),accessor);
+    }
+
+    public void sendPlayerJoined(RaceManager raceManager, String accountId){
+        webSocketService.sendToQueueSession(QUEUE_RACE_HOST,
+                WsMessage.success("PLAYER_JOINED",new PlayerJoinedDTO(raceManager.getPlayer(accountId))),
+                raceManager.getHost().getId(),raceManager.getHost().getSessionActive());
     }
 
     public RaceAccount findAccountById(String accountId) {

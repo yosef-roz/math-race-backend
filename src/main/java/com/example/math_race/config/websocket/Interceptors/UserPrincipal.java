@@ -1,4 +1,4 @@
-package com.example.math_race.config.Interceptors;
+package com.example.math_race.config.websocket.Interceptors;
 
 import java.security.Principal;
 
