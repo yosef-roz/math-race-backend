@@ -1,25 +1,22 @@
 package com.example.math_race.service;
 
-import com.example.math_race.dto.wsMessage.ChangeRaceStatusDTO;
 import com.example.math_race.dto.wsMessage.WsMessage;
-import com.example.math_race.dto.wsMessage.PlayerJoinedDTO;
-import com.example.math_race.dto.wsMessage.RaceStateDTO;
+import com.example.math_race.dto.wsMessage.response.PlayerJoinedDTO;
+import com.example.math_race.dto.wsMessage.response.RaceStateDTO;
 import com.example.math_race.dto.request.*;
 import com.example.math_race.dto.response.*;
 import com.example.math_race.entities.UserEntity;
 import com.example.math_race.exception.ErrorCode;
 import com.example.math_race.exception.LogicException;
 import com.example.math_race.race.*;
-import lombok.Getter;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.messaging.simp.stomp.StompHeaderAccessor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.Map;
-import java.util.Objects;
-import java.util.UUID;
+import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.stream.Collectors;
 
 import static com.example.math_race.service.WebSocketService.*;
 
@@ -31,9 +28,8 @@ public class RaceService {
     private final AuthService authService;
     private final WebSocketService webSocketService;
     private final RaceEngineService raceEngineService;
-
-    @Getter
-    private final Map<String, RaceManager> activeRaces;
+    private final Map<String, RaceManager> allRaces;
+    private final Map<String, String> accountIdToOpenRoomCode;
 
     @Autowired
     public RaceService(RaceValidator raceValidator, AuthService authService, WebSocketService webSocketService, RaceEngineService raceEngineService) {
@@ -41,8 +37,8 @@ public class RaceService {
         this.authService = authService;
         this.webSocketService = webSocketService;
         this.raceEngineService = raceEngineService;
-        this.activeRaces = new ConcurrentHashMap<>();
-
+        this.allRaces = new ConcurrentHashMap<>();
+        this.accountIdToOpenRoomCode = new ConcurrentHashMap<>();
     }
 
     public CreateRaceResponse creatRace(CreateRaceRequest request, RequestMetadata metadata){
@@ -52,7 +48,7 @@ public class RaceService {
             throw new LogicException(ErrorCode.ACCOUNT_NOT_FOUND);
         }
 
-        if (findAccountById(user.getId()+"") != null) {
+        if (findAccountByIdInOpenRace(user.getId()+"") != null) {
             throw new LogicException(ErrorCode.USER_ALREADY_IN_RACE);
         }
 
@@ -68,10 +64,11 @@ public class RaceService {
         RaceManager raceManager = new RaceManager(raceSettings);
         raceManager.setHost(new RaceHost(user.getId()+"",null,joinToken,nickname));
 
-        while (activeRaces.containsKey(raceManager.getRoomCode())){
+        while (allRaces.containsKey(raceManager.getRoomCode())){
             raceManager.updateRoomCode();
         }
-        activeRaces.put(raceManager.getRoomCode(), raceManager);
+        accountIdToOpenRoomCode.put(user.getId()+"", raceManager.getRoomCode());
+        allRaces.put(raceManager.getRoomCode(), raceManager);
 
         return new CreateRaceResponse(
                 raceSettings.getRaceName(),
@@ -95,7 +92,7 @@ public class RaceService {
             accountId = user.getId()+"";
         }
 
-        RaceManager raceManager =  activeRaces.get(request.getRoomCode());
+        RaceManager raceManager =  findOpenRaceByRoomCode(request.getRoomCode());
 
         if (raceManager == null)
             throw new LogicException(ErrorCode.RACE_NOT_FOUND);
@@ -126,13 +123,13 @@ public class RaceService {
                     request.getNickname() : user.getUsername();
         }
 
-        RaceManager raceManager = findRaceByAccountId(accountId);
+        RaceManager raceManager = findOpenRaceByAccountId(accountId);
         boolean isHost = false;
         String joinToken = UUID.randomUUID().toString().substring(0, 10);
 
         if (raceManager == null){
-            raceManager = activeRaces.get(request.getRoomCode());
-            if (raceManager == null){
+            raceManager = findRaceByRoomCode(request.getRoomCode());
+            if (raceManager == null || raceManager.getStatus().isClosed()){
                 throw new LogicException(ErrorCode.RACE_NOT_FOUND);
             }
             if (!raceManager.getStatus().equals(RaceStatus.PENDING)){
@@ -140,23 +137,15 @@ public class RaceService {
             }
 
             raceManager.joinRace(new RacePlayer(accountId,null,joinToken,nickname));
+            accountIdToOpenRoomCode.put(accountId, raceManager.getRoomCode());
 
         } else if (raceManager.getRoomCode().equals(request.getRoomCode())){
-            if (raceManager.getStatus().equals(RaceStatus.FINISHED)){
-                throw new LogicException(ErrorCode.RACE_ALREADY_FINISHED);
-            }
 
             RaceAccount account = raceManager.getAccount(accountId);
-//            if (account.isConnected()){
-//                webSocketService.sendErrorToQueueSession(QUEUE_NOTIFICATIONS,ErrorCode.DUPLICATE_RACE_CONNECTION,
-//                        accountId,account.getSessionActive());
-//            }
 
             account.setNickname(nickname);
             account.setJoinToken(joinToken);
-            if (raceManager.isHost(accountId)){
-                isHost = true;
-            }
+            isHost = raceManager.isHost(accountId);
 
         }else {
             throw new LogicException(ErrorCode.USER_ALREADY_IN_RACE);
@@ -170,44 +159,17 @@ public class RaceService {
                 raceManager.getRoomCode(),isHost ? "HOST" : "PLAYER",raceManager.getSettings().getTargetScore());
     }
 
-    public void handleChangeRaceStatus(String roomCode, ChangeRaceStatusDTO request, StompHeaderAccessor accessor){
-        RaceManager raceManager = activeRaces.get(roomCode);
-        boolean succeeded = false;
-        String sendType = "STATUS_CHANGED";
-
-        if (raceManager.getStatus().equals(RaceStatus.PENDING)){
-            if (request.getStatus().equals(RaceStatus.IN_PROGRESS.name()) ||
-                    request.getStatus().equals(RaceStatus.CANCELLED.name())){
-                succeeded = true;
-            }
-
-        } else if (raceManager.getStatus().equals(RaceStatus.IN_PROGRESS)){
-            if (request.getStatus().equals(RaceStatus.PAUSED.name()) ||
-                    request.getStatus().equals(RaceStatus.CANCELLED.name())){
-                succeeded = true;
-            }
-
-        } else if (raceManager.getStatus().equals(RaceStatus.PAUSED)) {
-            if (request.getStatus().equals(RaceStatus.IN_PROGRESS.name())||
-                    request.getStatus().equals(RaceStatus.CANCELLED.name())){
-                succeeded = true;
-            }
+    public void handleStartRace(String roomCode, StompHeaderAccessor accessor){
+        RaceManager raceManager = findOpenRaceByRoomCode(roomCode);
+        if (!raceManager.getStatus().equals(RaceStatus.PENDING)){
+            webSocketService.sendErrorToQueueSession(QUEUE_RACE_HOST,ErrorCode.RACE_ALREADY_INITIALIZED,accessor);
         }
 
-        if (succeeded){
-            webSocketService.sendSuccessToTopic(webSocketService.getRaceUpdatesTopic(roomCode),sendType,
-                    new ChangeRaceStatusDTO(request.getStatus()));
-            webSocketService.sendSuccessToQueueSession(QUEUE_RACE_HOST,sendType,
-                    new ChangeRaceStatusDTO(request.getStatus()),raceManager.getHost().getId(),raceManager.getHost().getSessionActive());
-        }else {
-
-            webSocketService.sendSuccessToQueueSession(QUEUE_RACE_HOST,sendType,
-                    new ChangeRaceStatusDTO(request.getStatus()),raceManager.getHost().getId(),raceManager.getHost().getSessionActive());
-        }
+        raceEngineService.startRace(raceManager);
     }
 
     public void sendRaceState(String roomCode, StompHeaderAccessor accessor){
-        RaceManager raceManager = activeRaces.get(roomCode);
+        RaceManager raceManager = findRaceByRoomCode(roomCode);
 
         webSocketService.sendSuccessToQueueSession(QUEUE_RACE_HOST,"RACE_FULL_STATE",
                 new RaceStateDTO(raceManager),accessor);
@@ -219,27 +181,44 @@ public class RaceService {
                 raceManager.getHost().getId(),raceManager.getHost().getSessionActive());
     }
 
-    public RaceAccount findAccountById(String accountId) {
+    public RaceAccount findAccountByIdInOpenRace(String accountId) {
         if (accountId == null) return null;
 
-        return activeRaces.values().stream()
-                .map(race -> {
+        String roomCode = accountIdToOpenRoomCode.get(accountId);
+        if (roomCode == null) return null;
 
-                    if (race.getHost().getId().equals(accountId)) {
-                        return race.getHost();
-                    }
+        RaceManager race = allRaces.get(roomCode);
 
-                    return race.getPlayer(accountId);
-                })
+        if (race != null && race.getStatus().isOpen()) {
+            return race.getAccount(accountId);
+        }
+
+        return null;
+    }
+
+    public List<RaceAccount> findAccountByIdInClosedRace(String accountId) {
+        if (accountId == null) return Collections.emptyList();
+
+        return allRaces.values().stream()
+                .filter(race -> race.getStatus().isClosed())
+                .map(race -> race.getAccount(accountId))
                 .filter(Objects::nonNull)
-                .findFirst()
-                .orElse(null);
+                .collect(Collectors.toList());
+    }
+
+    public List<RaceAccount> findAccountById(String accountId) {
+        if (accountId == null) return Collections.emptyList();
+
+        return allRaces.values().stream()
+                .map(race -> race.getAccount(accountId))
+                .filter(Objects::nonNull)
+                .collect(Collectors.toList());
     }
 
     public RaceManager findRaceByAccountId(String accountId) {
         if (accountId == null) return null;
 
-        return activeRaces.values().stream()
+        return allRaces.values().stream()
                 .filter(race ->
                         Objects.equals(race.getHost().getId(), accountId) ||
                                 race.getPlayer(accountId) != null
@@ -248,8 +227,45 @@ public class RaceService {
                 .orElse(null);
     }
 
+    public RaceManager findOpenRaceByAccountId(String accountId) {
+        if (accountId == null) return null;
+
+        String roomCode = accountIdToOpenRoomCode.get(accountId);
+        if (roomCode == null) return null;
+
+        RaceManager race = allRaces.get(roomCode);
+        return (race != null && race.getStatus().isOpen()) ? race : null;
+    }
+
+    public List<RaceManager> findClosedRacesByAccountId(String accountId) {
+        if (accountId == null) return Collections.emptyList();
+
+        return allRaces.values().stream()
+                .filter(race -> race.getStatus().isClosed())
+                .filter(race -> race.isAccountIn(accountId))
+                .collect(Collectors.toList());
+    }
+
+    public List<RaceManager> findAllRacesByAccountId(String accountId) {
+        if (accountId == null) return Collections.emptyList();
+
+        return allRaces.values().stream()
+                .filter(race -> race.isAccountIn(accountId))
+                .collect(Collectors.toList());
+    }
+
+    public RaceManager findOpenRaceByRoomCode(String roomCode) {
+        RaceManager race = allRaces.get(roomCode);
+        return (race != null && race.getStatus().isOpen()) ? race : null;
+    }
+
+    public RaceManager findClosedRaceByRoomCode(String roomCode) {
+        RaceManager race = allRaces.get(roomCode);
+        return (race != null && race.getStatus().isClosed()) ? race : null;
+    }
+
     public RaceManager findRaceByRoomCode(String roomCode) {
-        return activeRaces.get(roomCode);
+        return allRaces.get(roomCode);
     }
 
     public String createNickname(){

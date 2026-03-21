@@ -5,7 +5,6 @@ import com.example.math_race.dto.response.ApiResponse;
 import com.example.math_race.dto.response.CreateRaceResponse;
 import com.example.math_race.dto.response.JoinRaceResponse;
 import com.example.math_race.dto.response.RaceInfoResponse;
-import com.example.math_race.dto.wsMessage.ChangeRaceStatusDTO;
 import com.example.math_race.exception.ErrorCode;
 import com.example.math_race.service.RaceService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -96,9 +95,9 @@ public class RaceController {
     }
 
 
-    @MessageMapping("/race/{roomCode}/host/c")
-    public void handleChangeRaceStatus(@DestinationVariable String roomCode, ChangeRaceStatusDTO request, StompHeaderAccessor accessor) {
-
+    @MessageMapping("/race/{roomCode}/host/start")
+    public void handleChangeRaceStatus(@DestinationVariable String roomCode, StompHeaderAccessor accessor) {
+        raceService.handleStartRace(roomCode, accessor);
     }
 
     @MessageMapping("/race/{roomCode}/host/sync")

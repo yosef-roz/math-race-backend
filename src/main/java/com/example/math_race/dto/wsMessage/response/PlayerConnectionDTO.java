@@ -1,4 +1,4 @@
-package com.example.math_race.dto.wsMessage;
+package com.example.math_race.dto.wsMessage.response;
 
 import com.example.math_race.race.RacePlayer;
 import lombok.AllArgsConstructor;
@@ -8,16 +8,12 @@ import lombok.NoArgsConstructor;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-public class PlayerProgressDTO {
+public class PlayerConnectionDTO {
     private String id;
-    private String nickname;
-    private int currentScore;
     private boolean isOnline;
 
-    public PlayerProgressDTO(RacePlayer racePlayer){
+    public PlayerConnectionDTO(RacePlayer racePlayer) {
         this.id = racePlayer.getId();
-        this.nickname = racePlayer.getNickname();
-        this.currentScore = racePlayer.getCurrentScore();
         this.isOnline = racePlayer.isConnected();
     }
 }

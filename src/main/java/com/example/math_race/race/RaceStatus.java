@@ -1,5 +1,8 @@
 package com.example.math_race.race;
 
+import lombok.Getter;
+
+@Getter
 public enum RaceStatus {
 
     PENDING(1, "Waiting for players"),
@@ -20,11 +23,17 @@ public enum RaceStatus {
         this.description = description;
     }
 
-    public int getId() {
-        return id;
+
+    public boolean isClosed() {
+        return this == FINISHED || this == CANCELLED;
     }
 
-    public String getDescription() {
-        return description;
+    public boolean isOpen() {
+        return !isClosed();
     }
+
+    public boolean isRunning() {
+        return this == IN_PROGRESS;
+    }
+
 }

@@ -11,10 +11,10 @@ public class MathQuestionGenerator {
     public MathQuestion generateForPlayer(RacePlayer player) {
         String expression = "המלך ביקש מעידן שיקנה לו 3 תפוחים, עידן קנה 3 תפוחים והביא מהבית עוד 2 ונתן הכל למלך. כמה תפוחים סהכ הביא עידן למלך ?";
         List<String> options = List.of("6","3","5","2");
-        int correctOptionIndex = 2;
+        String correctAnswer = "5";
         int timeLimitSeconds = 15;
         int score = 20;
 
-        return new MathQuestion(expression,options,correctOptionIndex,timeLimitSeconds,score);
+        return new MathQuestion(expression,options,correctAnswer,timeLimitSeconds,score);
     }
 }

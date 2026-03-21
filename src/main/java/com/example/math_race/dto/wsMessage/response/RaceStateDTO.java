@@ -1,4 +1,4 @@
-package com.example.math_race.dto.wsMessage;
+package com.example.math_race.dto.wsMessage.response;
 
 import com.example.math_race.race.RaceManager;
 import com.example.math_race.race.RacePlayer;

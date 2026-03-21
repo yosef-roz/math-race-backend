@@ -23,20 +23,23 @@ public class RaceManager {
     private final Map<String, RacePlayer> players;
 
     private RaceStatus status;
-    private long remainingTimeMillis;     // כמה זמן נשאר עכשיו
-    private long lastResumedAtMillis;     // חותמת הזמן של הפעלת השעון האחרונה
+    private long remainingTimeMillis;     // כמה זמן יש לשמשחק
+    private long lastResumedAtMillis;// חותמת הזמן של הפעלת השעון האחרונה
+    private final long createdAtMillis;
+    private long endedAtMillis;
 
     public RaceManager(RaceSettings raceSettings) {
         this.id = UUID.randomUUID().toString();
+        this.status = RaceStatus.PENDING;
+
         this.settings = raceSettings;
         updateRoomCode();
 
         this.players = new ConcurrentHashMap<>();
 
-        this.status = RaceStatus.PENDING;
-
         this.remainingTimeMillis = raceSettings.getTotalDurationMillis();
         this.lastResumedAtMillis = 0;
+        this.createdAtMillis = System.currentTimeMillis();
     }
 
     public void joinRace(RacePlayer player) {
@@ -77,14 +80,6 @@ public class RaceManager {
         long actualRemaining = this.remainingTimeMillis - timeElapsedSinceResume;
 
         return Math.max(0, actualRemaining);
-    }
-
-    public boolean isInProgress(){
-        return Objects.equals(status, RaceStatus.IN_PROGRESS);
-    }
-
-    public boolean isPending(){
-        return Objects.equals(status, RaceStatus.PENDING);
     }
 
     public boolean isAccountIn(String accountId) {

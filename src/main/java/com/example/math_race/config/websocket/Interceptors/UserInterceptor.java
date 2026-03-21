@@ -2,7 +2,7 @@ package com.example.math_race.config.websocket.Interceptors;
 
 import com.example.math_race.config.websocket.WebSocketSessionRegistry;
 import com.example.math_race.dto.wsMessage.WsMessage;
-import com.example.math_race.dto.wsMessage.PlayerConnectionDTO;
+import com.example.math_race.dto.wsMessage.response.PlayerConnectionDTO;
 import com.example.math_race.entities.UserEntity;
 import com.example.math_race.exception.ErrorCode;
 import com.example.math_race.race.RaceAccount;
@@ -60,9 +60,6 @@ public class UserInterceptor implements ChannelInterceptor {
             handleConnect(accessor);
         } else if (StompCommand.SUBSCRIBE.equals(command)) {
             return handleSubscribe(message,accessor);
-//        } else if (StompCommand.MESSAGE.equals(command)) {
-//            // צריך לוודא שזה יוצא מהשרת ולא הגיע מהלקוח כי הלקוח יכול לשלוח גם MASSAGE
-//            return handleOutboundMessage(message, accessor);
         }else if (StompCommand.SEND.equals(accessor.getCommand())){
             return handleSend(message,accessor);
         }
@@ -99,7 +96,7 @@ public class UserInterceptor implements ChannelInterceptor {
         accessor.getSessionAttributes().put("sub_path_" + subId, destination);
 
         if(destination.contains("/race")) {
-            RaceManager raceManager = raceService.findRaceByAccountId(principal.getName());
+            RaceManager raceManager = raceService.findOpenRaceByAccountId(principal.getName());
             if (raceManager == null) {
                 webSocketService.sendErrorToQueueSession(QUEUE_NOTIFICATIONS, ErrorCode.USER_NOT_IN_ANY_RACE,accessor);
                 return null;
@@ -124,7 +121,6 @@ public class UserInterceptor implements ChannelInterceptor {
             }
 
             RaceAccount account = raceManager.getAccount(principal.getName());
-            // פה חדש
             String incomingToken = accessor.getFirstNativeHeader("Join-Token");
 
             if (!account.isConnected() || account.getSessionActive().equals(accessor.getSessionId()) ||
@@ -148,22 +144,6 @@ public class UserInterceptor implements ChannelInterceptor {
                 return null;
             }
 
-            // עד פה
-
-
-
-//            if (account.getSessionActive() != null && !account.getSessionActive().equals(accessor.getSessionId())) {
-//                webSocketService.sendErrorToQueueSession(QUEUE_NOTIFICATIONS, ErrorCode.DUPLICATE_RACE_CONNECTION,accessor);
-//                return null;
-//
-//            } else if (account.getSessionActive() == null) {
-//                account.setSessionActive(accessor.getSessionId());
-//                if (!destination.startsWith("/user/queue/race/host")) {
-//                    webSocketService.sendSuccessToQueueSession(QUEUE_RACE_HOST,"PLAYER_CONNECTION",
-//                            new PlayerConnectionDTO(principal.getName(), true), raceManager.getHost().getId(), raceManager.getHost().getSessionActive());
-//                }
-//            }
-
         }else if (!destination.equals("/user/queue/notifications")) {
             webSocketService.sendErrorToQueueSession(QUEUE_NOTIFICATIONS, ErrorCode.INVALID_RACE_PATH,accessor);
             return null;
@@ -171,44 +151,6 @@ public class UserInterceptor implements ChannelInterceptor {
 
         return message;
     }
-
-    private Message<?> handleOutboundMessage(Message<?> message, StompHeaderAccessor accessor) {
-        String sessionId = accessor.getSessionId();
-        Principal principal = accessor.getUser();
-        String destination = accessor.getDestination();
-
-        if (principal == null || destination == null || sessionId == null) {
-            throw new MessageDeliveryException(ErrorCode.USER_NOT_IDENTIFIED.name());
-        }
-
-        String accountId = principal.getName();
-
-        if (!webSocketService.isSessionExists(accountId, sessionId)) {
-            throw new MessageDeliveryException(ErrorCode.USER_NOT_IDENTIFIED.name());
-        }
-
-        if (destination.contains("/race/")) {
-            RaceAccount account = raceService.findAccountById(accountId);
-
-            if (account == null) {
-                webSocketService.sendErrorToQueueSession(QUEUE_NOTIFICATIONS, ErrorCode.USER_NOT_IN_ANY_RACE,accessor);
-                return null;
-            }
-
-            if (account.getSessionActive() == null) {
-                webSocketService.sendErrorToQueueSession(QUEUE_NOTIFICATIONS, ErrorCode.NOT_REGISTERED_FOR_RACE,accessor);
-                return null;
-            }
-
-            if (!account.getSessionActive().equals(sessionId)) {
-                webSocketService.sendErrorToQueueSession(QUEUE_NOTIFICATIONS, ErrorCode.DUPLICATE_RACE_CONNECTION,accessor);
-                return null;
-            }
-        }
-
-        return message;
-    }
-
 
     private Message<?> handleSend(Message<?> message, StompHeaderAccessor accessor) {
         String destination = accessor.getDestination();
@@ -218,7 +160,7 @@ public class UserInterceptor implements ChannelInterceptor {
         if (matcher.match(RACE_PATH_PATTERN, destination)){
             Map<String, String> vars = matcher.extractUriTemplateVariables(RACE_PATH_PATTERN, destination);
             String roomCode = vars.get("roomCode");
-            RaceManager raceManager = raceService.findRaceByRoomCode(roomCode);
+            RaceManager raceManager = raceService.findOpenRaceByRoomCode(roomCode);
 
             if (raceManager == null) {
                 webSocketService.sendToQueueSession(QUEUE_NOTIFICATIONS,
@@ -285,7 +227,7 @@ public class UserInterceptor implements ChannelInterceptor {
         if (principal != null && sessionId != null) {
             webSocketService.removeSession(principal.getName(), sessionId);
 
-            RaceManager raceManager = raceService.findRaceByAccountId(principal.getName());
+            RaceManager raceManager = raceService.findOpenRaceByAccountId(principal.getName());
             if (raceManager == null) return;
             RaceAccount account = raceManager.getAccount(principal.getName());
 
@@ -309,7 +251,7 @@ public class UserInterceptor implements ChannelInterceptor {
 
         if (principal != null && sessionId != null) {
 
-            RaceManager raceManager = raceService.findRaceByAccountId(principal.getName());
+            RaceManager raceManager = raceService.findOpenRaceByAccountId(principal.getName());
             if (raceManager == null) return;
             RaceAccount account =  raceManager.getAccount(principal.getName());
 

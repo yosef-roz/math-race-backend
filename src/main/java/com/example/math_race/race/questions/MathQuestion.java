@@ -12,7 +12,7 @@ public class MathQuestion {
 
     private String expression;
     private List<String> options;
-    private int correctOptionIndex;
+    private String correctAnswer;
     private int timeLimitSeconds;
     private int score;
 

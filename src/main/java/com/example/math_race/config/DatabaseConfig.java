@@ -14,8 +14,12 @@ import java.util.Properties;
 @Configuration
 public class DatabaseConfig {
 
+    private final Environment env;
+
     @Autowired
-    private Environment env;
+    public DatabaseConfig(Environment env) {
+        this.env = env;
+    }
 
     @Bean
     public DataSource dataSource() throws Exception {
