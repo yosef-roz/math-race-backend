@@ -70,29 +70,37 @@ public class RaceEngineService {
     public void sendNextQuestionToPlayer(RaceManager race,RacePlayer player) {
         if (!race.isAccountIn(player.getId()) || !race.getStatus().isRunning()) return;
 
-        ScheduledFuture<?> existingTimer = playerQuestionTimers.remove(player.getId());
-        if (existingTimer != null) {
-            existingTimer.cancel(false);
+        synchronized (player) {
+
+            if (player.getCurrentQuestion() != null) {
+                return;
+            }
+
+            ScheduledFuture<?> existingTimer = playerQuestionTimers.remove(player.getId());
+            if (existingTimer != null) {
+                existingTimer.cancel(false);
+            }
+
+            MathQuestion question = mathQuestionGenerator.generateForPlayer(player);
+            player.setCurrentQuestion(question);
+
+            player.setQuestionStartTimeMillis(System.currentTimeMillis());
+            player.setQuestionRemainingTimeMillis(question.getTimeLimitMillis());
+
+            MathQuestionDTO questionDTO = new MathQuestionDTO(race, player, question);
+            webSocketService.sendSuccessToQueueSession(QUEUE_RACE_FEEDBACK, "NEW_QUESTION", questionDTO,
+                    player.getId(), player.getSessionActive());
+
+            webSocketService.sendSuccessToQueueSession(QUEUE_RACE_HOST, "QUESTION_SENT", questionDTO,
+                    race.getHost().getId(), race.getHost().getSessionActive());
+
+
+            Instant timeoutTime = Instant.now().plusMillis(question.getTimeLimitMillis());
+            ScheduledFuture<?> timeoutTask = scheduler.schedule(() -> handleQuestionTimeout(race, player, question), Date.from(timeoutTime));
+
+
+            playerQuestionTimers.put(player.getId(), timeoutTask);
         }
-
-        MathQuestion question = mathQuestionGenerator.generateForPlayer(player);
-        player.setCurrentQuestion(question);
-
-        player.setQuestionStartTimeMillis(System.currentTimeMillis());
-        player.setQuestionRemainingTimeMillis(question.getTimeLimitMillis());
-
-        MathQuestionDTO questionDTO = new MathQuestionDTO(race,player,question);
-        webSocketService.sendSuccessToQueueSession(QUEUE_RACE_FEEDBACK,"NEW_QUESTION",questionDTO,
-                player.getId(), player.getSessionActive());
-
-        webSocketService.sendSuccessToQueueSession(QUEUE_RACE_HOST,"QUESTION_SENT", questionDTO,
-                race.getHost().getId(), race.getHost().getSessionActive());
-
-        Instant timeoutTime = Instant.now().plusMillis(question.getTimeLimitMillis());
-        ScheduledFuture<?> timeoutTask = scheduler.schedule(() -> handleQuestionTimeout(race, player), Date.from(timeoutTime));
-
-
-        playerQuestionTimers.put(player.getId(), timeoutTask);
     }
 
     public void processPlayerAnswer(RaceManager race, RacePlayer player, String answer) {
@@ -128,20 +136,26 @@ public class RaceEngineService {
             webSocketService.sendSuccessToQueueSession(QUEUE_RACE_HOST, isCorrect ? "PLAYER_ANSWERED_CORRECTLY" : "PLAYER_ANSWERED_INCORRECTLY", answerScoreDTO,
                     race.getHost().getId(), race.getHost().getSessionActive());
 
+            player.setCurrentQuestion(null);
+
+
             if (player.getCurrentScore() >= race.getSettings().getTargetScore()) {
                 finishRace(race);
             } else {
-                sendNextQuestionToPlayer(race, player);
+                scheduler.schedule(() -> {
+                    sendNextQuestionToPlayer(race, player);
+                }, Date.from(Instant.now().plusMillis(200)));
+
             }
 
         }
     }
 
-    private void handleQuestionTimeout(RaceManager race, RacePlayer player) {
+    private void handleQuestionTimeout(RaceManager race, RacePlayer player, MathQuestion timedOutQuestion) {
         if (!race.getStatus().isRunning()) return;
 
         synchronized (player) {
-            if (player.getCurrentQuestion() == null) {
+            if (player.getCurrentQuestion() != timedOutQuestion) {
                 return;
             }
 
@@ -155,7 +169,9 @@ public class RaceEngineService {
             webSocketService.sendSuccessToQueueSession(QUEUE_RACE_HOST, "PLAYER_TIMEOUT", answerScoreDTO,
                     race.getHost().getId(), race.getHost().getSessionActive());
 
-            sendNextQuestionToPlayer(race, player);
+            scheduler.schedule(() -> {
+                sendNextQuestionToPlayer(race, player);
+            }, Date.from(Instant.now().plusMillis(200)));
         }
     }
 
@@ -170,8 +186,10 @@ public class RaceEngineService {
         long remainingTime = player.getQuestionRemainingTimeMillis();
         player.setQuestionStartTimeMillis(System.currentTimeMillis());
 
+
+        MathQuestion currentQuestion = player.getCurrentQuestion();
         Instant timeoutTime = Instant.now().plusMillis(remainingTime);
-        ScheduledFuture<?> timeoutTask = scheduler.schedule(() -> handleQuestionTimeout(race, player), Date.from(timeoutTime));
+        ScheduledFuture<?> timeoutTask = scheduler.schedule(() -> handleQuestionTimeout(race, player,currentQuestion), Date.from(timeoutTime));
 
         playerQuestionTimers.put(player.getId(), timeoutTask);
     }
