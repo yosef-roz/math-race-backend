@@ -14,10 +14,10 @@ public class PlayerProgressDTO {
     private int currentScore;
     private boolean isOnline;
 
-    public PlayerProgressDTO(RacePlayer racePlayer){
+    public PlayerProgressDTO(RacePlayer racePlayer, boolean showScore){
         this.id = racePlayer.getId();
         this.nickname = racePlayer.getNickname();
-        this.currentScore = racePlayer.getCurrentScore();
+        this.currentScore = showScore ? racePlayer.getCurrentScore() : 0;
         this.isOnline = racePlayer.isConnected();
     }
 }

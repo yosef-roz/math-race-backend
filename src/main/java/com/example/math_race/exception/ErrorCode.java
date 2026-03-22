@@ -46,6 +46,7 @@ public enum ErrorCode {
     MISSING_IDENTIFICATION(1415, "No identification provided! You must provide either an authentication token or a guest ID to proceed."),
     NOT_RACE_PLAYER(1416, "Only player on the race is allowed to perform this action!"),
     RACE_ALREADY_INITIALIZED(1417, "The race has already been initialized!"),
+    NOT_ENOUGH_PLAYERS_TO_START(1418, "At least 2 players are required to start the race!"),
 
     // System Errors
     INTERNAL_ERROR(9000, "An unexpected error occurred"),

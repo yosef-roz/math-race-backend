@@ -165,19 +165,24 @@ public class RaceService {
             webSocketService.sendErrorToQueueSession(QUEUE_RACE_HOST,ErrorCode.RACE_ALREADY_INITIALIZED,accessor);
         }
 
+        if (raceManager.getPlayers().size() < 0){
+            webSocketService.sendErrorToQueueSession(QUEUE_RACE_HOST,ErrorCode.NOT_ENOUGH_PLAYERS_TO_START,accessor);
+        }
+
         raceEngineService.startRace(raceManager);
     }
 
     public void sendRaceState(String roomCode, StompHeaderAccessor accessor){
         RaceManager raceManager = findRaceByRoomCode(roomCode);
+        boolean isHost = raceManager.isHost(accessor.getUser().getName());
 
         webSocketService.sendSuccessToQueueSession(QUEUE_RACE_HOST,"RACE_FULL_STATE",
-                new RaceStateDTO(raceManager),accessor);
+                new RaceStateDTO(raceManager, isHost || raceManager.getStatus().equals(RaceStatus.FINISHED)),accessor);
     }
 
     public void sendPlayerJoined(RaceManager raceManager, String accountId){
         webSocketService.sendToQueueSession(QUEUE_RACE_HOST,
-                WsMessage.success("PLAYER_JOINED",new PlayerJoinedDTO(raceManager.getPlayer(accountId))),
+                WsMessage.success("PLAYER_JOINED",new PlayerJoinedDTO(raceManager.getPlayer(accountId),true)),
                 raceManager.getHost().getId(),raceManager.getHost().getSessionActive());
     }
 

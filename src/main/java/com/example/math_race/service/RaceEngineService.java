@@ -50,9 +50,7 @@ public class RaceEngineService {
         race.setLastResumedAtMillis(System.currentTimeMillis());
 
         Instant endTime = Instant.now().plusMillis(race.getRemainingTimeMillis());
-        ScheduledFuture<?> endTask = scheduler.schedule(() -> {
-           finishRace(race);
-        }, Date.from(endTime));
+        ScheduledFuture<?> endTask = scheduler.schedule(() -> finishRace(race), Date.from(endTime));
 
         raceEndTimers.put(race.getId(), endTask);
 
@@ -85,9 +83,7 @@ public class RaceEngineService {
                 race.getHost().getId(), race.getHost().getSessionActive());
 
         Instant timeoutTime = Instant.now().plusMillis(question.getTimeLimitMillis());
-        ScheduledFuture<?> timeoutTask = scheduler.schedule(() -> {
-           handleQuestionTimeout(race, player);
-        }, Date.from(timeoutTime));
+        ScheduledFuture<?> timeoutTask = scheduler.schedule(() -> handleQuestionTimeout(race, player), Date.from(timeoutTime));
 
 
         playerQuestionTimers.put(player.getId(), timeoutTask);
@@ -151,9 +147,7 @@ public class RaceEngineService {
         player.setQuestionStartTimeMillis(System.currentTimeMillis());
 
         Instant timeoutTime = Instant.now().plusMillis(remainingTime);
-        ScheduledFuture<?> timeoutTask = scheduler.schedule(() -> {
-            handleQuestionTimeout(race, player);
-        }, Date.from(timeoutTime));
+        ScheduledFuture<?> timeoutTask = scheduler.schedule(() -> handleQuestionTimeout(race, player), Date.from(timeoutTime));
 
         playerQuestionTimers.put(player.getId(), timeoutTask);
     }
@@ -192,9 +186,7 @@ public class RaceEngineService {
         race.setLastResumedAtMillis(System.currentTimeMillis());
 
         Instant endTime = Instant.now().plusMillis(race.getRemainingTimeMillis());
-        ScheduledFuture<?> endTask = scheduler.schedule(() -> {
-            finishRace(race);
-        }, Date.from(endTime));
+        ScheduledFuture<?> endTask = scheduler.schedule(() -> finishRace(race), Date.from(endTime));
         raceEndTimers.put(race.getId(), endTask);
 
         webSocketService.sendSuccessToTopic(webSocketService.getRaceUpdatesTopic(race.getRoomCode()), "RACE_RESUMED", null);
@@ -223,7 +215,7 @@ public class RaceEngineService {
 
     }
 
-    private void cancelledRace(RaceManager race) {
+    public void cancelledRace(RaceManager race) {
         if (race.getStatus().isClosed()) return;
 
         race.setStatus(RaceStatus.CANCELLED);

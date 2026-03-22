@@ -100,7 +100,7 @@ public class RaceController {
         raceService.handleStartRace(roomCode, accessor);
     }
 
-    @MessageMapping("/race/{roomCode}/host/sync")
+    @MessageMapping({"/race/{roomCode}/host/sync", "/race/{roomCode}/player/sync"})
     public void handleRaceSync(@DestinationVariable String roomCode, StompHeaderAccessor accessor){
         raceService.sendRaceState(roomCode, accessor);
     }

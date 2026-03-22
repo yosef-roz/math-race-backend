@@ -12,7 +12,7 @@ public class PlayerJoinedDTO {
 
     private PlayerProgressDTO player;
 
-    public PlayerJoinedDTO(RacePlayer racePlayer){
-        this.player = new PlayerProgressDTO(racePlayer);
+    public PlayerJoinedDTO(RacePlayer racePlayer, boolean showScore){
+        this.player = new PlayerProgressDTO(racePlayer,showScore);
     }
 }

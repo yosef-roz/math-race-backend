@@ -22,7 +22,7 @@ public class RaceResultsDTO {
         this.players = new ArrayList<>();
 
         for (RacePlayer player : race.getPlayers().values()){
-            this.players.add(new PlayerProgressDTO(player));
+            this.players.add(new PlayerProgressDTO(player,true));
         }
 
     }

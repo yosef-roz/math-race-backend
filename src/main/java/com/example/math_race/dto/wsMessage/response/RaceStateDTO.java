@@ -22,7 +22,7 @@ public class RaceStateDTO {
     private HostDetailsDTO host;
     private long totalDurationMillis;
 
-    public RaceStateDTO(RaceManager raceManager){
+    public RaceStateDTO(RaceManager raceManager,boolean showScore){
         this.name = raceManager.getSettings().getRaceName();
         this.roomCode = raceManager.getRoomCode();
         this.targetScore = raceManager.getSettings().getTargetScore();
@@ -31,7 +31,7 @@ public class RaceStateDTO {
         this.players = new ArrayList<>();
         this.totalDurationMillis = raceManager.getSettings().getTotalDurationMillis();
         for(RacePlayer racePlayer : raceManager.getPlayers().values()){
-            this.players.add(new PlayerProgressDTO(racePlayer));
+            this.players.add(new PlayerProgressDTO(racePlayer,showScore));
         }
     }
 }
