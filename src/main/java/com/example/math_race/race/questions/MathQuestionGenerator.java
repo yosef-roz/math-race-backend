@@ -6,6 +6,7 @@ import org.springframework.stereotype.Component;
 import java.util.*;
 import java.util.concurrent.ThreadLocalRandom;
 
+import static com.example.math_race.race.questions.AdjectiveType.*;
 import static com.example.math_race.race.questions.ItemCategory.*;
 
 @Component
@@ -16,11 +17,16 @@ public class MathQuestionGenerator {
     static ArrayList<Item> items =  new ArrayList<>();
     static ArrayList<Verb> verbs = new ArrayList<>();
     static ArrayList<Place> places = new ArrayList<>();
+    public static List<Adjective> adjectives = new ArrayList<>();
+    public static List<Unit> units = new ArrayList<>();
+
     static {
         fillHumans();
         fillVerbs();
         fillItems();
         fillPlaces();
+        fillAdjectives();
+        fillUnits();
     }
 
 
@@ -125,6 +131,9 @@ public class MathQuestionGenerator {
                 else if ("NUM".equals(info.getType())) chosen = findNumber(resolvedConstraints);
                 else if ("VERB".equals(info.getType())) chosen = findVerb(resolvedConstraints);
                 else if ("PLACE".equals(info.getType())) chosen = findPlace(resolvedConstraints);
+                else if ("ADJ".equals(info.getType())) chosen = findAdjective(resolvedConstraints);
+                else if ("UNIT".equals(info.getType())) chosen = findUnit(resolvedConstraints);
+                else if ("TIME".equals(info.getType())) chosen = findTime(resolvedConstraints);
 
                 if (chosen != null) {
                     memory.put(info.getId(), chosen);
@@ -183,23 +192,6 @@ public class MathQuestionGenerator {
 
         return tags;
     }
-
-//    public static Set<String> extractUniqueTags(String template) {
-//        Set<String> tags = new LinkedHashSet<>();
-//
-//        int indexStart = -1;
-//        for (int i = 0; i < template.length(); i++) {
-//            if (template.charAt(i) == '[') {
-//                indexStart = i;
-//            } else if (template.charAt(i) == ']' && indexStart != -1) {
-//                String tag = template.substring(indexStart, i + 1);
-//                tags.add(tag);
-//                indexStart = -1;
-//            }
-//        }
-//
-//        return tags;
-//    }
 
     private static String resolveValue(String value, Map<String, QuestionEntity> memory) {
         if (value == null || value.isEmpty()) {
@@ -269,6 +261,26 @@ public class MathQuestionGenerator {
         }
 
         return matches.get(ThreadLocalRandom.current().nextInt(matches.size()));
+    }
+
+    public static QuestionEntity findAdjective(Map<String, String> constraints) {
+        List<Adjective> matches = adjectives.stream()
+                .filter(a -> a.matches(constraints))
+                .toList();
+
+        if (matches.isEmpty()) {
+            System.out.println("Warning: No adjective matches constraints: " + constraints);
+            return null;
+        }
+
+        Adjective chosenAdjective = matches.get(java.util.concurrent.ThreadLocalRandom.current().nextInt(matches.size()));
+
+        String g = constraints.getOrDefault("g", "MALE").toUpperCase();
+        String num = constraints.getOrDefault("num", "s").toLowerCase();
+
+        String exactWord = chosenAdjective.getWord(g, num);
+
+        return key -> exactWord;
     }
 
     public static Item findItem(Map<String, String> constraints) {
@@ -348,6 +360,92 @@ public class MathQuestionGenerator {
         return new NumberEntity(randomNumber);
     }
 
+    public static TimeEntity findTime(Map<String, String> constraints) {
+        int minMinutes = 0;       // 00:00 (ברירת מחדל למינימום)
+        int maxMinutes = 1439;    // 23:59 (ברירת מחדל למקסימום)
+
+        // 1. קריאת גבולות המינימום והמקסימום
+        try {
+            if (constraints.containsKey("min") && !constraints.get("min").equals("?")) {
+                minMinutes = parseTime(constraints.get("min"));
+            }
+            if (constraints.containsKey("max") && !constraints.get("max").equals("?")) {
+                maxMinutes = parseTime(constraints.get("max"));
+            }
+        } catch (Exception e) {
+            System.out.println("Warning: Invalid time format in min/max constraints");
+        }
+
+        // סידור הגבולות למקרה שהזינו הפוך
+        if (minMinutes > maxMinutes) {
+            int temp = minMinutes;
+            minMinutes = maxMinutes;
+            maxMinutes = temp;
+        }
+
+        boolean round = !constraints.getOrDefault("round", "true").equalsIgnoreCase("false");
+
+        if (constraints.containsKey("value") && !constraints.get("value").equals("?")) {
+            String valStr = constraints.get("value").trim();
+
+            if (valStr.startsWith("!")) {
+                try {
+                    int forbiddenValue = parseTime(valStr.substring(1));
+
+                    if (minMinutes == maxMinutes && minMinutes == forbiddenValue) {
+                        return new TimeEntity(minMinutes);
+                    }
+
+                    int randomMinutes;
+                    int attempts = 0;
+
+                    do {
+                        randomMinutes = java.util.concurrent.ThreadLocalRandom.current().nextInt(minMinutes, maxMinutes + 1);
+
+                        if (round) {
+                            randomMinutes = Math.round(randomMinutes / 5.0f) * 5;
+                            if (randomMinutes > maxMinutes) randomMinutes = maxMinutes;
+                            if (randomMinutes < minMinutes) randomMinutes = minMinutes;
+                        }
+
+                        attempts++;
+                        if (attempts > 100) break;
+
+                    } while (randomMinutes == forbiddenValue);
+
+                    return new TimeEntity(randomMinutes);
+
+                } catch (Exception e) {
+                    System.out.println("Warning: Invalid time format for forbidden value: " + valStr);
+                }
+            }
+            else {
+                try {
+                    return new TimeEntity(parseTime(valStr));
+                } catch (Exception e) {
+                    System.out.println("Warning: Invalid time format for specific value: " + valStr);
+                }
+            }
+        }
+
+        int randomMinutes = java.util.concurrent.ThreadLocalRandom.current().nextInt(minMinutes, maxMinutes + 1);
+
+        if (round) {
+            randomMinutes = Math.round(randomMinutes / 5.0f) * 5;
+            if (randomMinutes > maxMinutes) randomMinutes = maxMinutes;
+            if (randomMinutes < minMinutes) randomMinutes = minMinutes;
+        }
+
+        return new TimeEntity(randomMinutes);
+    }
+
+    private static int parseTime(String timeStr) {
+        String[] parts = timeStr.trim().split("[:.]");
+        int h = Integer.parseInt(parts[0]);
+        int m = Integer.parseInt(parts[1]);
+        return h * 60 + m;
+    }
+
     public static QuestionEntity findVerb(Map<String, String> constraints) {
         List<Verb> matches = verbs.stream()
                 .filter(v -> v.matches(constraints))
@@ -358,19 +456,33 @@ public class MathQuestionGenerator {
             return null;
         }
 
-        // בחירת פועל (למקרה שיש כמה, למרות שלרוב יהיה רק אחד עם אותו ID)
         Verb chosenVerb = matches.get(ThreadLocalRandom.current().nextInt(matches.size()));
 
-        // קריאת האילוצים הדקדוקיים (ברירת מחדל: עבר, זכר, יחיד)
-        String g = constraints.getOrDefault("g", "MALE").toUpperCase();
+        String f = constraints.getOrDefault("f", "regular").toLowerCase();
         String t = constraints.getOrDefault("t", "past").toLowerCase();
+        String g = constraints.getOrDefault("g", "MALE").toUpperCase();
         String num = constraints.getOrDefault("num", "s").toLowerCase();
 
-        // שליפת המילה המדויקת (למשל "קנתה")
+        if (f.equals("inf")) {
+            return key -> chosenVerb.getWord("inf", "ANY", "ANY");
+        }
+
         String exactWord = chosenVerb.getWord(t, g, num);
 
-        // החזרת ישות וירטואלית שתמיד מחזירה את המילה המדויקת ללא קשר ל-Key שנבקש ב-Property
         return key -> exactWord;
+    }
+
+    public static QuestionEntity findUnit(Map<String, String> constraints) {
+        List<Unit> matches = units.stream()
+                .filter(u -> u.matches(constraints))
+                .toList();
+
+        if (matches.isEmpty()) {
+            System.out.println("Warning: No unit matches constraints: " + constraints);
+            return null;
+        }
+
+        return matches.get(java.util.concurrent.ThreadLocalRandom.current().nextInt(matches.size()));
     }
 
     public static void fillHumans() {
@@ -386,35 +498,53 @@ public class MathQuestionGenerator {
     }
 
     public static void fillItems() {
-        // --- FOOD (אוכל - דברים שאוכלים או קונים במכולת) ---
-        items.add(new Item("תפוח", "תפוחים", Gender.MALE, ItemCategory.FOOD, ItemCategory.GENERAL));
-        items.add(new Item("בננה", "בננות", Gender.FEMALE, ItemCategory.FOOD, ItemCategory.GENERAL));
-        items.add(new Item("תפוז", "תפוזים", Gender.MALE, ItemCategory.FOOD, ItemCategory.GENERAL));
-        items.add(new Item("סוכרייה", "סוכריות", Gender.FEMALE, ItemCategory.FOOD, ItemCategory.GENERAL));
-        items.add(new Item("פיצה", "פיצות", Gender.FEMALE, ItemCategory.FOOD, ItemCategory.GENERAL));
+        // הגדרת קבוצות יחידות מראש לשימוש חוזר
+        Set<UnitType> weightOnly = Set.of(UnitType.WEIGHT);
+        Set<UnitType> volumeOnly = Set.of(UnitType.VOLUME);
+        Set<UnitType> countOnly = Set.of(UnitType.COUNT);
+        Set<UnitType> lengthOnly = Set.of(UnitType.LENGTH);
+        Set<UnitType> weightOrCount = Set.of(UnitType.WEIGHT, UnitType.COUNT);
 
-        // --- COLLECTIBLE (פריטי אספנות - דברים שאוספים בכיס או באלבום) ---
-        items.add(new Item("גולה", "גולות", Gender.FEMALE, ItemCategory.COLLECTIBLE, ItemCategory.GENERAL));
-        items.add(new Item("קלף", "קלפים", Gender.MALE, ItemCategory.COLLECTIBLE, ItemCategory.GENERAL));
-        items.add(new Item("מדבקה", "מדבקות", Gender.FEMALE, ItemCategory.COLLECTIBLE, ItemCategory.GENERAL));
-        items.add(new Item("גלויה", "גלויות", Gender.FEMALE, ItemCategory.COLLECTIBLE, ItemCategory.GENERAL));
-        // מטבע זהב הוא גם כסף וגם פריט אספנות - זה שילוב מעולה!
-        items.add(new Item("מטבע זהב", "מטבעות זהב", Gender.MALE, ItemCategory.MONEY, ItemCategory.COLLECTIBLE, ItemCategory.GENERAL));
+        // --- FOOD (אוכל) ---
+        // פירות בדרך כלל נשקלים או נספרים
+        items.add(new Item("תפוח", "תפוחים", Gender.MALE, weightOrCount, ItemCategory.FOOD, ItemCategory.GENERAL));
+        items.add(new Item("בננה", "בננות", Gender.FEMALE, weightOrCount, ItemCategory.FOOD, ItemCategory.GENERAL));
+        items.add(new Item("תפוז", "תפוזים", Gender.MALE, weightOrCount, ItemCategory.FOOD, ItemCategory.GENERAL));
+        // ממתקים נשקלים או נספרים
+        items.add(new Item("סוכרייה", "סוכריות", Gender.FEMALE, weightOrCount, ItemCategory.FOOD, ItemCategory.GENERAL));
+        // פיצה נמדדת ביחידות (מגשים/משולשים)
+        items.add(new Item("פיצה", "פיצות", Gender.FEMALE, countOnly, ItemCategory.FOOD, ItemCategory.GENERAL));
+        // הוספת שתייה (נפח)
+        items.add(new Item("מיץ", "מיצים", Gender.MALE, volumeOnly, ItemCategory.FOOD));
+        items.add(new Item("מים", "בקבוקי מים", Gender.MALE, volumeOnly, ItemCategory.FOOD));
+
+        // --- COLLECTIBLE (אספנות) ---
+        // גולות, קלפים ומדבקות רק נספרים
+        items.add(new Item("גולה", "גולות", Gender.FEMALE, countOnly, ItemCategory.COLLECTIBLE, ItemCategory.GENERAL));
+        items.add(new Item("קלף", "קלפים", Gender.MALE, countOnly, ItemCategory.COLLECTIBLE, ItemCategory.GENERAL));
+        items.add(new Item("מדבקה", "מדבקות", Gender.FEMALE, countOnly, ItemCategory.COLLECTIBLE, ItemCategory.GENERAL));
+        items.add(new Item("גלויה", "גלויות", Gender.FEMALE, countOnly, ItemCategory.COLLECTIBLE, ItemCategory.GENERAL));
+        // מטבע זהב אפשר לספור אבל גם לשקול (בגלל הערך של הזהב)
+        items.add(new Item("מטבע זהב", "מטבעות זהב", Gender.MALE, weightOrCount, ItemCategory.MONEY, ItemCategory.COLLECTIBLE, ItemCategory.GENERAL));
 
         // --- STATIONERY (ציוד לימודי) ---
-        items.add(new Item("עיפרון", "עפרונות", Gender.MALE, ItemCategory.STATIONERY, ItemCategory.GENERAL));
-        items.add(new Item("מחברת", "מחברות", Gender.FEMALE, ItemCategory.STATIONERY, ItemCategory.GENERAL));
-        items.add(new Item("ספר", "ספרים", Gender.MALE, ItemCategory.STATIONERY, ItemCategory.GENERAL));
-        items.add(new Item("מחק", "מחקים", Gender.MALE, ItemCategory.STATIONERY, ItemCategory.GENERAL));
+        // רוב הציוד נספר ביחידות
+        items.add(new Item("עיפרון", "עפרונות", Gender.MALE, countOnly, ItemCategory.STATIONERY, ItemCategory.GENERAL));
+        items.add(new Item("מחברת", "מחברות", Gender.FEMALE, countOnly, ItemCategory.STATIONERY, ItemCategory.GENERAL));
+        items.add(new Item("ספר", "ספרים", Gender.MALE, countOnly, ItemCategory.STATIONERY, ItemCategory.GENERAL));
+        items.add(new Item("מחק", "מחקים", Gender.MALE, countOnly, ItemCategory.STATIONERY, ItemCategory.GENERAL));
+        // סרט הדבקה או חוט נמדדים באורך
+        items.add(new Item("סרט הדבקה", "סרטי הדבקה", Gender.MALE, lengthOnly, ItemCategory.STATIONERY));
 
         // --- TOY (צעצועים) ---
-        items.add(new Item("כדור", "כדורים", Gender.MALE, ItemCategory.TOY, ItemCategory.GENERAL));
-        items.add(new Item("בובה", "בובות", Gender.FEMALE, ItemCategory.TOY, ItemCategory.GENERAL));
-        items.add(new Item("מכונית צעצוע", "מכוניות צעצוע", Gender.FEMALE, ItemCategory.TOY, ItemCategory.GENERAL));
+        items.add(new Item("כדור", "כדורים", Gender.MALE, countOnly, ItemCategory.TOY, ItemCategory.GENERAL));
+        items.add(new Item("בובה", "בובות", Gender.FEMALE, countOnly, ItemCategory.TOY, ItemCategory.GENERAL));
+        items.add(new Item("מכונית צעצוע", "מכוניות צעצוע", Gender.FEMALE, countOnly, ItemCategory.TOY, ItemCategory.GENERAL));
 
-        // --- MONEY (כסף - בדרך כלל ליחידות מידה של מחיר ועודף) ---
-        items.add(new Item("שקל", "שקלים", Gender.MALE, ItemCategory.MONEY, ItemCategory.GENERAL));
-        items.add(new Item("שטר", "שטרות", Gender.MALE, ItemCategory.MONEY, ItemCategory.GENERAL));
+        // --- MONEY (כסף) ---
+        // כסף נספר ביחידות (שטרות/מטבעות)
+        items.add(new Item("שקל", "שקלים", Gender.MALE, countOnly, ItemCategory.MONEY, ItemCategory.GENERAL));
+        items.add(new Item("שטר", "שטרות", Gender.MALE, countOnly, ItemCategory.MONEY, ItemCategory.GENERAL));
     }
 
     public static void fillVerbs() {
@@ -424,6 +554,7 @@ public class MathQuestionGenerator {
         buy.addForm("past", "FEMALE", "s", "קנתה");
         buy.addForm("past", "MALE", "p", "קנו");
         buy.addForm("past", "FEMALE", "p", "קנו");
+        buy.addForm("inf", "ANY", "ANY", "לקנות");
         verbs.add(buy);
 
         // --- אכל (מתאים ל: FOOD) ---
@@ -432,6 +563,7 @@ public class MathQuestionGenerator {
         eat.addForm("past", "FEMALE", "s", "אכלה");
         eat.addForm("past", "MALE", "p", "אכלו");
         eat.addForm("past", "FEMALE", "p", "אכלו");
+        eat.addForm("inf", "ANY", "ANY", "לאכול");
         verbs.add(eat);
 
         // --- נתן (מתאים ל: COLLECTIBLE, GENERAL) ---
@@ -440,6 +572,7 @@ public class MathQuestionGenerator {
         give.addForm("past", "FEMALE", "s", "נתנה");
         give.addForm("past", "MALE", "p", "נתנו");
         give.addForm("past", "FEMALE", "p", "נתנו");
+        give.addForm("inf", "ANY", "ANY", "לתת");
         verbs.add(give);
 
         // --- קיבל (מתאים ל: COLLECTIBLE, GENERAL, MONEY) ---
@@ -448,6 +581,7 @@ public class MathQuestionGenerator {
         receive.addForm("past", "FEMALE", "s", "קיבלה");
         receive.addForm("past", "MALE", "p", "קיבלו");
         receive.addForm("past", "FEMALE", "p", "קיבלו");
+        receive.addForm("inf", "ANY", "ANY", "לקבל");
         verbs.add(receive);
 
         // --- מצא (מתאים ל: COLLECTIBLE, GENERAL) ---
@@ -456,6 +590,7 @@ public class MathQuestionGenerator {
         find.addForm("past", "FEMALE", "s", "מצאה");
         find.addForm("past", "MALE", "p", "מצאו");
         find.addForm("past", "FEMALE", "p", "מצאו");
+        find.addForm("inf", "ANY", "ANY", "למצוא");
         verbs.add(find);
 
         // --- איבד (מתאים ל: COLLECTIBLE, GENERAL) ---
@@ -464,6 +599,7 @@ public class MathQuestionGenerator {
         lose.addForm("past", "FEMALE", "s", "איבדה");
         lose.addForm("past", "MALE", "p", "איבדו");
         lose.addForm("past", "FEMALE", "p", "איבדו");
+        lose.addForm("inf", "ANY", "ANY", "לאבד");
         verbs.add(lose);
 
         // --- אסף (מתאים ל: COLLECTIBLE) ---
@@ -472,6 +608,7 @@ public class MathQuestionGenerator {
         collect.addForm("past", "FEMALE", "s", "אספה");
         collect.addForm("past", "MALE", "p", "אספו");
         collect.addForm("past", "FEMALE", "p", "אספו");
+        collect.addForm("inf", "ANY", "ANY", "לאסוף");
         verbs.add(collect);
 
         // --- חילק (מתאים ל: שאלות חילוק - FOOD, COLLECTIBLE) ---
@@ -480,6 +617,7 @@ public class MathQuestionGenerator {
         divide.addForm("past", "FEMALE", "s", "חילקה");
         divide.addForm("past", "MALE", "p", "חילקו");
         divide.addForm("past", "FEMALE", "p", "חילקו");
+        divide.addForm("inf", "ANY", "ANY", "לחלק");
         verbs.add(divide);
 
         // --- נכנס (מתאים ל: PLACE) ---
@@ -488,14 +626,84 @@ public class MathQuestionGenerator {
         enter.addForm("past", "FEMALE", "s", "נכנסה");
         enter.addForm("past", "MALE", "p", "נכנסו");
         enter.addForm("past", "FEMALE", "p", "נכנסו");
+        enter.addForm("inf", "ANY", "ANY", "להיכנס");
         verbs.add(enter);
 
+        // --- היה (פועל עזר) ---
         Verb be = new Verb("be");
         be.addForm("past", "MALE", "s", "היה");
         be.addForm("past", "FEMALE", "s", "הייתה");
         be.addForm("past", "MALE", "p", "היו");
         be.addForm("past", "FEMALE", "p", "היו");
+        be.addForm("inf", "ANY", "ANY", "להיות");
         verbs.add(be);
+
+        // ==========================================
+        //            פעלים חדשים שנוספו
+        // ==========================================
+
+        // --- מכר (מתאים ל: חנויות, כסף - שאלות של חיסור מהמלאי או הוספת כסף) ---
+        Verb sell = new Verb("sell");
+        sell.addForm("past", "MALE", "s", "מכר");
+        sell.addForm("past", "FEMALE", "s", "מכרה");
+        sell.addForm("past", "MALE", "p", "מכרו");
+        sell.addForm("past", "FEMALE", "p", "מכרו");
+        sell.addForm("inf", "ANY", "ANY", "למכור");
+        verbs.add(sell);
+
+        // --- לקח (מתאים לחיסור: מישהו לקח משהו) ---
+        Verb take = new Verb("take");
+        take.addForm("past", "MALE", "s", "לקח");
+        take.addForm("past", "FEMALE", "s", "לקחה");
+        take.addForm("past", "MALE", "p", "לקחו");
+        take.addForm("past", "FEMALE", "p", "לקחו");
+        take.addForm("inf", "ANY", "ANY", "לקחת");
+        verbs.add(take);
+
+        // --- שם / הניח (מתאים לחיבור: לשים דברים בקופסה, על מדף) ---
+        Verb put = new Verb("put");
+        put.addForm("past", "MALE", "s", "שם");
+        put.addForm("past", "FEMALE", "s", "שמה");
+        put.addForm("past", "MALE", "p", "שמו");
+        put.addForm("past", "FEMALE", "p", "שמו");
+        put.addForm("inf", "ANY", "ANY", "לשים");
+        verbs.add(put);
+
+        // --- סידר (מתאים לכפל: סידר דברים בשורות או במדפים) ---
+        Verb arrange = new Verb("arrange");
+        arrange.addForm("past", "MALE", "s", "סידר");
+        arrange.addForm("past", "FEMALE", "s", "סידרה");
+        arrange.addForm("past", "MALE", "p", "סידרו");
+        arrange.addForm("past", "FEMALE", "p", "סידרו");
+        arrange.addForm("inf", "ANY", "ANY", "לסדר");
+        verbs.add(arrange);
+
+        // --- שילם (מתאים לשאלות של קניות ועודף) ---
+        Verb pay = new Verb("pay");
+        pay.addForm("past", "MALE", "s", "שילם");
+        pay.addForm("past", "FEMALE", "s", "שילמה");
+        pay.addForm("past", "MALE", "p", "שילמו");
+        pay.addForm("past", "FEMALE", "p", "שילמו");
+        pay.addForm("inf", "ANY", "ANY", "לשלם");
+        verbs.add(pay);
+
+        // --- חסך (מתאים לשאלות של איסוף כסף לאורך זמן) ---
+        Verb save = new Verb("save");
+        save.addForm("past", "MALE", "s", "חסך");
+        save.addForm("past", "FEMALE", "s", "חסכה");
+        save.addForm("past", "MALE", "p", "חסכו");
+        save.addForm("past", "FEMALE", "p", "חסכו");
+        save.addForm("inf", "ANY", "ANY", "לחסוך");
+        verbs.add(save);
+
+        // --- סיים ---
+        Verb finish = new Verb("finish");
+        finish.addForm("past", "MALE", "s", "סיים");
+        finish.addForm("past", "FEMALE", "s", "סיימה");
+        finish.addForm("past", "MALE", "p", "סיימו");
+        finish.addForm("past", "FEMALE", "p", "סיימו");
+        finish.addForm("inf", "ANY", "ANY", "לסיים");
+        verbs.add(finish);
     }
 
     public static void fillPlaces(){
@@ -531,11 +739,72 @@ public class MathQuestionGenerator {
         places.add(new Place("חדר", "חדרים", Gender.MALE, PlaceType.HOME, GENERAL, TOY, STATIONERY)); // חדש
     }
 
+    public static void fillAdjectives() {
+        // --- צבעים ---
+        Adjective red = new Adjective("red", COLOR);
+        red.addForm("MALE", "s", "אדום");
+        red.addForm("FEMALE", "s", "אדומה");
+        red.addForm("MALE", "p", "אדומים");
+        red.addForm("FEMALE", "p", "אדומות");
+        adjectives.add(red);
 
+        Adjective blue = new Adjective("blue", COLOR);
+        blue.addForm("MALE", "s", "כחול");
+        blue.addForm("FEMALE", "s", "כחולה");
+        blue.addForm("MALE", "p", "כחולים");
+        blue.addForm("FEMALE", "p", "כחולות");
+        adjectives.add(blue);
 
+        // --- גדלים ---
+        Adjective big = new Adjective("big", SIZE);
+        big.addForm("MALE", "s", "גדול");
+        big.addForm("FEMALE", "s", "גדולה");
+        big.addForm("MALE", "p", "גדולים");
+        big.addForm("FEMALE", "p", "גדולות");
+        adjectives.add(big);
 
+        Adjective small = new Adjective("small", SIZE);
+        small.addForm("MALE", "s", "קטן");
+        small.addForm("FEMALE", "s", "קטנה");
+        small.addForm("MALE", "p", "קטנים");
+        small.addForm("FEMALE", "p", "קטנות");
+        adjectives.add(small);
 
+        // --- תכונות שונות ---
+        Adjective newAdj = new Adjective("new", CONDITION);
+        newAdj.addForm("MALE", "s", "חדש");
+        newAdj.addForm("FEMALE", "s", "חדשה");
+        newAdj.addForm("MALE", "p", "חדשים");
+        newAdj.addForm("FEMALE", "p", "חדשות");
+        adjectives.add(newAdj);
 
+        Adjective oldAdj = new Adjective("old", CONDITION);
+        oldAdj.addForm("MALE", "s", "ישן");
+        oldAdj.addForm("FEMALE", "s", "ישנה");
+        oldAdj.addForm("MALE", "p", "ישנים");
+        oldAdj.addForm("FEMALE", "p", "ישנות");
+        adjectives.add(oldAdj);
+    }
+
+    public static void fillUnits() {
+        // --- משקל ---
+        units.add(new Unit("kg", "קילוגרם", "קילוגרמים", Gender.MALE, UnitType.WEIGHT));
+        units.add(new Unit("gram", "גרם", "גרמים", Gender.MALE, UnitType.WEIGHT));
+        units.add(new Unit("ton", "טון", "טונות", Gender.MALE, UnitType.WEIGHT));
+
+        units.add(new Unit("meter", "מטר", "מטרים", Gender.MALE, UnitType.LENGTH));
+        units.add(new Unit("cm", "סנטימטר", "סנטימטרים", Gender.MALE, UnitType.LENGTH));
+        units.add(new Unit("km", "קילומטר", "קילומטרים", Gender.MALE, UnitType.LENGTH));
+
+        units.add(new Unit("liter", "ליטר", "ליטרים", Gender.MALE, UnitType.VOLUME));
+        units.add(new Unit("ml", "מיליליטר", "מיליליטרים", Gender.MALE, UnitType.VOLUME));
+        units.add(new Unit("cup", "כוס", "כוסות", Gender.FEMALE, UnitType.VOLUME));
+
+        // --- יחידות ספירה (COUNT) ---
+        units.add(new Unit("piece", "יחידה", "יחידות", Gender.FEMALE, UnitType.COUNT));
+        units.add(new Unit("box", "מארז", "מארזים", Gender.MALE, UnitType.COUNT));
+        units.add(new Unit("tray", "מגש", "מגשים", Gender.MALE, UnitType.COUNT));
+    }
 
 
 

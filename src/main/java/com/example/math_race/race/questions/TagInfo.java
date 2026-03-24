@@ -1,6 +1,5 @@
 package com.example.math_race.race.questions;
 
-import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
@@ -78,48 +77,6 @@ public class TagInfo {
             }
         }
     }
-
-
-
-//    public static TagInfo parse(String tag) {
-//        String clean = tag.substring(1, tag.length() - 1);
-//        List<String> parts = smartSplit(clean, ':');
-//
-//        String type = parts.get(0);
-//        Map<String, String> constraints = new HashMap<>();
-//        String property = "";
-//        String id = "";
-//
-//        if (type.startsWith("#")) {
-//            id = type;
-//            if (parts.size() > 1) property = parts.get(1);
-//            return new TagInfo(type, constraints, property, id);
-//        }
-//
-//        int lastIdx = parts.size() - 1;
-//
-//        if (lastIdx >= 1 && parts.get(lastIdx).startsWith("#")) {
-//            id = parts.get(lastIdx);
-//            lastIdx--;
-//        }
-//
-//        if (lastIdx >= 1 && !parts.get(lastIdx).contains("=")) {
-//            property = parts.get(lastIdx);
-//            lastIdx--;
-//        }
-//
-//        if (lastIdx >= 1) {
-//            String constraintsPart = parts.get(1);
-//            List<String> pairs = smartSplit(constraintsPart, ';');
-//            for (String pair : pairs) {
-//                List<String> kv = smartSplit(pair, '=');
-//                if (kv.size() == 2) constraints.put(kv.get(0).trim(), kv.get(1).trim());
-//            }
-//        }
-//
-//        return new TagInfo(type, constraints, property, id);
-//    }
-
 
     private static List<String> smartSplit(String s, char delimiter) {
         List<String> result = new ArrayList<>();

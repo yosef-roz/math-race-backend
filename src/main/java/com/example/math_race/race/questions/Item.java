@@ -17,11 +17,13 @@ public class Item implements QuestionEntity {
     private String plural;
     private Gender gender;
     private Set<ItemCategory> categories;
+    private Set<UnitType> allowedUnits;
 
-    public Item(String singular, String plural, Gender gender, ItemCategory... categories) {
+    public Item(String singular, String plural, Gender gender, Set<UnitType> allowedUnits, ItemCategory... categories) {
         this.singular = singular;
         this.plural = plural;
         this.gender = gender;
+        this.allowedUnits = allowedUnits != null ? allowedUnits : new HashSet<>();
         this.categories = new HashSet<>(Arrays.asList(categories));
     }
 
@@ -39,6 +41,13 @@ public class Item implements QuestionEntity {
 
         if ("one".equals(key)) {
             return gender == Gender.MALE ? "אחד" : "אחת";
+        }
+
+        if ("allowed_unit".equals(key)) {
+            if (allowedUnits.isEmpty()) return "NONE"; // אם אי אפשר למדוד אותו
+            return allowedUnits.stream()
+                    .map(Enum::name)
+                    .collect(java.util.stream.Collectors.joining("|"));
         }
 
         return singular;
@@ -86,6 +95,43 @@ public class Item implements QuestionEntity {
             } else {
                 if (!expressionMatch) return false;
             }
+        }
+
+        if (constraints.containsKey("unit_type") && !constraints.get("unit_type").equals("?")) {
+            String rawExpr = constraints.get("unit_type").trim().toUpperCase();
+            boolean isNegated = rawExpr.startsWith("!");
+
+            if (isNegated) {
+                rawExpr = rawExpr.substring(1);
+            }
+
+            String[] orGroups = rawExpr.split("\\|");
+            boolean expressionResult = false;
+
+            for (String group : orGroups) {
+                String[] andRequirements = group.split("&");
+                boolean allInGroupMatch = true;
+
+                for (String req : andRequirements) {
+                    try {
+                        UnitType ut = UnitType.valueOf(req.trim());
+                        if (!this.allowedUnits.contains(ut)) {
+                            allInGroupMatch = false;
+                            break;
+                        }
+                    } catch (IllegalArgumentException e) {
+                        allInGroupMatch = false;
+                        break;
+                    }
+                }
+
+                if (allInGroupMatch) {
+                    expressionResult = true;
+                    break;
+                }
+            }
+
+            if (isNegated == expressionResult) return false;
         }
 
 
