@@ -50,74 +50,99 @@ public class MathQuestionGenerator {
         for (String tag : tags) {
 
             if (tag.startsWith("[IF:")) {
-
                 try {
-                    int secondColon = tag.indexOf(":<");
-                    if (secondColon == -1) continue;
-                    String conditionFromTag = tag.substring(4, secondColon);
+                    int originalCondEnd = tag.indexOf(":<");
+                    if (originalCondEnd == -1) continue;
 
-                    String regex = "\\[IF:" + java.util.regex.Pattern.quote(conditionFromTag) + ":<(.*?)>:<(.*?)>]";
-                    java.util.regex.Pattern pattern = java.util.regex.Pattern.compile(regex);
-                    java.util.regex.Matcher matcher = pattern.matcher(result);
+                    String identifier = tag.substring(0, originalCondEnd + 2);
+                    int startIdx = result.indexOf(identifier);
+                    if (startIdx == -1) continue;
 
-                    if (matcher.find()) {
-                        String fullMatchInResult = matcher.group(0);
-                        String trueOption = matcher.group(1);
-                        String falseOption = matcher.group(2);
-
-                        String operator = "";
-                        if (conditionFromTag.contains(">=")) operator = ">=";
-                        else if (conditionFromTag.contains("<=")) operator = "<=";
-                        else if (conditionFromTag.contains(">")) operator = ">";
-                        else if (conditionFromTag.contains("<")) operator = "<";
-                        else if (conditionFromTag.contains("=")) operator = "=";
-
-                        if (!operator.isEmpty()) {
-                            int opIndex = conditionFromTag.indexOf(operator);
-                            String leftSide = conditionFromTag.substring(0, opIndex).trim();
-                            String expectedStr = conditionFromTag.substring(opIndex + operator.length()).trim();
-
-                            String entityId = leftSide;
-                            String propertyKey = "";
-
-                            if (leftSide.contains(":")) {
-                                String[] varParts = leftSide.split(":", 2);
-                                entityId = varParts[0].trim();
-                                propertyKey = varParts[1].trim();
+                    int depth = 0;
+                    int endIdx = -1;
+                    for (int i = startIdx; i < result.length(); i++) {
+                        if (result.charAt(i) == '[') depth++;
+                        else if (result.charAt(i) == ']') {
+                            depth--;
+                            if (depth == 0) {
+                                endIdx = i;
+                                break;
                             }
-
-                            String actualStr = "";
-                            if (memory.containsKey(entityId)) {
-                                actualStr = memory.get(entityId).getProperty(propertyKey);
-                            }
-
-                            boolean conditionMet = false;
-                            if (operator.equals("=")) {
-                                conditionMet = actualStr.equals(expectedStr);
-                            } else {
-                                try {
-                                    double actualNum = Double.parseDouble(actualStr);
-                                    double expectedNum = Double.parseDouble(expectedStr);
-                                    conditionMet = switch (operator) {
-                                        case ">" -> actualNum > expectedNum;
-                                        case "<" -> actualNum < expectedNum;
-                                        case ">=" -> actualNum >= expectedNum;
-                                        case "<=" -> actualNum <= expectedNum;
-                                        default -> conditionMet;
-                                    };
-                                } catch (NumberFormatException nfe) {
-                                    System.out.println("Warning: Numeric comparison failed for: " + actualStr);
-                                }
-                            }
-
-                            String chosenText = conditionMet ? trueOption : falseOption;
-
-//                            System.out.println("הטקסט הנבחר");
-//                            System.out.println(chosenText);
-
-                            String resolvedText = gene(chosenText, memory);
-                            result = result.replace(fullMatchInResult, resolvedText);
                         }
+                    }
+                    if (endIdx == -1) continue;
+
+                    // מפה רגיל
+
+                    String currentTag = result.substring(startIdx, endIdx + 1);
+                    int currentCondEnd = currentTag.indexOf(":<");
+
+                    int branchSplit = -1;
+                    int innerDepth = 0;
+                    for (int i = currentCondEnd + 2; i < currentTag.length(); i++) {
+                        if (currentTag.charAt(i) == '[') innerDepth++;
+                        else if (currentTag.charAt(i) == ']') innerDepth--;
+
+                        if (innerDepth == 0 && currentTag.startsWith(">:<", i)) {
+                            branchSplit = i;
+                            break;
+                        }
+                    }
+                    if (branchSplit == -1) continue;
+
+                    String conditionFromTag = currentTag.substring(4, currentCondEnd).trim();
+                    String trueOption = currentTag.substring(currentCondEnd + 2, branchSplit);
+                    String falseOption = currentTag.substring(branchSplit + 3, currentTag.length() - 2);
+
+                    String operator = "";
+                    if (conditionFromTag.contains(">=")) operator = ">=";
+                    else if (conditionFromTag.contains("<=")) operator = "<=";
+                    else if (conditionFromTag.contains(">")) operator = ">";
+                    else if (conditionFromTag.contains("<")) operator = "<";
+                    else if (conditionFromTag.contains("=")) operator = "=";
+
+                    if (!operator.isEmpty()) {
+                        int opIndex = conditionFromTag.indexOf(operator);
+                        String leftSide = conditionFromTag.substring(0, opIndex).trim();
+                        String expectedStr = conditionFromTag.substring(opIndex + operator.length()).trim();
+
+                        String entityId = leftSide;
+                        String propertyKey = "";
+
+                        if (leftSide.contains(":")) {
+                            String[] varParts = leftSide.split(":", 2);
+                            entityId = varParts[0].trim();
+                            propertyKey = varParts[1].trim();
+                        }
+
+                        String actualStr = "";
+                        if (memory.containsKey(entityId)) {
+                            actualStr = memory.get(entityId).getProperty(propertyKey);
+                        }
+
+                        boolean conditionMet = false;
+                        if (operator.equals("=")) {
+                            conditionMet = actualStr.equals(expectedStr);
+                        } else {
+                            try {
+                                double actualNum = Double.parseDouble(actualStr);
+                                double expectedNum = Double.parseDouble(expectedStr);
+                                conditionMet = switch (operator) {
+                                    case ">" -> actualNum > expectedNum;
+                                    case "<" -> actualNum < expectedNum;
+                                    case ">=" -> actualNum >= expectedNum;
+                                    case "<=" -> actualNum <= expectedNum;
+                                    default -> conditionMet;
+                                };
+                            } catch (NumberFormatException nfe) {
+                                System.out.println("Warning: Numeric comparison failed for: " + actualStr);
+                            }
+                        }
+
+                        String chosenText = conditionMet ? trueOption : falseOption;
+                        String resolvedText = gene(chosenText, memory);
+
+                        result = result.replace(currentTag, resolvedText);
                     }
                 } catch (Exception e) {
                     System.out.println("Error parsing IF tag: " + tag);
