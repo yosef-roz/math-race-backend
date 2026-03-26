@@ -1,5 +1,6 @@
-package com.example.math_race.race.questions;
+package com.example.math_race.questionGenerator.tags.types;
 
+import com.example.math_race.questionGenerator.tags.core.QuestionEntity;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -7,7 +8,7 @@ import lombok.NoArgsConstructor;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-public class NumberEntity implements QuestionEntity {
+public class NumberTag implements QuestionEntity {
     private int value;
 
     @Override
@@ -30,6 +31,12 @@ public class NumberEntity implements QuestionEntity {
             int bonus = Integer.parseInt(key.replace("div_", ""));
             return String.valueOf(value / bonus);
         }
+
+        if (key.startsWith("mod_")) {
+            int divisor = Integer.parseInt(key.replace("mod_", ""));
+            return String.valueOf(value % divisor);
+        }
+
 
         return String.valueOf(value);
     }

@@ -1,9 +1,11 @@
-package com.example.math_race.race.questions;
+package com.example.math_race.questionGenerator.tags.types;
 
-public class TimeEntity implements QuestionEntity {
+import com.example.math_race.questionGenerator.tags.core.QuestionEntity;
+
+public class TimeTag implements QuestionEntity {
     private int totalMinutes;
 
-    public TimeEntity(int totalMinutes) {
+    public TimeTag(int totalMinutes) {
         this.totalMinutes = totalMinutes;
     }
 

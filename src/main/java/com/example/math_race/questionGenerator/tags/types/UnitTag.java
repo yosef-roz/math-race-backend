@@ -1,11 +1,16 @@
-package com.example.math_race.race.questions;
+package com.example.math_race.questionGenerator.tags.types;
+
+import com.example.math_race.questionGenerator.tags.core.QuestionEntity;
+import com.example.math_race.questionGenerator.tags.enums.Gender;
+import com.example.math_race.questionGenerator.tags.enums.ItemCategory;
+import com.example.math_race.questionGenerator.tags.enums.UnitType;
 
 import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 
-public class Unit implements QuestionEntity {
+public class UnitTag implements QuestionEntity {
     private String id;
     private String singular;
     private String plural;
@@ -13,7 +18,7 @@ public class Unit implements QuestionEntity {
     private UnitType type;
     private Set<ItemCategory> validItemCategories;
 
-    public Unit(String id, String singular, String plural, Gender gender, UnitType type, ItemCategory... categories) {
+    public UnitTag(String id, String singular, String plural, Gender gender, UnitType type, ItemCategory... categories) {
         this.id = id;
         this.singular = singular;
         this.plural = plural;

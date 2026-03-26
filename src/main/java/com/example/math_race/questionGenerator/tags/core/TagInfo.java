@@ -1,4 +1,4 @@
-package com.example.math_race.race.questions;
+package com.example.math_race.questionGenerator.tags.core;
 
 import lombok.Data;
 import lombok.NoArgsConstructor;

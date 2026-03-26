@@ -1,34 +1,35 @@
 package com.example.math_race.race.questions;
 
+import com.example.math_race.questionGenerator.tags.core.QuestionEntity;
+import com.example.math_race.questionGenerator.tags.core.TagInfo;
+import com.example.math_race.questionGenerator.tags.enums.*;
+import com.example.math_race.questionGenerator.tags.types.*;
 import com.example.math_race.race.RacePlayer;
 import org.springframework.stereotype.Component;
 
 import java.util.*;
 import java.util.concurrent.ThreadLocalRandom;
 
-import static com.example.math_race.race.questions.AdjectiveType.*;
-import static com.example.math_race.race.questions.ItemCategory.*;
-
 @Component
 public class MathQuestionGenerator {
 
 
-    static ArrayList<Human> humans =  new ArrayList<>();
-    static ArrayList<Item> items =  new ArrayList<>();
-    static ArrayList<Verb> verbs = new ArrayList<>();
-    static ArrayList<Place> places = new ArrayList<>();
-    public static List<Adjective> adjectives = new ArrayList<>();
-    public static List<Unit> units = new ArrayList<>();
-    private static List<RoleEntity> roles = new ArrayList<>();
+    static ArrayList<HumanTag> humans;
+    static ArrayList<ItemTag> items;
+    static ArrayList<VerbTag> verbs;
+    static ArrayList<PlaceTag> places;
+    public static List<AdjectiveTag> adjectives;
+    public static List<UnitTag> units;
+    private static final List<RoleTag> roles;
 
     static {
-        fillHumans();
-        fillVerbs();
-        fillItems();
-        fillPlaces();
-        fillAdjectives();
-        fillUnits();
-        fillRoles();
+        humans = fillHumans();
+        verbs = fillVerbs();
+        items = fillItems();
+        places = fillPlaces();
+        adjectives = fillAdjectives();
+        units = fillUnits();
+        roles = fillRoles();
     }
 
 
@@ -72,8 +73,6 @@ public class MathQuestionGenerator {
                     }
                     if (endIdx == -1) continue;
 
-                    // מפה רגיל
-
                     String currentTag = result.substring(startIdx, endIdx + 1);
                     int currentCondEnd = currentTag.indexOf(":<");
 
@@ -97,6 +96,7 @@ public class MathQuestionGenerator {
                     String operator = "";
                     if (conditionFromTag.contains(">=")) operator = ">=";
                     else if (conditionFromTag.contains("<=")) operator = "<=";
+                    else if (conditionFromTag.contains("!=")) operator = "!=";
                     else if (conditionFromTag.contains(">")) operator = ">";
                     else if (conditionFromTag.contains("<")) operator = "<";
                     else if (conditionFromTag.contains("=")) operator = "=";
@@ -106,23 +106,37 @@ public class MathQuestionGenerator {
                         String leftSide = conditionFromTag.substring(0, opIndex).trim();
                         String expectedStr = conditionFromTag.substring(opIndex + operator.length()).trim();
 
-                        String entityId = leftSide;
-                        String propertyKey = "";
-
-                        if (leftSide.contains(":")) {
-                            String[] varParts = leftSide.split(":", 2);
-                            entityId = varParts[0].trim();
-                            propertyKey = varParts[1].trim();
-                        }
+                        expectedStr = expectedStr.startsWith("(") ? resolveValue(expectedStr,memory) : expectedStr;
 
                         String actualStr = "";
-                        if (memory.containsKey(entityId)) {
-                            actualStr = memory.get(entityId).getProperty(propertyKey);
+
+                        if (leftSide.startsWith("(")) {
+                            actualStr = resolveValue(leftSide, memory);
+                        } else {
+                            String entityId = leftSide;
+                            String propertyKey = "";
+
+                            if (leftSide.contains(":")) {
+                                String[] varParts = leftSide.split(":", 2);
+                                entityId = varParts[0].trim();
+                                propertyKey = varParts[1].trim();
+                            }
+
+                            if (memory.containsKey(entityId)) {
+                                actualStr = memory.get(entityId).getProperty(propertyKey);
+                            } else {
+                                actualStr = leftSide;
+                            }
                         }
+
+                        actualStr = actualStr != null ? actualStr : "";
+                        expectedStr = expectedStr != null ? expectedStr : "";
 
                         boolean conditionMet = false;
                         if (operator.equals("=")) {
                             conditionMet = actualStr.equals(expectedStr);
+                        } else if (operator.equals("!=")) {
+                            conditionMet = !actualStr.equals(expectedStr);
                         } else {
                             try {
                                 double actualNum = Double.parseDouble(actualStr);
@@ -135,7 +149,7 @@ public class MathQuestionGenerator {
                                     default -> conditionMet;
                                 };
                             } catch (NumberFormatException nfe) {
-                                System.out.println("Warning: Numeric comparison failed for: " + actualStr);
+                                System.out.println("Warning: Numeric comparison failed for actual: [" + actualStr + "] and expected: [" + expectedStr + "]");
                             }
                         }
 
@@ -273,8 +287,8 @@ public class MathQuestionGenerator {
     }
 
 
-    public static Human findHuman(Map<String, String> constraints) {
-        List<Human> matches = humans.stream()
+    public static HumanTag findHuman(Map<String, String> constraints) {
+        List<HumanTag> matches = humans.stream()
                 .filter(h -> h.matches(constraints))
                 .toList();
 
@@ -287,7 +301,7 @@ public class MathQuestionGenerator {
     }
 
     public static QuestionEntity findAdjective(Map<String, String> constraints) {
-        List<Adjective> matches = adjectives.stream()
+        List<AdjectiveTag> matches = adjectives.stream()
                 .filter(a -> a.matches(constraints))
                 .toList();
 
@@ -296,7 +310,7 @@ public class MathQuestionGenerator {
             return null;
         }
 
-        Adjective chosenAdjective = matches.get(java.util.concurrent.ThreadLocalRandom.current().nextInt(matches.size()));
+        AdjectiveTag chosenAdjective = matches.get(java.util.concurrent.ThreadLocalRandom.current().nextInt(matches.size()));
 
         String g = constraints.getOrDefault("g", "MALE").toUpperCase();
         String num = constraints.getOrDefault("num", "s").toLowerCase();
@@ -306,8 +320,8 @@ public class MathQuestionGenerator {
         return key -> exactWord;
     }
 
-    public static Item findItem(Map<String, String> constraints) {
-        List<Item> matches = items.stream()
+    public static ItemTag findItem(Map<String, String> constraints) {
+        List<ItemTag> matches = items.stream()
                 .filter(h -> h.matches(constraints))
                 .toList();
 
@@ -319,8 +333,8 @@ public class MathQuestionGenerator {
         return matches.get(ThreadLocalRandom.current().nextInt(matches.size()));
     }
 
-    public static Place findPlace(Map<String, String> constraints) {
-        List<Place> matches = places.stream()
+    public static PlaceTag findPlace(Map<String, String> constraints) {
+        List<PlaceTag> matches = places.stream()
                 .filter(p -> p.matches(constraints))
                 .toList();
 
@@ -332,7 +346,7 @@ public class MathQuestionGenerator {
         return matches.get(ThreadLocalRandom.current().nextInt(matches.size()));
     }
 
-    public static NumberEntity findNumber(Map<String, String> constraints) {
+    public static NumberTag findNumber(Map<String, String> constraints) {
         int min, max;
         try {
             min = Integer.parseInt(constraints.getOrDefault("min", "1").trim());
@@ -356,7 +370,7 @@ public class MathQuestionGenerator {
                     int forbiddenValue = Integer.parseInt(valStr.substring(1));
 
                     if (min == max && min == forbiddenValue) {
-                        return new NumberEntity(min);
+                        return new NumberTag(min);
                     }
 
                     int randomNumber;
@@ -364,7 +378,7 @@ public class MathQuestionGenerator {
                         randomNumber = java.util.concurrent.ThreadLocalRandom.current().nextInt(min, max + 1);
                     } while (randomNumber == forbiddenValue);
 
-                    return new NumberEntity(randomNumber);
+                    return new NumberTag(randomNumber);
                 } catch (NumberFormatException e) {
                     System.out.println("Warning: Invalid value: " + valStr);
                 }
@@ -372,7 +386,7 @@ public class MathQuestionGenerator {
 
             else {
                 try {
-                    return new NumberEntity(Integer.parseInt(valStr));
+                    return new NumberTag(Integer.parseInt(valStr));
                 } catch (NumberFormatException e) {
                     System.out.println("Warning: Invalid value for number: " + valStr);
                 }
@@ -380,10 +394,10 @@ public class MathQuestionGenerator {
         }
 
         int randomNumber = java.util.concurrent.ThreadLocalRandom.current().nextInt(min, max + 1);
-        return new NumberEntity(randomNumber);
+        return new NumberTag(randomNumber);
     }
 
-    public static TimeEntity findTime(Map<String, String> constraints) {
+    public static TimeTag findTime(Map<String, String> constraints) {
         int minMinutes = 0;       // 00:00 (ברירת מחדל למינימום)
         int maxMinutes = 1439;    // 23:59 (ברירת מחדל למקסימום)
 
@@ -416,7 +430,7 @@ public class MathQuestionGenerator {
                     int forbiddenValue = parseTime(valStr.substring(1));
 
                     if (minMinutes == maxMinutes && minMinutes == forbiddenValue) {
-                        return new TimeEntity(minMinutes);
+                        return new TimeTag(minMinutes);
                     }
 
                     int randomMinutes;
@@ -436,7 +450,7 @@ public class MathQuestionGenerator {
 
                     } while (randomMinutes == forbiddenValue);
 
-                    return new TimeEntity(randomMinutes);
+                    return new TimeTag(randomMinutes);
 
                 } catch (Exception e) {
                     System.out.println("Warning: Invalid time format for forbidden value: " + valStr);
@@ -444,7 +458,7 @@ public class MathQuestionGenerator {
             }
             else {
                 try {
-                    return new TimeEntity(parseTime(valStr));
+                    return new TimeTag(parseTime(valStr));
                 } catch (Exception e) {
                     System.out.println("Warning: Invalid time format for specific value: " + valStr);
                 }
@@ -459,7 +473,7 @@ public class MathQuestionGenerator {
             if (randomMinutes < minMinutes) randomMinutes = minMinutes;
         }
 
-        return new TimeEntity(randomMinutes);
+        return new TimeTag(randomMinutes);
     }
 
     private static int parseTime(String timeStr) {
@@ -470,7 +484,7 @@ public class MathQuestionGenerator {
     }
 
     public static QuestionEntity findVerb(Map<String, String> constraints) {
-        List<Verb> matches = verbs.stream()
+        List<VerbTag> matches = verbs.stream()
                 .filter(v -> v.matches(constraints))
                 .toList();
 
@@ -479,7 +493,7 @@ public class MathQuestionGenerator {
             return null;
         }
 
-        Verb chosenVerb = matches.get(ThreadLocalRandom.current().nextInt(matches.size()));
+        VerbTag chosenVerb = matches.get(ThreadLocalRandom.current().nextInt(matches.size()));
 
         String f = constraints.getOrDefault("f", "regular").toLowerCase();
         String t = constraints.getOrDefault("t", "past").toLowerCase();
@@ -496,7 +510,7 @@ public class MathQuestionGenerator {
     }
 
     public static QuestionEntity findUnit(Map<String, String> constraints) {
-        List<Unit> matches = units.stream()
+        List<UnitTag> matches = units.stream()
                 .filter(u -> u.matches(constraints))
                 .toList();
 
@@ -509,7 +523,7 @@ public class MathQuestionGenerator {
     }
 
     public static QuestionEntity findRole(Map<String, String> constraints) {
-        List<RoleEntity> matches = roles.stream() // בהנחה שיש לך רשימה סטטית של תפקידים שנקראת roles
+        List<RoleTag> matches = roles.stream() // בהנחה שיש לך רשימה סטטית של תפקידים שנקראת roles
                 .filter(r -> r.matches(constraints))
                 .toList();
 
@@ -522,64 +536,68 @@ public class MathQuestionGenerator {
         return matches.get(java.util.concurrent.ThreadLocalRandom.current().nextInt(matches.size()));
     }
 
-    public static void fillHumans() {
+    public static ArrayList<HumanTag> fillHumans() {
+        ArrayList<HumanTag> humans = new ArrayList<>();
         // --- בנים (25) ---
-        humans.add(new Human("שמעון", Gender.MALE));
-        humans.add(new Human("יוסף", Gender.MALE));
-        humans.add(new Human("אברהם", Gender.MALE));
-        humans.add(new Human("דוד", Gender.MALE));
-        humans.add(new Human("משה", Gender.MALE));
-        humans.add(new Human("אריאל", Gender.MALE));
-        humans.add(new Human("נועם", Gender.MALE));
-        humans.add(new Human("איתי", Gender.MALE));
-        humans.add(new Human("אורי", Gender.MALE));
-        humans.add(new Human("עומר", Gender.MALE));
-        humans.add(new Human("דניאל", Gender.MALE));
-        humans.add(new Human("יהונתן", Gender.MALE));
-        humans.add(new Human("רועי", Gender.MALE));
-        humans.add(new Human("עידן", Gender.MALE));
-        humans.add(new Human("עמית", Gender.MALE));
-        humans.add(new Human("גיא", Gender.MALE));
-        humans.add(new Human("מאור", Gender.MALE));
-        humans.add(new Human("תומר", Gender.MALE));
-        humans.add(new Human("אלעד", Gender.MALE));
-        humans.add(new Human("ירון", Gender.MALE));
-        humans.add(new Human("אורן", Gender.MALE));
-        humans.add(new Human("ברק", Gender.MALE));
-        humans.add(new Human("גלעד", Gender.MALE));
-        humans.add(new Human("ניר", Gender.MALE));
-        humans.add(new Human("אסף", Gender.MALE));
+        humans.add(new HumanTag("שמעון", Gender.MALE));
+        humans.add(new HumanTag("יוסף", Gender.MALE));
+        humans.add(new HumanTag("אברהם", Gender.MALE));
+        humans.add(new HumanTag("דוד", Gender.MALE));
+        humans.add(new HumanTag("משה", Gender.MALE));
+        humans.add(new HumanTag("אריאל", Gender.MALE));
+        humans.add(new HumanTag("נועם", Gender.MALE));
+        humans.add(new HumanTag("איתי", Gender.MALE));
+        humans.add(new HumanTag("אורי", Gender.MALE));
+        humans.add(new HumanTag("עומר", Gender.MALE));
+        humans.add(new HumanTag("דניאל", Gender.MALE));
+        humans.add(new HumanTag("יהונתן", Gender.MALE));
+        humans.add(new HumanTag("רועי", Gender.MALE));
+        humans.add(new HumanTag("עידן", Gender.MALE));
+        humans.add(new HumanTag("עמית", Gender.MALE));
+        humans.add(new HumanTag("גיא", Gender.MALE));
+        humans.add(new HumanTag("מאור", Gender.MALE));
+        humans.add(new HumanTag("תומר", Gender.MALE));
+        humans.add(new HumanTag("אלעד", Gender.MALE));
+        humans.add(new HumanTag("ירון", Gender.MALE));
+        humans.add(new HumanTag("אורן", Gender.MALE));
+        humans.add(new HumanTag("ברק", Gender.MALE));
+        humans.add(new HumanTag("גלעד", Gender.MALE));
+        humans.add(new HumanTag("ניר", Gender.MALE));
+        humans.add(new HumanTag("אסף", Gender.MALE));
 
         // --- בנות (25) ---
-        humans.add(new Human("נועה", Gender.FEMALE));
-        humans.add(new Human("תמר", Gender.FEMALE));
-        humans.add(new Human("יעל", Gender.FEMALE));
-        humans.add(new Human("מאיה", Gender.FEMALE));
-        humans.add(new Human("אביגיל", Gender.FEMALE));
-        humans.add(new Human("טליה", Gender.FEMALE));
-        humans.add(new Human("עדי", Gender.FEMALE));
-        humans.add(new Human("שירה", Gender.FEMALE));
-        humans.add(new Human("מיכל", Gender.FEMALE));
-        humans.add(new Human("רוני", Gender.FEMALE));
-        humans.add(new Human("אלה", Gender.FEMALE));
-        humans.add(new Human("עדן", Gender.FEMALE));
-        humans.add(new Human("הילה", Gender.FEMALE));
-        humans.add(new Human("דנה", Gender.FEMALE));
-        humans.add(new Human("מורן", Gender.FEMALE));
-        humans.add(new Human("קרן", Gender.FEMALE));
-        humans.add(new Human("ענת", Gender.FEMALE));
-        humans.add(new Human("מירי", Gender.FEMALE));
-        humans.add(new Human("גלי", Gender.FEMALE));
-        humans.add(new Human("סיון", Gender.FEMALE));
-        humans.add(new Human("רותם", Gender.FEMALE)); // מתאים גם לבנים, אבל הגדרנו כבת
-        humans.add(new Human("שיר", Gender.FEMALE));
-        humans.add(new Human("אור", Gender.FEMALE));   // כנ"ל
-        humans.add(new Human("שחר", Gender.FEMALE));   // כנ"ל
-        humans.add(new Human("ענבל", Gender.FEMALE));
+        humans.add(new HumanTag("נועה", Gender.FEMALE));
+        humans.add(new HumanTag("תמר", Gender.FEMALE));
+        humans.add(new HumanTag("יעל", Gender.FEMALE));
+        humans.add(new HumanTag("מאיה", Gender.FEMALE));
+        humans.add(new HumanTag("אביגיל", Gender.FEMALE));
+        humans.add(new HumanTag("טליה", Gender.FEMALE));
+        humans.add(new HumanTag("עדי", Gender.FEMALE));
+        humans.add(new HumanTag("שירה", Gender.FEMALE));
+        humans.add(new HumanTag("מיכל", Gender.FEMALE));
+        humans.add(new HumanTag("רוני", Gender.FEMALE));
+        humans.add(new HumanTag("אלה", Gender.FEMALE));
+        humans.add(new HumanTag("עדן", Gender.FEMALE));
+        humans.add(new HumanTag("הילה", Gender.FEMALE));
+        humans.add(new HumanTag("דנה", Gender.FEMALE));
+        humans.add(new HumanTag("מורן", Gender.FEMALE));
+        humans.add(new HumanTag("קרן", Gender.FEMALE));
+        humans.add(new HumanTag("ענת", Gender.FEMALE));
+        humans.add(new HumanTag("מירי", Gender.FEMALE));
+        humans.add(new HumanTag("גלי", Gender.FEMALE));
+        humans.add(new HumanTag("סיון", Gender.FEMALE));
+        humans.add(new HumanTag("רותם", Gender.FEMALE)); // מתאים גם לבנים, אבל הגדרנו כבת
+        humans.add(new HumanTag("שיר", Gender.FEMALE));
+        humans.add(new HumanTag("אור", Gender.FEMALE));   // כנ"ל
+        humans.add(new HumanTag("שחר", Gender.FEMALE));   // כנ"ל
+        humans.add(new HumanTag("ענבל", Gender.FEMALE));
+
+        return  humans;
     }
 
-    public static void fillItems() {
-        // הגדרת קבוצות יחידות מראש לשימוש חוזר
+    public static ArrayList<ItemTag> fillItems() {
+        ArrayList<ItemTag>  items = new ArrayList<>();
+
         Set<UnitType> weightOnly = Set.of(UnitType.WEIGHT);
         Set<UnitType> volumeOnly = Set.of(UnitType.VOLUME);
         Set<UnitType> countOnly = Set.of(UnitType.COUNT);
@@ -588,72 +606,64 @@ public class MathQuestionGenerator {
         Set<UnitType> volumeOrCount = Set.of(UnitType.VOLUME, UnitType.COUNT);
         Set<UnitType> noUnit = Set.of(UnitType.NONE);
 
-        // --- FOOD (אוכל) ---
-        items.add(new Item("תפוח", "תפוחים", Gender.MALE, weightOrCount, ItemCategory.FOOD, ItemCategory.GENERAL));
-        items.add(new Item("בננה", "בננות", Gender.FEMALE, weightOrCount, ItemCategory.FOOD, ItemCategory.GENERAL));
-        items.add(new Item("תפוז", "תפוזים", Gender.MALE, weightOrCount, ItemCategory.FOOD, ItemCategory.GENERAL));
-        items.add(new Item("עגבנייה", "עגבניות", Gender.FEMALE, weightOrCount, ItemCategory.FOOD));
-        items.add(new Item("מלפפון", "מלפפונים", Gender.MALE, weightOrCount, ItemCategory.FOOD));
-        items.add(new Item("פיצה", "פיצות", Gender.FEMALE, countOnly, ItemCategory.FOOD));
-        items.add(new Item("לחם", "כיכרות לחם", Gender.MALE, countOnly, ItemCategory.FOOD));
-        items.add(new Item("קמח", "שקי קמח", Gender.MALE, weightOnly, ItemCategory.FOOD)); // קמח נמדד בעיקר במשקל (קילו)
-        items.add(new Item("מים", "בקבוקי מים", Gender.MALE, volumeOrCount, ItemCategory.FOOD)); // ליטר או בקבוקים
-        items.add(new Item("חלב", "קרטוני חלב", Gender.MALE, volumeOrCount, ItemCategory.FOOD));
+        // --- מזון ושתייה ---
+        items.add(new ItemTag("תפוח", "תפוחים", Gender.MALE, weightOrCount, ItemCategory.PRODUCE));
+        items.add(new ItemTag("עגבנייה", "עגבניות", Gender.FEMALE, weightOrCount, ItemCategory.PRODUCE));
+        items.add(new ItemTag("לחם", "כיכרות לחם", Gender.MALE, countOnly, ItemCategory.BAKED_GOODS));
+        items.add(new ItemTag("קרואסון", "קרואסונים", Gender.MALE, countOnly, ItemCategory.BAKED_GOODS));
+        items.add(new ItemTag("מים", "בקבוקי מים", Gender.MALE, volumeOrCount, ItemCategory.DRINKS));
+        items.add(new ItemTag("סוכרייה", "סוכריות", Gender.FEMALE, weightOrCount, ItemCategory.SWEETS));
+        items.add(new ItemTag("פופקורן", "פופקורן", Gender.MALE, weightOrCount, ItemCategory.SWEETS));
+        items.add(new ItemTag("קמח", "שקי קמח", Gender.MALE, weightOnly, ItemCategory.GENERAL_FOOD));
 
-        // --- COLLECTIBLE (פריטי אספנות מודרניים / תחביבים) ---
-        items.add(new Item("קלף פוקימון", "קלפי פוקימון", Gender.MALE, countOnly, ItemCategory.COLLECTIBLE));
-        items.add(new Item("בול", "בולים", Gender.MALE, countOnly, ItemCategory.COLLECTIBLE));
-        items.add(new Item("חוברת קומיקס", "חוברות קומיקס", Gender.FEMALE, countOnly, ItemCategory.COLLECTIBLE));
-        items.add(new Item("בובת פופ", "בובות פופ", Gender.FEMALE, countOnly, ItemCategory.COLLECTIBLE));
-        items.add(new Item("מדליה", "מדליות", Gender.FEMALE, countOnly, ItemCategory.COLLECTIBLE));
+        // --- ART SUPPLIES (יצירה - חדש!) ---
+        items.add(new ItemTag("מכחול", "מכחולים", Gender.MALE, countOnly, ItemCategory.ART_SUPPLIES));
+        items.add(new ItemTag("קנבס", "קנבסים", Gender.MALE, countOnly, ItemCategory.ART_SUPPLIES));
+        items.add(new ItemTag("שפופרת צבע", "שפופרות צבע", Gender.FEMALE, countOnly, ItemCategory.ART_SUPPLIES));
+        items.add(new ItemTag("חימר", "גושי חימר", Gender.MALE, weightOrCount, ItemCategory.ART_SUPPLIES));
 
-        // --- ANTIQUE (עתיקות ופריטים היסטוריים - כולם גם פריטי אספנות!) ---
-        items.add(new Item("מטבע זהב", "מטבעות זהב", Gender.MALE, weightOrCount, ItemCategory.ANTIQUE, ItemCategory.COLLECTIBLE, ItemCategory.MONEY));
-        items.add(new Item("כד חרס", "כדי חרס", Gender.MALE, countOnly, ItemCategory.ANTIQUE, ItemCategory.COLLECTIBLE));
-        items.add(new Item("פסלון ברונזה", "פסלוני ברונזה", Gender.MALE, weightOrCount, ItemCategory.ANTIQUE, ItemCategory.COLLECTIBLE));
-        items.add(new Item("שעון קיר עתיק", "שעוני קיר עתיקים", Gender.MALE, countOnly, ItemCategory.ANTIQUE, ItemCategory.COLLECTIBLE));
-        items.add(new Item("תיבת עץ", "תיבות עץ", Gender.FEMALE, countOnly, ItemCategory.ANTIQUE, ItemCategory.COLLECTIBLE));
-        items.add(new Item("חרב עתיקה", "חרבות עתיקות", Gender.FEMALE, countOnly, ItemCategory.ANTIQUE, ItemCategory.COLLECTIBLE));
+        // --- STATIONERY (כלי כתיבה) ---
+        items.add(new ItemTag("עיפרון", "עפרונות", Gender.MALE, countOnly, ItemCategory.STATIONERY));
+        items.add(new ItemTag("מחברת", "מחברות", Gender.FEMALE, countOnly, ItemCategory.STATIONERY));
+        items.add(new ItemTag("מחק", "מחקים", Gender.MALE, countOnly, ItemCategory.STATIONERY));
+        items.add(new ItemTag("סרגל", "סרגלים", Gender.MALE, countOnly, ItemCategory.STATIONERY));
 
-        // --- STATIONERY (ציוד משרדי ולימודי) ---
-        items.add(new Item("עיפרון", "עפרונות", Gender.MALE, countOnly, ItemCategory.STATIONERY, ItemCategory.GENERAL));
-        items.add(new Item("מחברת", "מחברות", Gender.FEMALE, countOnly, ItemCategory.STATIONERY, ItemCategory.GENERAL));
-        items.add(new Item("מחק", "מחקים", Gender.MALE, countOnly, ItemCategory.STATIONERY));
-        items.add(new Item("סרגל", "סרגלים", Gender.MALE, countOnly, ItemCategory.STATIONERY));
-        items.add(new Item("עט", "עטים", Gender.MALE, countOnly, ItemCategory.STATIONERY));
-        items.add(new Item("תיק", "תיקים", Gender.MALE, countOnly, ItemCategory.STATIONERY, ItemCategory.GENERAL));
+        // --- ANTIQUE & COLLECTIBLE (עתיקות ואספנות) ---
+        items.add(new ItemTag("מטבע זהב", "מטבעות זהב", Gender.MALE, weightOrCount, ItemCategory.ANTIQUE, ItemCategory.COLLECTIBLE));
+        items.add(new ItemTag("כד חרס", "כדי חרס", Gender.MALE, countOnly, ItemCategory.ANTIQUE));
+        items.add(new ItemTag("קלף פוקימון", "קלפי פוקימון", Gender.MALE, countOnly, ItemCategory.COLLECTIBLE));
+        items.add(new ItemTag("בובת פופ", "בובות פופ", Gender.FEMALE, countOnly, ItemCategory.COLLECTIBLE));
+
+        // --- MEDICAL (רפואי) ---
+        items.add(new ItemTag("תרופה", "תרופות", Gender.FEMALE, countOnly, ItemCategory.MEDICAL));
+        items.add(new ItemTag("פלסטר", "פלסטרים", Gender.MALE, countOnly, ItemCategory.MEDICAL));
 
         // --- TOY (צעצועים) ---
-        items.add(new Item("בובה", "בובות", Gender.FEMALE, countOnly, ItemCategory.TOY));
-        items.add(new Item("פאזל", "פאזלים", Gender.MALE, countOnly, ItemCategory.TOY));
-        items.add(new Item("מכונית על שלט", "מכוניות על שלט", Gender.FEMALE, countOnly, ItemCategory.TOY));
-        items.add(new Item("משחק קופסה", "משחקי קופסה", Gender.MALE, countOnly, ItemCategory.TOY));
-        items.add(new Item("רובה מים", "רובי מים", Gender.MALE, countOnly, ItemCategory.TOY));
+        items.add(new ItemTag("בובה", "בובות", Gender.FEMALE, countOnly, ItemCategory.TOY));
+        items.add(new ItemTag("פאזל", "פאזלים", Gender.MALE, countOnly, ItemCategory.TOY));
 
-        // --- CLOTHING (ביגוד והנעלה - תוספת מומלצת) ---
-        items.add(new Item("חולצה", "חולצות", Gender.FEMALE, noUnit, ItemCategory.CLOTHING, ItemCategory.GENERAL));
-        items.add(new Item("מכנס", "מכנסיים", Gender.MALE, countOnly, ItemCategory.CLOTHING, ItemCategory.GENERAL)); // מכנסיים זה תמיד רבים, אבל לצורך המנוע "מכנס" כיחיד זה שימושי
-        items.add(new Item("כובע", "כובעים", Gender.MALE, noUnit, ItemCategory.CLOTHING));
-        items.add(new Item("זוג נעליים", "זוגות נעליים", Gender.MALE, noUnit, ItemCategory.CLOTHING));
-        items.add(new Item("מעיל", "מעילים", Gender.MALE, noUnit, ItemCategory.CLOTHING));
+        // --- CLOTHING (ביגוד) ---
+        items.add(new ItemTag("חולצה", "חולצות", Gender.FEMALE, noUnit, ItemCategory.CLOTHING));
+        items.add(new ItemTag("מכנס", "מכנסיים", Gender.MALE, countOnly, ItemCategory.CLOTHING));
 
-        // --- ELECTRONICS (אלקטרוניקה - תוספת מומלצת) ---
-        items.add(new Item("מחשב נייד", "מחשבים ניידים", Gender.MALE, countOnly, ItemCategory.ELECTRONICS));
-        items.add(new Item("טלפון חכם", "טלפונים חכמים", Gender.MALE, countOnly, ItemCategory.ELECTRONICS));
-        items.add(new Item("אוזנייה", "אוזניות", Gender.FEMALE, countOnly, ItemCategory.ELECTRONICS));
-        items.add(new Item("מסך", "מסכים", Gender.MALE, countOnly, ItemCategory.ELECTRONICS));
+        // --- ELECTRONICS (אלקטרוניקה) ---
+        items.add(new ItemTag("מחשב נייד", "מחשבים ניידים", Gender.MALE, countOnly, ItemCategory.ELECTRONICS));
+        items.add(new ItemTag("אוזנייה", "אוזניות", Gender.FEMALE, countOnly, ItemCategory.ELECTRONICS));
 
-        // --- GENERAL / MATERIALS (חומרים שנמדדים באורך, למשל שאלות על בנייה) ---
-        items.add(new Item("כבל חשמל", "כבלי חשמל", Gender.MALE, lengthOnly, ItemCategory.ELECTRONICS, ItemCategory.GENERAL));
-        items.add(new Item("חבל", "חבלים", Gender.MALE, lengthOnly, ItemCategory.GENERAL));
-        items.add(new Item("צינור", "צינורות", Gender.MALE, lengthOnly, ItemCategory.GENERAL));
+        // --- HARDWARE (חומרי בניין ועבודה - התאמה לאורך) ---
+        items.add(new ItemTag("כבל חשמל", "כבלי חשמל", Gender.MALE, lengthOnly, ItemCategory.HARDWARE, ItemCategory.ELECTRONICS));
+        items.add(new ItemTag("חבל", "חבלים", Gender.MALE, lengthOnly, ItemCategory.HARDWARE));
+        items.add(new ItemTag("צינור", "צינורות", Gender.MALE, lengthOnly, ItemCategory.HARDWARE));
+
+        return  items;
     }
 
 
 
-    public static void fillVerbs() {
-        // --- קנה (מתאים ל: MONEY, GENERAL) ---
-        Verb buy = new Verb("buy");
+    public static ArrayList<VerbTag> fillVerbs() {
+        ArrayList<VerbTag> verbs = new ArrayList<>();
+        // --- קנה ---
+        VerbTag buy = new VerbTag("buy");
         buy.addForm("past", "MALE", "s", "קנה");
         buy.addForm("past", "FEMALE", "s", "קנתה");
         buy.addForm("past", "MALE", "p", "קנו");
@@ -661,8 +671,8 @@ public class MathQuestionGenerator {
         buy.addForm("inf", "ANY", "ANY", "לקנות");
         verbs.add(buy);
 
-        // --- אכל (מתאים ל: FOOD) ---
-        Verb eat = new Verb("eat");
+        // --- אכל (לאוכל, מאפים וממתקים) ---
+        VerbTag eat = new VerbTag("eat");
         eat.addForm("past", "MALE", "s", "אכל");
         eat.addForm("past", "FEMALE", "s", "אכלה");
         eat.addForm("past", "MALE", "p", "אכלו");
@@ -670,8 +680,35 @@ public class MathQuestionGenerator {
         eat.addForm("inf", "ANY", "ANY", "לאכול");
         verbs.add(eat);
 
-        // --- נתן (מתאים ל: COLLECTIBLE, GENERAL) ---
-        Verb give = new Verb("give");
+        // --- שתה (חדש - למשקאות!) ---
+        VerbTag drink = new VerbTag("drink");
+        drink.addForm("past", "MALE", "s", "שתה");
+        drink.addForm("past", "FEMALE", "s", "שתתה");
+        drink.addForm("past", "MALE", "p", "שתו");
+        drink.addForm("past", "FEMALE", "p", "שתו");
+        drink.addForm("inf", "ANY", "ANY", "לשתות");
+        verbs.add(drink);
+
+        // --- לבש (חדש - לביגוד!) ---
+        VerbTag wear = new VerbTag("wear");
+        wear.addForm("past", "MALE", "s", "לבש");
+        wear.addForm("past", "FEMALE", "s", "לבשה");
+        wear.addForm("past", "MALE", "p", "לבשו");
+        wear.addForm("past", "FEMALE", "p", "לבשו");
+        wear.addForm("inf", "ANY", "ANY", "ללבוש");
+        verbs.add(wear);
+
+        // --- תיקן (חדש - לטמבורייה ואלקטרוניקה!) ---
+        VerbTag fix = new VerbTag("fix");
+        fix.addForm("past", "MALE", "s", "תיקן");
+        fix.addForm("past", "FEMALE", "s", "תיקנה");
+        fix.addForm("past", "MALE", "p", "תיקנו");
+        fix.addForm("past", "FEMALE", "p", "תיקנו");
+        fix.addForm("inf", "ANY", "ANY", "לתקן");
+        verbs.add(fix);
+
+        // --- נתן ---
+        VerbTag give = new VerbTag("give");
         give.addForm("past", "MALE", "s", "נתן");
         give.addForm("past", "FEMALE", "s", "נתנה");
         give.addForm("past", "MALE", "p", "נתנו");
@@ -679,8 +716,8 @@ public class MathQuestionGenerator {
         give.addForm("inf", "ANY", "ANY", "לתת");
         verbs.add(give);
 
-        // --- קיבל (מתאים ל: COLLECTIBLE, GENERAL, MONEY) ---
-        Verb receive = new Verb("receive");
+        // --- קיבל ---
+        VerbTag receive = new VerbTag("receive");
         receive.addForm("past", "MALE", "s", "קיבל");
         receive.addForm("past", "FEMALE", "s", "קיבלה");
         receive.addForm("past", "MALE", "p", "קיבלו");
@@ -688,8 +725,8 @@ public class MathQuestionGenerator {
         receive.addForm("inf", "ANY", "ANY", "לקבל");
         verbs.add(receive);
 
-        // --- מצא (מתאים ל: COLLECTIBLE, GENERAL) ---
-        Verb find = new Verb("find");
+        // --- מצא ---
+        VerbTag find = new VerbTag("find");
         find.addForm("past", "MALE", "s", "מצא");
         find.addForm("past", "FEMALE", "s", "מצאה");
         find.addForm("past", "MALE", "p", "מצאו");
@@ -697,8 +734,8 @@ public class MathQuestionGenerator {
         find.addForm("inf", "ANY", "ANY", "למצוא");
         verbs.add(find);
 
-        // --- איבד (מתאים ל: COLLECTIBLE, GENERAL) ---
-        Verb lose = new Verb("lose");
+        // --- איבד ---
+        VerbTag lose = new VerbTag("lose");
         lose.addForm("past", "MALE", "s", "איבד");
         lose.addForm("past", "FEMALE", "s", "איבדה");
         lose.addForm("past", "MALE", "p", "איבדו");
@@ -706,8 +743,8 @@ public class MathQuestionGenerator {
         lose.addForm("inf", "ANY", "ANY", "לאבד");
         verbs.add(lose);
 
-        // --- אסף (מתאים ל: COLLECTIBLE) ---
-        Verb collect = new Verb("collect");
+        // --- אסף ---
+        VerbTag collect = new VerbTag("collect");
         collect.addForm("past", "MALE", "s", "אסף");
         collect.addForm("past", "FEMALE", "s", "אספה");
         collect.addForm("past", "MALE", "p", "אספו");
@@ -715,8 +752,8 @@ public class MathQuestionGenerator {
         collect.addForm("inf", "ANY", "ANY", "לאסוף");
         verbs.add(collect);
 
-        // --- חילק (מתאים ל: שאלות חילוק - FOOD, COLLECTIBLE) ---
-        Verb divide = new Verb("divide");
+        // --- חילק ---
+        VerbTag divide = new VerbTag("divide");
         divide.addForm("past", "MALE", "s", "חילק");
         divide.addForm("past", "FEMALE", "s", "חילקה");
         divide.addForm("past", "MALE", "p", "חילקו");
@@ -724,8 +761,8 @@ public class MathQuestionGenerator {
         divide.addForm("inf", "ANY", "ANY", "לחלק");
         verbs.add(divide);
 
-        // --- נכנס (מתאים ל: PLACE) ---
-        Verb enter = new Verb("enter");
+        // --- נכנס ---
+        VerbTag enter = new VerbTag("enter");
         enter.addForm("past", "MALE", "s", "נכנס");
         enter.addForm("past", "FEMALE", "s", "נכנסה");
         enter.addForm("past", "MALE", "p", "נכנסו");
@@ -733,21 +770,8 @@ public class MathQuestionGenerator {
         enter.addForm("inf", "ANY", "ANY", "להיכנס");
         verbs.add(enter);
 
-        // --- היה (פועל עזר) ---
-        Verb be = new Verb("be");
-        be.addForm("past", "MALE", "s", "היה");
-        be.addForm("past", "FEMALE", "s", "הייתה");
-        be.addForm("past", "MALE", "p", "היו");
-        be.addForm("past", "FEMALE", "p", "היו");
-        be.addForm("inf", "ANY", "ANY", "להיות");
-        verbs.add(be);
-
-        // ==========================================
-        //            פעלים חדשים שנוספו
-        // ==========================================
-
-        // --- מכר (מתאים ל: חנויות, כסף - שאלות של חיסור מהמלאי או הוספת כסף) ---
-        Verb sell = new Verb("sell");
+        // --- מכר ---
+        VerbTag sell = new VerbTag("sell");
         sell.addForm("past", "MALE", "s", "מכר");
         sell.addForm("past", "FEMALE", "s", "מכרה");
         sell.addForm("past", "MALE", "p", "מכרו");
@@ -755,8 +779,8 @@ public class MathQuestionGenerator {
         sell.addForm("inf", "ANY", "ANY", "למכור");
         verbs.add(sell);
 
-        // --- לקח (מתאים לחיסור: מישהו לקח משהו) ---
-        Verb take = new Verb("take");
+        // --- לקח ---
+        VerbTag take = new VerbTag("take");
         take.addForm("past", "MALE", "s", "לקח");
         take.addForm("past", "FEMALE", "s", "לקחה");
         take.addForm("past", "MALE", "p", "לקחו");
@@ -764,8 +788,8 @@ public class MathQuestionGenerator {
         take.addForm("inf", "ANY", "ANY", "לקחת");
         verbs.add(take);
 
-        // --- שם / הניח (מתאים לחיבור: לשים דברים בקופסה, על מדף) ---
-        Verb put = new Verb("put");
+        // --- שם / הניח ---
+        VerbTag put = new VerbTag("put");
         put.addForm("past", "MALE", "s", "שם");
         put.addForm("past", "FEMALE", "s", "שמה");
         put.addForm("past", "MALE", "p", "שמו");
@@ -773,8 +797,8 @@ public class MathQuestionGenerator {
         put.addForm("inf", "ANY", "ANY", "לשים");
         verbs.add(put);
 
-        // --- סידר (מתאים לכפל: סידר דברים בשורות או במדפים) ---
-        Verb arrange = new Verb("arrange");
+        // --- סידר ---
+        VerbTag arrange = new VerbTag("arrange");
         arrange.addForm("past", "MALE", "s", "סידר");
         arrange.addForm("past", "FEMALE", "s", "סידרה");
         arrange.addForm("past", "MALE", "p", "סידרו");
@@ -782,17 +806,23 @@ public class MathQuestionGenerator {
         arrange.addForm("inf", "ANY", "ANY", "לסדר");
         verbs.add(arrange);
 
-        // --- שילם (מתאים לשאלות של קניות ועודף) ---
-        Verb pay = new Verb("pay");
+        // --- שילם ---
+        VerbTag pay = new VerbTag("pay");
         pay.addForm("past", "MALE", "s", "שילם");
         pay.addForm("past", "FEMALE", "s", "שילמה");
         pay.addForm("past", "MALE", "p", "שילמו");
         pay.addForm("past", "FEMALE", "p", "שילמו");
         pay.addForm("inf", "ANY", "ANY", "לשלם");
+
+        pay.addForm("future", "MALE", "s", "ישלם");
+        pay.addForm("future", "FEMALE", "s", "תשלם");
+        pay.addForm("future", "MALE", "p", "ישלמו");
+        pay.addForm("future", "FEMALE", "p", "ישלמו");
+
         verbs.add(pay);
 
-        // --- חסך (מתאים לשאלות של איסוף כסף לאורך זמן) ---
-        Verb save = new Verb("save");
+        // --- חסך ---
+        VerbTag save = new VerbTag("save");
         save.addForm("past", "MALE", "s", "חסך");
         save.addForm("past", "FEMALE", "s", "חסכה");
         save.addForm("past", "MALE", "p", "חסכו");
@@ -801,7 +831,7 @@ public class MathQuestionGenerator {
         verbs.add(save);
 
         // --- סיים ---
-        Verb finish = new Verb("finish");
+        VerbTag finish = new VerbTag("finish");
         finish.addForm("past", "MALE", "s", "סיים");
         finish.addForm("past", "FEMALE", "s", "סיימה");
         finish.addForm("past", "MALE", "p", "סיימו");
@@ -809,109 +839,197 @@ public class MathQuestionGenerator {
         finish.addForm("inf", "ANY", "ANY", "לסיים");
         verbs.add(finish);
 
-        Verb offer = new Verb("offer");
+        // --- פעלים מיוחדים לתבניות (רצה, צריך, הציע) ---
+        VerbTag offer = new VerbTag("offer");
         offer.addForm("past", "MALE", "s", "הציע");
         offer.addForm("past", "FEMALE", "s", "הציעה");
         offer.addForm("inf", "ANY", "ANY", "להציע");
         verbs.add(offer);
 
-        Verb want = new Verb("want");
+        VerbTag want = new VerbTag("want");
         want.addForm("past", "MALE", "s", "רצה");
         want.addForm("past", "FEMALE", "s", "רצתה");
         verbs.add(want);
 
-        Verb need = new Verb("need");
+        VerbTag need = new VerbTag("need");
         need.addForm("past", "MALE", "s", "היה צריך");
         need.addForm("past", "FEMALE", "s", "הייתה צריכה");
         verbs.add(need);
+
+        VerbTag be = new VerbTag("be");
+        be.addForm("past", "MALE", "s", "היה");
+        be.addForm("past", "FEMALE", "s", "הייתה");
+        be.addForm("past", "MALE", "p", "היו");
+        be.addForm("past", "FEMALE", "p", "היו");
+        be.addForm("inf", "ANY", "ANY", "להיות");
+        verbs.add(be);
+
+        VerbTag can = new VerbTag("can");
+        can.addForm("past", "MALE", "s", "יכל");
+        can.addForm("past", "FEMALE", "s", "יכלה");
+        can.addForm("past", "MALE", "p", "יכלו");
+        can.addForm("past", "FEMALE", "p", "יכלו");
+
+        can.addForm("present", "MALE", "s", "יכול");
+        can.addForm("present", "FEMALE", "s", "יכולה");
+        can.addForm("present", "MALE", "p", "יכולים");
+        can.addForm("present", "FEMALE", "p", "יכולות");
+
+        can.addForm("inf", "ANY", "ANY", "להצליח");
+        verbs.add(can);
+
+        VerbTag sit = new VerbTag("sit");
+        sit.addForm("past", "MALE", "s", "ישב");
+        sit.addForm("past", "FEMALE", "s", "ישבה");
+        sit.addForm("past", "MALE", "p", "ישבו");
+        sit.addForm("past", "FEMALE", "p", "ישבו");
+
+        sit.addForm("inf", "ANY", "ANY", "לשבת");
+        verbs.add(sit);
+
+        // --- הוסיף ---
+        VerbTag add = new VerbTag("add");
+
+        add.addForm("past", "MALE", "s", "הוסיף");
+        add.addForm("past", "FEMALE", "s", "הוסיפה");
+        add.addForm("past", "MALE", "p", "הוסיפו");
+        add.addForm("past", "FEMALE", "p", "הוסיפו");
+
+        add.addForm("future", "MALE", "s", "יוסיף");
+        add.addForm("future", "FEMALE", "s", "תוסיף");
+        add.addForm("future", "MALE", "p", "יוסיפו");
+        add.addForm("future", "FEMALE", "p", "יוסיפו");
+
+        add.addForm("inf", "ANY", "ANY", "להוסיף");
+
+        verbs.add(add);
+
+        VerbTag read = new VerbTag("read");
+        read.addForm("past", "MALE", "s", "קרא");
+        read.addForm("past", "FEMALE", "s", "קראה");
+        read.addForm("present", "MALE", "s", "קורא");
+        read.addForm("present", "FEMALE", "s", "קוראת");
+
+        read.addForm("inf", "ANY", "ANY", "לקרוא");
+        verbs.add(read);
+
+        verbs.add(add);
+
+        VerbTag cut = new VerbTag("cut");
+        cut.addForm("past", "MALE", "s", "חתך");
+        cut.addForm("past", "FEMALE", "s", "חתכה");
+        add.addForm("past", "MALE", "p", "חתכו");
+        add.addForm("past", "FEMALE", "p", "חתכו");
+
+        cut.addForm("inf", "ANY", "ANY", "לחתוך");
+        verbs.add(cut);
+
+        return verbs;
     }
 
-    public static void fillPlaces() {
-        // ==========================================
-        // חנויות ועסקים (STORE)
-        // ==========================================
-        places.add(new Place("grocery", "מכולת", "מכולות", Gender.FEMALE, PlaceType.STORE, FOOD, GENERAL));
-        places.add(new Place("supermarket", "סופרמרקט", "סופרמרקטים", Gender.MALE, PlaceType.STORE, FOOD, GENERAL));
-        places.add(new Place("bakery", "מאפייה", "מאפיות", Gender.FEMALE, PlaceType.STORE, FOOD));
-        places.add(new Place("kiosk", "קיוסק", "קיוסקים", Gender.MALE, PlaceType.STORE, FOOD));
-        places.add(new Place("market", "שוק", "שווקים", Gender.MALE, PlaceType.STORE, FOOD, COLLECTIBLE, GENERAL, CLOTHING));
-        places.add(new Place("toy_store", "חנות צעצועים", "חנויות צעצועים", Gender.FEMALE, PlaceType.STORE, TOY));
-        places.add(new Place("antique_store", "חנות עתיקות", "חנויות עתיקות", Gender.FEMALE, PlaceType.STORE, ANTIQUE));
-        places.add(new Place("craft_store", "חנות יצירה", "חנויות יצירה", Gender.FEMALE, PlaceType.STORE, STATIONERY, TOY));
-        places.add(new Place("stationery_store", "חנות כלי כתיבה", "חנויות כלי כתיבה", Gender.FEMALE, PlaceType.STORE, STATIONERY, GENERAL));
-        places.add(new Place("mall", "קניון", "קניונים", Gender.MALE, PlaceType.STORE, GENERAL, FOOD, TOY, STATIONERY, MONEY, CLOTHING, ELECTRONICS));
-        places.add(new Place("clothing_store", "חנות בגדים", "חנויות בגדים", Gender.FEMALE, PlaceType.STORE, CLOTHING));
-        places.add(new Place("electronics_store", "חנות אלקטרוניקה", "חנויות אלקטרוניקה", Gender.FEMALE, PlaceType.STORE, ELECTRONICS));
+    public static ArrayList<PlaceTag> fillPlaces() {
+        ArrayList<PlaceTag> places = new ArrayList<>();
+        // --- חנויות מזון ---
+        places.add(new PlaceTag("supermarket", "סופרמרקט", "סופרמרקטים", Gender.MALE, PlaceType.STORE,
+                ItemCategory.PRODUCE, ItemCategory.BAKED_GOODS, ItemCategory.DRINKS, ItemCategory.SWEETS, ItemCategory.GENERAL_FOOD, ItemCategory.HARDWARE));
+        places.add(new PlaceTag("grocery", "מכולת", "מכולות", Gender.FEMALE, PlaceType.STORE,
+                ItemCategory.PRODUCE, ItemCategory.BAKED_GOODS, ItemCategory.DRINKS, ItemCategory.SWEETS, ItemCategory.GENERAL_FOOD));
+        places.add(new PlaceTag("bakery", "מאפייה", "מאפיות", Gender.FEMALE, PlaceType.STORE,
+                ItemCategory.BAKED_GOODS, ItemCategory.DRINKS));
+        places.add(new PlaceTag("kiosk", "קיוסק", "קיוסקים", Gender.MALE, PlaceType.STORE,
+                ItemCategory.SWEETS, ItemCategory.DRINKS));
+        places.add(new PlaceTag("market", "שוק", "שווקים", Gender.MALE, PlaceType.STORE,
+                ItemCategory.PRODUCE, ItemCategory.BAKED_GOODS, ItemCategory.SWEETS, ItemCategory.COLLECTIBLE, ItemCategory.CLOTHING, ItemCategory.HARDWARE));
+
+        // --- חנויות מתמחות ---
+        places.add(new PlaceTag("craft_store", "חנות יצירה", "חנויות יצירה", Gender.FEMALE, PlaceType.STORE,
+                ItemCategory.ART_SUPPLIES)); // מוכרת רק יצירה!
+        places.add(new PlaceTag("stationery_store", "חנות כלי כתיבה", "חנויות כלי כתיבה", Gender.FEMALE, PlaceType.STORE,
+                ItemCategory.STATIONERY, ItemCategory.ART_SUPPLIES)); // מוכרת כלי כתיבה וקצת יצירה
+        places.add(new PlaceTag("toy_store", "חנות צעצועים", "חנויות צעצועים", Gender.FEMALE, PlaceType.STORE,
+                ItemCategory.TOY));
+        places.add(new PlaceTag("antique_store", "חנות עתיקות", "חנויות עתיקות", Gender.FEMALE, PlaceType.STORE,
+                ItemCategory.ANTIQUE));
+        places.add(new PlaceTag("clothing_store", "חנות בגדים", "חנויות בגדים", Gender.FEMALE, PlaceType.STORE,
+                ItemCategory.CLOTHING));
+        places.add(new PlaceTag("electronics_store", "חנות אלקטרוניקה", "חנויות אלקטרוניקה", Gender.FEMALE, PlaceType.STORE,
+                ItemCategory.ELECTRONICS));
+        places.add(new PlaceTag("hardware_store", "טמבורייה", "טמבוריות", Gender.FEMALE, PlaceType.STORE,
+                ItemCategory.HARDWARE)); // הבית החדש של החבלים והצינורות!
+
+        // --- בריאות ---
+        places.add(new PlaceTag("pharmacy", "בית מרקחת", "בתי מרקחת", Gender.MALE, PlaceType.HEALTH,
+                ItemCategory.MEDICAL));
+        places.add(new PlaceTag("hospital", "בית חולים", "בתי חולים", Gender.MALE, PlaceType.HEALTH,
+                ItemCategory.MEDICAL, ItemCategory.DRINKS, ItemCategory.BAKED_GOODS)); // קפיטריה בבית חולים
+
+        // --- חינוך (מקומות שבהם משתמשים בציוד, לא קונים אותו) ---
+        places.add(new PlaceTag("school", "בית ספר", "בתי ספר", Gender.MALE, PlaceType.EDUCATION,
+                ItemCategory.STATIONERY, ItemCategory.ART_SUPPLIES));
+        places.add(new PlaceTag("library", "ספרייה", "ספריות", Gender.FEMALE, PlaceType.EDUCATION,
+                ItemCategory.STATIONERY));
+
+        // --- פנאי ותחבורה (מקומות שבהם קונים חטיפים) ---
+        places.add(new PlaceTag("cinema", "קולנוע", "בתי קולנוע", Gender.MALE, PlaceType.ENTERTAINMENT,
+                ItemCategory.SWEETS, ItemCategory.DRINKS));
+        places.add(new PlaceTag("airport", "שדה תעופה", "שדות תעופה", Gender.MALE, PlaceType.TRANSPORTATION,
+                ItemCategory.SWEETS, ItemCategory.DRINKS, ItemCategory.ELECTRONICS, ItemCategory.CLOTHING)); // בדיוטי פרי
 
         // ==========================================
         // מגורים (HOME)
         // ==========================================
-        places.add(new Place("house", "בית", "בתים", Gender.MALE, PlaceType.HOME, GENERAL, FOOD, CLOTHING, ELECTRONICS, TOY));
-        places.add(new Place("apartment", "דירה", "דירות", Gender.FEMALE, PlaceType.HOME, GENERAL, FOOD, CLOTHING, ELECTRONICS, TOY));
+        places.add(new PlaceTag("house", "בית", "בתים", Gender.MALE, PlaceType.HOME, ItemCategory.GENERAL_FOOD, ItemCategory.CLOTHING, ItemCategory.ELECTRONICS, ItemCategory.TOY));
+        places.add(new PlaceTag("apartment", "דירה", "דירות", Gender.FEMALE, PlaceType.HOME, ItemCategory.GENERAL_FOOD, ItemCategory.CLOTHING, ItemCategory.ELECTRONICS, ItemCategory.TOY));
 
         // ==========================================
-        // מרחב ציבורי (PUBLIC)
+        // מרחב ציבורי וטבע (PUBLIC & OUTDOORS)
         // ==========================================
-        places.add(new Place("street", "רחוב", "רחובות", Gender.MALE, PlaceType.PUBLIC, GENERAL));
-        places.add(new Place("square", "כיכר", "כיכרות", Gender.FEMALE, PlaceType.PUBLIC, GENERAL));
-        places.add(new Place("city_hall", "בניין עירייה", "בנייני עירייה", Gender.MALE, PlaceType.PUBLIC, STATIONERY, GENERAL));
+        // ברחוב ובכיכר הגיוני למצוא דברים שנפלו לאנשים: כלי כתיבה, או פריטי לבוש (כמו כובע)
+        places.add(new PlaceTag("street", "רחוב", "רחובות", Gender.MALE, PlaceType.PUBLIC, ItemCategory.CLOTHING, ItemCategory.STATIONERY));
+        places.add(new PlaceTag("square", "כיכר", "כיכרות", Gender.FEMALE, PlaceType.PUBLIC, ItemCategory.CLOTHING, ItemCategory.STATIONERY));
+        places.add(new PlaceTag("park", "פארק", "פארקים", Gender.MALE, PlaceType.OUTDOORS, ItemCategory.TOY, ItemCategory.SWEETS, ItemCategory.CLOTHING));
+        places.add(new PlaceTag("forest", "יער", "יערות", Gender.MALE, PlaceType.OUTDOORS, ItemCategory.HARDWARE, ItemCategory.CLOTHING));
+        places.add(new PlaceTag("beach", "חוף ים", "חופי ים", Gender.MALE, PlaceType.OUTDOORS, ItemCategory.TOY, ItemCategory.CLOTHING, ItemCategory.DRINKS));
 
-        // ==========================================
-        // חיק הטבע (OUTDOORS)
-        // ==========================================
-        places.add(new Place("park", "פארק", "פארקים", Gender.MALE, PlaceType.OUTDOORS, GENERAL, FOOD));
-        places.add(new Place("forest", "יער", "יערות", Gender.MALE, PlaceType.OUTDOORS, GENERAL));
-        places.add(new Place("beach", "חוף ים", "חופי ים", Gender.MALE, PlaceType.OUTDOORS, GENERAL, FOOD));
+        // --- מסעדות ומזון (FOOD_SERVICE) ---
+        places.add(new PlaceTag("restaurant", "מסעדה", "מסעדות", Gender.FEMALE, PlaceType.FOOD_SERVICE, ItemCategory.PRODUCE, ItemCategory.DRINKS, ItemCategory.SWEETS, ItemCategory.BAKED_GOODS));
+        places.add(new PlaceTag("cafe", "בית קפה", "בתי קפה", Gender.MALE, PlaceType.FOOD_SERVICE, ItemCategory.BAKED_GOODS, ItemCategory.DRINKS, ItemCategory.SWEETS));
+        places.add(new PlaceTag("pizzeria", "פיצרייה", "פיצריות", Gender.FEMALE, PlaceType.FOOD_SERVICE, ItemCategory.BAKED_GOODS, ItemCategory.DRINKS));
 
-        // ==========================================
-        // חינוך ולימודים (EDUCATION)
-        // ==========================================
-        places.add(new Place("school", "בית ספר", "בתי ספר", Gender.MALE, PlaceType.EDUCATION, STATIONERY, GENERAL));
-        places.add(new Place("library", "ספרייה", "ספריות", Gender.FEMALE, PlaceType.EDUCATION, STATIONERY, GENERAL));
-        places.add(new Place("university", "אוניברסיטה", "אוניברסיטאות", Gender.FEMALE, PlaceType.EDUCATION, STATIONERY, ELECTRONICS, GENERAL));
-        places.add(new Place("classroom", "כיתה", "כיתות", Gender.FEMALE, PlaceType.EDUCATION, STATIONERY));
+// --- מרכזי קניות ---
+        places.add(new PlaceTag("mall", "קניון", "קניונים", Gender.MALE, PlaceType.STORE, ItemCategory.CLOTHING, ItemCategory.ELECTRONICS, ItemCategory.TOY, ItemCategory.SWEETS, ItemCategory.DRINKS));
 
-        // ==========================================
-        // פנאי ובידור (ENTERTAINMENT)
-        // ==========================================
-        places.add(new Place("cinema", "קולנוע", "בתי קולנוע", Gender.MALE, PlaceType.ENTERTAINMENT, FOOD, GENERAL));
-        places.add(new Place("museum", "מוזיאון", "מוזיאונים", Gender.MALE, PlaceType.ENTERTAINMENT, ANTIQUE, COLLECTIBLE)); // מוזיאון מושלם לעתיקות
-        places.add(new Place("amusement_park", "לונה פארק", "פארקי שעשועים", Gender.MALE, PlaceType.ENTERTAINMENT, FOOD, TOY));
-        places.add(new Place("zoo", "גן חיות", "גני חיות", Gender.MALE, PlaceType.ENTERTAINMENT, FOOD, TOY));
-        places.add(new Place("pool", "בריכה", "בריכות", Gender.FEMALE, PlaceType.ENTERTAINMENT, FOOD, GENERAL));
+// --- חינוך ואקדמיה ---
+        places.add(new PlaceTag("university", "אוניברסיטה", "אוניברסיטאות", Gender.FEMALE, PlaceType.EDUCATION, ItemCategory.STATIONERY, ItemCategory.ELECTRONICS));
+        places.add(new PlaceTag("classroom", "כיתה", "כיתות", Gender.FEMALE, PlaceType.EDUCATION, ItemCategory.STATIONERY, ItemCategory.ART_SUPPLIES));
 
-        // ==========================================
-        // מסעדות ומזון (FOOD_SERVICE)
-        // ==========================================
-        places.add(new Place("restaurant", "מסעדה", "מסעדות", Gender.FEMALE, PlaceType.FOOD_SERVICE, FOOD));
-        places.add(new Place("cafe", "בית קפה", "בתי קפה", Gender.MALE, PlaceType.FOOD_SERVICE, FOOD));
-        places.add(new Place("pizzeria", "פיצרייה", "פיצריות", Gender.FEMALE, PlaceType.FOOD_SERVICE, FOOD));
+// --- בידור, פנאי וספורט ---
+        places.add(new PlaceTag("museum", "מוזיאון", "מוזיאונים", Gender.MALE, PlaceType.ENTERTAINMENT, ItemCategory.ANTIQUE, ItemCategory.STATIONERY));
+        places.add(new PlaceTag("zoo", "גן חיות", "גני חיות", Gender.MALE, PlaceType.ENTERTAINMENT, ItemCategory.SWEETS, ItemCategory.DRINKS));
+        places.add(new PlaceTag("amusement_park", "פארק שעשועים", "פארקי שעשועים", Gender.MALE, PlaceType.ENTERTAINMENT, ItemCategory.SWEETS, ItemCategory.DRINKS, ItemCategory.TOY));
+        places.add(new PlaceTag("pool", "בריכה", "בריכות", Gender.FEMALE, PlaceType.ENTERTAINMENT, ItemCategory.SWEETS, ItemCategory.DRINKS, ItemCategory.CLOTHING));
 
-        // ==========================================
-        // תחבורה ונסיעות (TRANSPORTATION)
-        // ==========================================
-        places.add(new Place("train_station", "תחנת רכבת", "תחנות רכבת", Gender.FEMALE, PlaceType.TRANSPORTATION, GENERAL, FOOD));
-        places.add(new Place("bus_station", "תחנת אוטובוס", "תחנות אוטובוס", Gender.FEMALE, PlaceType.TRANSPORTATION, GENERAL, FOOD));
-        places.add(new Place("airport", "שדה תעופה", "שדות תעופה", Gender.MALE, PlaceType.TRANSPORTATION, GENERAL, FOOD, CLOTHING, ELECTRONICS));
+// --- תחבורה ---
+        places.add(new PlaceTag("bus_station", "תחנת אוטובוס", "תחנות אוטובוס", Gender.FEMALE, PlaceType.TRANSPORTATION, ItemCategory.DRINKS, ItemCategory.SWEETS));
+        places.add(new PlaceTag("train_station", "תחנת רכבת", "תחנות רכבת", Gender.FEMALE, PlaceType.TRANSPORTATION, ItemCategory.DRINKS, ItemCategory.SWEETS, ItemCategory.BAKED_GOODS));
 
-        // ==========================================
-        // ספורט ובריאות (HEALTH)
-        // ==========================================
-        places.add(new Place("hospital", "בית חולים", "בתי חולים", Gender.MALE, PlaceType.HEALTH, GENERAL, FOOD));
-        places.add(new Place("clinic", "מרפאה", "מרפאות", Gender.FEMALE, PlaceType.HEALTH, GENERAL));
-        places.add(new Place("pharmacy", "בית מרקחת", "בתי מרקחת", Gender.MALE, PlaceType.HEALTH, GENERAL)); // בהמשך נוסיף להם MEDICAL
+// --- בריאות ---
+        places.add(new PlaceTag("clinic", "מרפאה", "מרפאות", Gender.FEMALE, PlaceType.HEALTH, ItemCategory.MEDICAL));
+
+        return places;
     }
 
-    public static void fillAdjectives() {
+    public static List<AdjectiveTag> fillAdjectives() {
+        List<AdjectiveTag>  adjectives = new ArrayList<>();
         // --- צבעים ---
-        Adjective red = new Adjective("red", COLOR);
+        AdjectiveTag red = new AdjectiveTag("red", AdjectiveType.COLOR);
         red.addForm("MALE", "s", "אדום");
         red.addForm("FEMALE", "s", "אדומה");
         red.addForm("MALE", "p", "אדומים");
         red.addForm("FEMALE", "p", "אדומות");
         adjectives.add(red);
 
-        Adjective blue = new Adjective("blue", COLOR);
+        AdjectiveTag blue = new AdjectiveTag("blue", AdjectiveType.COLOR);
         blue.addForm("MALE", "s", "כחול");
         blue.addForm("FEMALE", "s", "כחולה");
         blue.addForm("MALE", "p", "כחולים");
@@ -919,138 +1037,160 @@ public class MathQuestionGenerator {
         adjectives.add(blue);
 
         // --- גדלים ---
-        Adjective big = new Adjective("big", SIZE);
+        AdjectiveTag big = new AdjectiveTag("big", AdjectiveType.SIZE);
         big.addForm("MALE", "s", "גדול");
         big.addForm("FEMALE", "s", "גדולה");
         big.addForm("MALE", "p", "גדולים");
         big.addForm("FEMALE", "p", "גדולות");
         adjectives.add(big);
 
-        Adjective small = new Adjective("small", SIZE);
+        AdjectiveTag small = new AdjectiveTag("small", AdjectiveType.SIZE);
         small.addForm("MALE", "s", "קטן");
         small.addForm("FEMALE", "s", "קטנה");
         small.addForm("MALE", "p", "קטנים");
         small.addForm("FEMALE", "p", "קטנות");
         adjectives.add(small);
 
-        // --- תכונות שונות ---
-        Adjective newAdj = new Adjective("new", CONDITION);
+        // --- מצבים (CONDITION) ---
+        AdjectiveTag newAdj = new AdjectiveTag("new", AdjectiveType.CONDITION);
         newAdj.addForm("MALE", "s", "חדש");
         newAdj.addForm("FEMALE", "s", "חדשה");
         newAdj.addForm("MALE", "p", "חדשים");
         newAdj.addForm("FEMALE", "p", "חדשות");
         adjectives.add(newAdj);
 
-        Adjective oldAdj = new Adjective("old", CONDITION);
+        AdjectiveTag oldAdj = new AdjectiveTag("old", AdjectiveType.CONDITION);
         oldAdj.addForm("MALE", "s", "ישן");
         oldAdj.addForm("FEMALE", "s", "ישנה");
         oldAdj.addForm("MALE", "p", "ישנים");
         oldAdj.addForm("FEMALE", "p", "ישנות");
         adjectives.add(oldAdj);
+
+        // הוספה: שבור (מתאים לחומרי בניין, צעצועים, אלקטרוניקה)
+        AdjectiveTag broken = new AdjectiveTag("broken", AdjectiveType.CONDITION);
+        broken.addForm("MALE", "s", "שבור");
+        broken.addForm("FEMALE", "s", "שבורה");
+        broken.addForm("MALE", "p", "שבורים");
+        broken.addForm("FEMALE", "p", "שבורות");
+        adjectives.add(broken);
+
+        // הוספה: טרי (מתאים לפירות, ירקות ומאפים)
+        AdjectiveTag fresh = new AdjectiveTag("fresh", AdjectiveType.CONDITION);
+        fresh.addForm("MALE", "s", "טרי");
+        fresh.addForm("FEMALE", "s", "טרייה");
+        fresh.addForm("MALE", "p", "טריים");
+        fresh.addForm("FEMALE", "p", "טריות");
+        adjectives.add(fresh);
+
+        // --- תחושות/טעם (FEELING) ---
+        AdjectiveTag tasty = new AdjectiveTag("tasty", AdjectiveType.FEELING);
+        tasty.addForm("MALE", "s", "טעים");
+        tasty.addForm("FEMALE", "s", "טעימה");
+        tasty.addForm("MALE", "p", "טעימים");
+        tasty.addForm("FEMALE", "p", "טעימות");
+        adjectives.add(tasty);
+
+        return  adjectives;
     }
 
-    public static void fillUnits() {
-        // ==========================================
-        // 1. משקל (WEIGHT) - בעיקר לאוכל, ולפעמים לעתיקות (זהב)
-        // ==========================================
-        units.add(new Unit("kg", "קילוגרם", "קילוגרמים", Gender.MALE, UnitType.WEIGHT, ItemCategory.FOOD, ItemCategory.ANTIQUE));
-        units.add(new Unit("gram", "גרם", "גרמים", Gender.MALE, UnitType.WEIGHT, ItemCategory.FOOD, ItemCategory.ANTIQUE));
-        units.add(new Unit("ton", "טון", "טונות", Gender.MALE, UnitType.WEIGHT, ItemCategory.FOOD, ItemCategory.ANTIQUE)); // כמו מטבעות זהב
-        units.add(new Unit("sack", "שק", "שקים", Gender.MALE, UnitType.WEIGHT, ItemCategory.FOOD)); // שק קמח, שק תפוחי אדמה
+    public static List<UnitTag> fillUnits() {
+        List<UnitTag> units = new ArrayList<>();
+        // משקל ואורך
+        units.add(new UnitTag("kg", "קילוגרם", "קילוגרמים", Gender.MALE, UnitType.WEIGHT, ItemCategory.PRODUCE, ItemCategory.GENERAL_FOOD, ItemCategory.ART_SUPPLIES));
+        units.add(new UnitTag("meter", "מטר", "מטרים", Gender.MALE, UnitType.LENGTH, ItemCategory.HARDWARE));
+        units.add(new UnitTag("roll", "גליל", "גלילים", Gender.MALE, UnitType.LENGTH, ItemCategory.HARDWARE));
 
-        // ==========================================
-        // 2. אורך (LENGTH) - לחומרים ציוד כללי
-        // ==========================================
-        units.add(new Unit("meter", "מטר", "מטרים", Gender.MALE, UnitType.LENGTH, ItemCategory.GENERAL, ItemCategory.ELECTRONICS));
-        units.add(new Unit("cm", "סנטימטר", "סנטימטרים", Gender.MALE, UnitType.LENGTH, ItemCategory.GENERAL));
-        units.add(new Unit("km", "קילומטר", "קילומטרים", Gender.MALE, UnitType.LENGTH, ItemCategory.GENERAL)); // אולי פחות רלוונטי לחנות, אבל טוב לבעיות תנועה
-        units.add(new Unit("roll", "גליל", "גלילים", Gender.MALE, UnitType.LENGTH, ItemCategory.GENERAL)); // גליל של כבל חשמל או חבל
+        // נפח
+        units.add(new UnitTag("liter", "ליטר", "ליטרים", Gender.MALE, UnitType.VOLUME, ItemCategory.DRINKS));
+        units.add(new UnitTag("bottle", "בקבוק", "בקבוקים", Gender.MALE, UnitType.VOLUME, ItemCategory.DRINKS));
 
-        // ==========================================
-        // 3. נפח (VOLUME) - לפריטי שתייה ונוזלים
-        // ==========================================
-        units.add(new Unit("liter", "ליטר", "ליטרים", Gender.MALE, UnitType.VOLUME, ItemCategory.FOOD));
-        units.add(new Unit("ml", "מיליליטר", "מיליליטרים", Gender.MALE, UnitType.VOLUME, ItemCategory.FOOD));
-        units.add(new Unit("cup", "כוס", "כוסות", Gender.FEMALE, UnitType.VOLUME, ItemCategory.FOOD));
-        units.add(new Unit("bottle", "בקבוק", "בקבוקים", Gender.MALE, UnitType.VOLUME, ItemCategory.FOOD)); // בקבוק מים/חלב
+        // ספירה מיוחדת
+        units.add(new UnitTag("box", "מארז", "מארזים", Gender.MALE, UnitType.COUNT, ItemCategory.SWEETS, ItemCategory.TOY, ItemCategory.STATIONERY, ItemCategory.ELECTRONICS, ItemCategory.MEDICAL, ItemCategory.ART_SUPPLIES));
+        units.add(new UnitTag("pack", "חבילה", "חבילות", Gender.FEMALE, UnitType.COUNT, ItemCategory.SWEETS, ItemCategory.STATIONERY, ItemCategory.COLLECTIBLE, ItemCategory.MEDICAL, ItemCategory.ART_SUPPLIES));
+        units.add(new UnitTag("tray", "מגש", "מגשים", Gender.MALE, UnitType.COUNT, ItemCategory.BAKED_GOODS)); // רק מאפים!
 
-        // ==========================================
-        // 4. ספירה (COUNT) - לארוז חפצים
-        // ==========================================
-        // יחידה - מילה כללית שלפעמים מתאימה לציוד ואלקטרוניקה
-        units.add(new Unit("piece", "יחידה", "יחידות", Gender.FEMALE, UnitType.COUNT, ItemCategory.GENERAL, ItemCategory.ELECTRONICS, ItemCategory.STATIONERY));
+        // כלים לסחורה כבדה, חקלאות ועתיקות
+        units.add(new UnitTag("sack", "שק", "שקים", Gender.MALE, UnitType.COUNT,
+                ItemCategory.COLLECTIBLE, ItemCategory.PRODUCE, ItemCategory.GENERAL_FOOD));
+        // נמחק ANTIQUE! מטבעות זהב ייכנסו לפה בזכות COLLECTIBLE.
 
-        // מארז - מתאים לצעצועים, כלי כתיבה, אוכל יבש
-        units.add(new Unit("box", "מארז", "מארזים", Gender.MALE, UnitType.COUNT, ItemCategory.FOOD, ItemCategory.TOY, ItemCategory.STATIONERY, ItemCategory.ELECTRONICS));
+        units.add(new UnitTag("crate", "ארגז", "ארגזים", Gender.MALE, UnitType.COUNT,
+                ItemCategory.ANTIQUE, ItemCategory.PRODUCE, ItemCategory.DRINKS, ItemCategory.TOY, ItemCategory.HARDWARE));
+        // נשאר ANTIQUE! כדי חרס ייכנסו אך ורק לפה.
 
-        // קרטון - אוכל, ציוד משרדי
-        units.add(new Unit("carton", "קרטון", "קרטונים", Gender.MALE, UnitType.COUNT, ItemCategory.FOOD, ItemCategory.STATIONERY));
+        units.add(new UnitTag("chest", "תיבה", "תיבות", Gender.FEMALE, UnitType.COUNT,
+                ItemCategory.COLLECTIBLE));
+        // נמחק ANTIQUE!
 
-        // חבילה - קלפים, בולים, עפרונות, במבה
-        units.add(new Unit("pack", "חבילה", "חבילות", Gender.FEMALE, UnitType.COUNT, ItemCategory.FOOD, ItemCategory.STATIONERY, ItemCategory.COLLECTIBLE));
+        // היחידה הריקה (כדי שלא יתווסף "יחידות של" לכל דבר)
+        units.add(new UnitTag("none_unit", "", "", Gender.MALE, UnitType.NONE,
+                ItemCategory.ELECTRONICS, ItemCategory.CLOTHING, ItemCategory.TOY, ItemCategory.PRODUCE, ItemCategory.BAKED_GOODS, ItemCategory.SWEETS, ItemCategory.STATIONERY, ItemCategory.COLLECTIBLE, ItemCategory.ANTIQUE, ItemCategory.MEDICAL, ItemCategory.ART_SUPPLIES, ItemCategory.HARDWARE));
 
-        // מגש - מתאים *אך ורק* לאוכל! (מגש פיצה, מגש ביצים)
-        units.add(new Unit("tray", "מגש", "מגשים", Gender.MALE, UnitType.COUNT, ItemCategory.FOOD));
-
-        units.add(new Unit("none_unit", "", "", Gender.MALE, UnitType.NONE,
-                ItemCategory.GENERAL, ItemCategory.ELECTRONICS, ItemCategory.CLOTHING, ItemCategory.TOY));
+        return units;
     }
 
-    public static void fillRoles() {
+    public static List<RoleTag> fillRoles() {
         // ==========================================
         // 1. מפעילים (OPERATORS) - נותני השירות
         // ==========================================
+        List<RoleTag> roles = new ArrayList<>();
 
         // -- חנויות ועסקים --
-        roles.add(new RoleEntity("seller", "מוכר", "מוכרים", "מוכרת", "מוכרות", RoleType.OPERATOR,
-                "grocery", "kiosk", "toy_store", "craft_store", "stationery_store", "generic_store", "clothing_store", "electronics_store"));
+        roles.add(new RoleTag("seller", "מוכר", "מוכרים", "מוכרת", "מוכרות", RoleType.OPERATOR,
+                "grocery", "kiosk", "toy_store", "craft_store", "stationery_store", "clothing_store", "electronics_store", "hardware_store"));
 
-        roles.add(new RoleEntity("cashier", "קופאי", "קופאים", "קופאית", "קופאיות", RoleType.OPERATOR,
-                "supermarket", "mall"));
+        roles.add(new RoleTag("cashier", "קופאי", "קופאים", "קופאית", "קופאיות", RoleType.OPERATOR,
+                "supermarket", "grocery"));
 
-        roles.add(new RoleEntity("baker", "אופה", "אופים", "אופה", "אופות", RoleType.OPERATOR,
+        roles.add(new RoleTag("baker", "אופה", "אופים", "אופה", "אופות", RoleType.OPERATOR,
                 "bakery"));
 
-        roles.add(new RoleEntity("merchant", "סוחר", "סוחרים", "סוחרת", "סוחרות", RoleType.OPERATOR,
+        roles.add(new RoleTag("merchant", "סוחר", "סוחרים", "סוחרת", "סוחרות", RoleType.OPERATOR,
                 "market", "antique_store"));
 
-        roles.add(new RoleEntity("pharmacist", "רוקח", "רוקחים", "רוקחת", "רוקחות", RoleType.OPERATOR,
+        roles.add(new RoleTag("pharmacist", "רוקח", "רוקחים", "רוקחת", "רוקחות", RoleType.OPERATOR,
                 "pharmacy"));
 
         // -- חינוך ולימודים --
-        roles.add(new RoleEntity("teacher", "מורה", "מורים", "מורה", "מורות", RoleType.OPERATOR,
+        roles.add(new RoleTag("teacher", "מורה", "מורים", "מורה", "מורות", RoleType.OPERATOR,
                 "school", "classroom"));
 
-        roles.add(new RoleEntity("librarian", "ספרן", "ספרנים", "ספרנית", "ספרניות", RoleType.OPERATOR,
+        roles.add(new RoleTag("librarian", "ספרן", "ספרנים", "ספרנית", "ספרניות", RoleType.OPERATOR,
                 "library"));
 
-        roles.add(new RoleEntity("professor", "מרצה", "מרצים", "מרצה", "מרצות", RoleType.OPERATOR,
+        roles.add(new RoleTag("professor", "מרצה", "מרצים", "מרצה", "מרצות", RoleType.OPERATOR,
                 "university"));
 
         // -- פנאי, בידור וטבע --
-        roles.add(new RoleEntity("guide", "מדריך", "מדריכים", "מדריכה", "מדריכות", RoleType.OPERATOR,
+        roles.add(new RoleTag("guide", "מדריך", "מדריכים", "מדריכה", "מדריכות", RoleType.OPERATOR,
                 "museum", "zoo", "park", "forest"));
 
-        roles.add(new RoleEntity("usher", "סדרן", "סדרנים", "סדרנית", "סדרניות", RoleType.OPERATOR,
+        roles.add(new RoleTag("usher", "סדרן", "סדרנים", "סדרנית", "סדרניות", RoleType.OPERATOR,
                 "cinema", "amusement_park"));
 
-        roles.add(new RoleEntity("lifeguard", "מציל", "מצילים", "מצילה", "מצילות", RoleType.OPERATOR,
+        roles.add(new RoleTag("lifeguard", "מציל", "מצילים", "מצילה", "מצילות", RoleType.OPERATOR,
                 "pool", "beach"));
 
         // -- מסעדות ומזון --
-        roles.add(new RoleEntity("waiter", "מלצר", "מלצרים", "מלצרית", "מלצריות", RoleType.OPERATOR,
+        roles.add(new RoleTag("waiter", "מלצר", "מלצרים", "מלצרית", "מלצריות", RoleType.OPERATOR,
                 "restaurant", "cafe", "pizzeria"));
 
         // -- תחבורה ונסיעות --
-        roles.add(new RoleEntity("driver", "נהג", "נהגים", "נהגת", "נהגות", RoleType.OPERATOR,
-                "bus_station", "train_station")); // אפשר גם להוסיף 'כרטיסן'
+        roles.add(new RoleTag("driver", "נהג", "נהגים", "נהגת", "נהגות", RoleType.OPERATOR,
+                "bus_station", "train_station"));
+
+        roles.add(new RoleTag("flight_attendant", "דייל", "דיילים", "דיילת", "דיילות", RoleType.OPERATOR,
+                "airport"));
 
         // -- ספורט ובריאות --
-        roles.add(new RoleEntity("doctor", "רופא", "רופאים", "רופאה", "רופאות", RoleType.OPERATOR,
+        roles.add(new RoleTag("doctor", "רופא", "רופאים", "רופאה", "רופאות", RoleType.OPERATOR,
                 "hospital", "clinic"));
 
-        roles.add(new RoleEntity("nurse", "אח", "אחים", "אחות", "אחיות", RoleType.OPERATOR,
+        roles.add(new RoleTag("nurse", "אח", "אחים", "אחות", "אחיות", RoleType.OPERATOR,
                 "hospital", "clinic"));
+
+        roles.add(new RoleTag("host", "מארח", "מארחים", "מארחת", "מארחות", RoleType.OPERATOR, "house", "apartment"));
+
 
 
         // ==========================================
@@ -1058,51 +1198,55 @@ public class MathQuestionGenerator {
         // ==========================================
 
         // -- לקוחות קלאסיים --
-        roles.add(new RoleEntity("customer", "לקוח", "לקוחות", "לקוחה", "לקוחות", RoleType.TARGET,
+        roles.add(new RoleTag("customer", "לקוח", "לקוחות", "לקוחה", "לקוחות", RoleType.TARGET,
                 "grocery", "supermarket", "bakery", "kiosk", "toy_store", "craft_store", "stationery_store",
-                "generic_store", "mall", "clothing_store", "electronics_store", "pharmacy"));
+                "mall", "clothing_store", "electronics_store", "pharmacy", "hardware_store"));
 
-        roles.add(new RoleEntity("buyer", "קונה", "קונים", "קונה", "קונות", RoleType.TARGET,
-                "market", "generic_store"));
+        roles.add(new RoleTag("buyer", "קונה", "קונים", "קונה", "קונות", RoleType.TARGET,
+                "market", "antique_store"));
 
         // -- חינוך ולימודים --
-        roles.add(new RoleEntity("student", "תלמיד", "תלמידים", "תלמידה", "תלמידות", RoleType.TARGET,
-                "school", "classroom", "stationery_store"));
+        roles.add(new RoleTag("student", "תלמיד", "תלמידים", "תלמידה", "תלמידות", RoleType.TARGET,
+                "school", "classroom", "stationery_store", "craft_store"));
 
-        roles.add(new RoleEntity("university_student", "סטודנט", "סטודנטים", "סטודנטית", "סטודנטיות", RoleType.TARGET,
+        roles.add(new RoleTag("university_student", "סטודנט", "סטודנטים", "סטודנטית", "סטודנטיות", RoleType.TARGET,
                 "university"));
 
-        roles.add(new RoleEntity("reader", "קורא", "קוראים", "קוראת", "קוראות", RoleType.TARGET,
+        roles.add(new RoleTag("reader", "קורא", "קוראים", "קוראת", "קוראות", RoleType.TARGET,
                 "library"));
 
         // -- פנאי ובידור --
-        roles.add(new RoleEntity("visitor", "מבקר", "מבקרים", "מבקרת", "מבקרות", RoleType.TARGET,
+        roles.add(new RoleTag("visitor", "מבקר", "מבקרים", "מבקרת", "מבקרות", RoleType.TARGET,
                 "mall", "market", "museum", "zoo", "amusement_park", "park"));
 
-        roles.add(new RoleEntity("viewer", "צופה", "צופים", "צופה", "צופות", RoleType.TARGET,
+        roles.add(new RoleTag("viewer", "צופה", "צופים", "צופה", "צופות", RoleType.TARGET,
                 "cinema"));
 
-        roles.add(new RoleEntity("collector", "אספן", "אספנים", "אספנית", "אספניות", RoleType.TARGET,
-                "antique_store", "market"));
+        roles.add(new RoleTag("collector", "אספן", "אספנים", "אספנית", "אספניות", RoleType.TARGET,
+                "antique_store", "market", "toy_store"));
 
-        roles.add(new RoleEntity("traveler", "מטייל", "מטיילים", "מטיילת", "מטיילות", RoleType.TARGET,
+        roles.add(new RoleTag("traveler", "מטייל", "מטיילים", "מטיילת", "מטיילות", RoleType.TARGET,
                 "forest", "park", "street", "square"));
 
-        roles.add(new RoleEntity("bather", "מתרחץ", "מתרחצים", "מתרחצת", "מתרחצות", RoleType.TARGET,
+        roles.add(new RoleTag("bather", "מתרחץ", "מתרחצים", "מתרחצת", "מתרחצות", RoleType.TARGET,
                 "pool", "beach"));
 
         // -- מזון, בריאות ותחבורה --
-        roles.add(new RoleEntity("diner", "סועד", "סועדים", "סועדת", "סועדות", RoleType.TARGET,
+        roles.add(new RoleTag("diner", "סועד", "סועדים", "סועדת", "סועדות", RoleType.TARGET,
                 "restaurant", "pizzeria", "cafe"));
 
-        roles.add(new RoleEntity("patient", "מטופל", "מטופלים", "מטופלת", "מטופלות", RoleType.TARGET,
-                "hospital", "clinic"));
+        roles.add(new RoleTag("patient", "מטופל", "מטופלים", "מטופלת", "מטופלות", RoleType.TARGET,
+                "hospital", "clinic", "pharmacy"));
 
-        roles.add(new RoleEntity("passenger", "נוסע", "נוסעים", "נוסעת", "נוסעות", RoleType.TARGET,
+        roles.add(new RoleTag("passenger", "נוסע", "נוסעים", "נוסעת", "נוסעות", RoleType.TARGET,
                 "train_station", "bus_station", "airport"));
 
-        roles.add(new RoleEntity("pedestrian", "הולך רגל", "הולכי רגל", "הולכת רגל", "הולכות רגל", RoleType.TARGET,
+        roles.add(new RoleTag("pedestrian", "הולך רגל", "הולכי רגל", "הולכת רגל", "הולכות רגל", RoleType.TARGET,
                 "street", "square"));
+
+        roles.add(new RoleTag("guest", "אורח", "אורחים", "אורחת", "אורחות", RoleType.TARGET, "house", "apartment"));
+
+        return roles;
     }
 
 
@@ -1118,6 +1262,6 @@ public class MathQuestionGenerator {
         int timeLimitSeconds = 15;
         int score = 20;
 
-        return new MathQuestion(expression,options,correctAnswer,timeLimitSeconds,score);
+        return new MathQuestion("",expression,options,"",correctAnswer,timeLimitSeconds,score);
     }
 }

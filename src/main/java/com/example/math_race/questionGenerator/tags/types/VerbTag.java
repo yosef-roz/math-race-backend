@@ -1,13 +1,13 @@
-package com.example.math_race.race.questions;
+package com.example.math_race.questionGenerator.tags.types;
 
 import java.util.HashMap;
 import java.util.Map;
 
-public class Verb {
+public class VerbTag {
     private String id;
     private Map<String, String> forms = new HashMap<>();
 
-    public Verb(String id) {
+    public VerbTag(String id) {
         this.id = id;
     }
 

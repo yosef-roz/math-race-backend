@@ -1,0 +1,13 @@
+[
+  {
+    "id": "medium_logic_1",
+    "questionTemplate": "[PLACE:place_type=EDUCATION...]",
+    "answerTemplate": "[IF:(#W)=0:<[NUM:value=(#X:mul_15):#R]>:<[TIME:value=(#T1:add_m_20):#R]>]",
+    "hintTemplate": "שים לב לשעת ההתחלה ([#T1]) ולקצב סידור ה[#2:p] בדקה.",
+    "distractorsTemplates": [
+      "[IF:(#W)=0:<[NUM:value=(#X:mul_10)]>:<[TIME:value=(#T1:add_m_10)]>]",
+      "[IF:(#W)=0:<[NUM:value=(#X:mul_20)]>:<[TIME:value=(#T1:add_m_30)]>]",
+      "[IF:(#W)=0:<[NUM:value=(#X:mul_5)]>:<[TIME:value=(#T1:add_m_40)]>]"
+    ]
+  }
+]

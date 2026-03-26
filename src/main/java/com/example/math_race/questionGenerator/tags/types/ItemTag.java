@@ -1,5 +1,9 @@
-package com.example.math_race.race.questions;
+package com.example.math_race.questionGenerator.tags.types;
 
+import com.example.math_race.questionGenerator.tags.core.QuestionEntity;
+import com.example.math_race.questionGenerator.tags.enums.Gender;
+import com.example.math_race.questionGenerator.tags.enums.ItemCategory;
+import com.example.math_race.questionGenerator.tags.enums.UnitType;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -12,14 +16,14 @@ import java.util.Set;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-public class Item implements QuestionEntity {
+public class ItemTag implements QuestionEntity {
     private String singular;
     private String plural;
     private Gender gender;
     private Set<ItemCategory> categories;
     private Set<UnitType> allowedUnits;
 
-    public Item(String singular, String plural, Gender gender, Set<UnitType> allowedUnits, ItemCategory... categories) {
+    public ItemTag(String singular, String plural, Gender gender, Set<UnitType> allowedUnits, ItemCategory... categories) {
         this.singular = singular;
         this.plural = plural;
         this.gender = gender;

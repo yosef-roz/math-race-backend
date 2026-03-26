@@ -1,5 +1,9 @@
-package com.example.math_race.race.questions;
+package com.example.math_race.questionGenerator.tags.types;
 
+import com.example.math_race.questionGenerator.tags.core.QuestionEntity;
+import com.example.math_race.questionGenerator.tags.enums.Gender;
+import com.example.math_race.questionGenerator.tags.enums.ItemCategory;
+import com.example.math_race.questionGenerator.tags.enums.PlaceType;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -9,7 +13,7 @@ import java.util.*;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-public class Place implements QuestionEntity{
+public class PlaceTag implements QuestionEntity {
     private String id;
     private String singular;
     private String plural;
@@ -18,7 +22,7 @@ public class Place implements QuestionEntity{
     private Set<ItemCategory> categories;
 
 
-    public Place(String id,String singular, String plural, Gender gender, PlaceType placeType, ItemCategory... categories) {
+    public PlaceTag(String id, String singular, String plural, Gender gender, PlaceType placeType, ItemCategory... categories) {
         this.id = id;
         this.singular = singular;
         this.plural = plural;

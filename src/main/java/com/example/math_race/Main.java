@@ -1,7 +1,7 @@
 package com.example.math_race;
 
 import com.example.math_race.race.questions.MathQuestionGenerator;
-import com.example.math_race.race.questions.QuestionEntity;
+import com.example.math_race.questionGenerator.tags.core.QuestionEntity;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -197,7 +197,87 @@ public class Main {
                 "[IF:#W=0:<[NUM:value=(#X:mul_(#Y)):#R]>:<[NUM:value=(#Z:sub_(#X:mul_(#Y))):#R]>]"
         });
 
+        // מכאן
 
+        templates.add(new String[]{
+                // 1. הגרלות נסתרות (מקום, מוכר, פריט שמוכרים בחנות הזו)
+                "[NUM:min=0;max=1:*:#OG]" +
+                        "[PLACE:place_type=STORE:*:#P1]" +
+                        "[ROLE:place_id=(#P1:id);role_type=OPERATOR:*:#O1]" +
+                        "[ITEM:type=(#P1:t):*:#2]" +
+
+                        // 2. הסיפור
+                        "[HUMAN:#1] [VERB:id=enter;t=past;g=(#1:g);num=s] ל[#P1:s]. " +
+                        "ה[IF:(#OG)=0:<[#O1:m_s] תלה>:<[#O1:f_s] תלתה>] שלט מבצע על ה[#2:p]: " +
+                        "\"קנו [NUM:min=3;max=5:#X] [UNIT:type=(#2:allowed_unit):p:#U1][IF:(#2:allowed_unit)=NONE:<>:< של>] [#2:p] [ADJ:id=new;g=(#2:g);num=p:#A1], " +
+                        "וקבלו [NUM:min=1;max=2:#B] מתנה!\". " +
+
+                        "[#1:n] [VERB:id=buy;t=past;g=(#1:g);num=s] [NUM:min=2;max=8:#Y] [IF:(#2:allowed_unit)=NONE:<[#2:p]>:<[#U1:p]>]. " +
+                        // 3. השאלה (האם מגיע לו בונוס?)
+                        "כמה [IF:(#2:allowed_unit)=NONE:<[#2:p]>:<[#U1:p]>] של [#2:p] יש ל[#1] עכשיו בסך הכל?",
+
+                // 4. התשובה (מחשב בונוס רק אם הוא קנה מספיק)
+                "[IF:(#Y)>=(#X):<[NUM:value=(#Y:add_(#B)):#R]>:<[NUM:value=(#Y):#R]>]"
+        });
+
+
+        templates.add(new String[]{
+                // 1. הגרלות נסתרות
+                "[PLACE:place_type=OUTDOORS|HOME:*:#P1]" +
+                        "[ITEM:type=(#P1:t):*:#2]" +
+
+                        // 2. הסיפור עם הפיצול הדינמי למקום
+                        "[HUMAN:#1] ו[HUMAN:n=!(#1:n):#3] [IF:(#P1:pt)=OUTDOORS:<בילו ב[#P1:s] וחיפשו מציאות>:<[VERB:id=arrange;t=past;g=MALE;num=p] את ה[#P1:s]>]. " +
+
+                        "[#1:n] [VERB:id=find;t=past;g=(#1:g);num=s] [NUM:min=10;max=25:#X] [#2:p] [ADJ:id=old;g=(#2:g);num=p:#A1]. " +
+                        "[#3:n] [VERB:id=find;t=past;g=(#3:g);num=s] [NUM:min=10;max=25:#Y] [#2:p] [#A1]. " +
+
+                        "לאחר מכן, הם החליטו לאסוף את הכל יחד ולחלק את כל מה שנמצא שווה בשווה ל-[NUM:min=3;max=6:#Z] קופסאות קטנות. " +
+
+                        // 3. מגרילים איזה סוג שאלה נשאל (0 = שארית, 1 = כמות בכל קופסה)
+                        "[NUM:min=0;max=1:*:#W]" +
+
+                        // 4. השאלה - מפוצלת לפי W
+                        "[IF:(#W)=0:<" +
+                        "כמה [#2:p] [#A1] נשארו בחוץ כי לא התחלקו שווה בשווה בין הקופסאות?" +
+                        ">:<" +
+                        "כמה [#2:p] [#A1] נכנסו בדיוק לתוך כל קופסה?" +
+                        ">]",
+
+                // 5. התשובה - מפוצלת לפי W (חייבת להיות תואמת לשאלה!)
+                "[IF:(#W)=0:<" +
+                        "[NUM:value=(#X:add_(#Y)):mod_(#Z):#R]" + // חישוב שארית
+                        ">:<" +
+                        "[NUM:value=(#X:add_(#Y)):div_(#Z):#R]" + // חישוב חלוקה רגילה
+                        ">]"
+        });
+
+        templates.add(new String[]{
+                // 1. הגרלות נסתרות (הפריט מותאם דינמית למקום!)
+                "[PLACE:place_type=EDUCATION|HOME:*:#P1]" +
+                        "[ITEM:type=(#P1:t):*:#2]" +
+
+                        // 2. הסיפור - נקי לגמרי מתנאי IF מסורבלים בזכות מילון הפעלים החדש
+                        "[HUMAN:#1] [VERB:id=sit;t=past;g=(#1:g);num=s] ב[#P1:s] בשעה [TIME:min=14.00;max=16.00:#T1]. " +
+                        "[#1:he_she] [VERB:id=can;t=present;g=(#1:g);num=s] [VERB:id=arrange;f=inf] [NUM:min=4;max=8:#X] [#2:p] בכל דקה. " +
+
+                        // 3. הגרלת סוג השאלה: 0 = כמות פריטים, 1 = שעת סיום
+                        "[NUM:min=0;max=1:*:#W]" +
+
+                        // 4. השאלה המפוצלת (ללא אות ל' מיותרת לפני פועל המקור)
+                        "[IF:(#W)=0:<" +
+                        "אם [#1:he_she] [VERB:id=arrange;t=past;g=(#1:g);num=s] [#2:p] ברצף עד השעה [TIME:value=(#T1:add_m_15):#T2], כמה [#2:p] [#1:he_she] [VERB:id=arrange;t=past;g=(#1:g);num=s] סך הכל?" +
+                        ">:<" +
+                        "אם היו שם [NUM:value=(#X:mul_20):#Y] [#2:p] בסך הכל, באיזו שעה [#1:he_she] [VERB:id=finish;t=past;g=(#1:g);num=s] [VERB:id=arrange;f=inf] את כולם?" +
+                        ">]",
+
+                // 5. התשובה המפוצלת (מותאמת בדיוק לשאלה שנבחרה)
+                "[IF:(#W)=0:<" +
+                        "[NUM:value=(#X:mul_15):#R]" + // חישוב כמות: קצב * 15 דקות
+                        ">:<" +
+                        "[TIME:value=(#T1:add_m_20):#R]" + // חישוב שעה: מוסיף בדיוק 20 דקות לזמן ההתחלה
+                        ">]"
+        });
 
         // הרצה של המנוע
         System.out.println("--- מריץ ייצור שאלות ---");

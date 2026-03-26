@@ -1,5 +1,7 @@
-package com.example.math_race.race.questions;
+package com.example.math_race.questionGenerator.tags.types;
 
+import com.example.math_race.questionGenerator.tags.core.QuestionEntity;
+import com.example.math_race.questionGenerator.tags.enums.Gender;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -10,7 +12,7 @@ import java.util.Map;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-public class Human implements QuestionEntity {
+public class HumanTag implements QuestionEntity {
     private String name;
     private Gender gender;
 
@@ -35,6 +37,10 @@ public class Human implements QuestionEntity {
 
         if ("loves".equals(key) || "likes".equals(key)) {
             return gender == Gender.MALE ? "אוהב" : "אוהבת";
+        }
+
+        if ("from_him_her".equals(key)) {
+            return gender == Gender.MALE ? "ממנו" : "ממנה";
         }
 
         return name;

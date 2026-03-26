@@ -1,11 +1,14 @@
-package com.example.math_race.race.questions;
+package com.example.math_race.questionGenerator.tags.types;
+
+import com.example.math_race.questionGenerator.tags.core.QuestionEntity;
+import com.example.math_race.questionGenerator.tags.enums.RoleType;
 
 import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 
-public class RoleEntity implements QuestionEntity {
+public class RoleTag implements QuestionEntity {
     private String id;
     private String singularMale;
     private String pluralMale;
@@ -14,9 +17,9 @@ public class RoleEntity implements QuestionEntity {
     private RoleType roleType;
     private Set<String> validPlaceIds;
 
-    public RoleEntity(String id, String singularMale, String pluralMale,
-                      String singularFemale, String pluralFemale,
-                      RoleType roleType, String... allowedPlaceIds) {
+    public RoleTag(String id, String singularMale, String pluralMale,
+                   String singularFemale, String pluralFemale,
+                   RoleType roleType, String... allowedPlaceIds) {
         this.id = id;
         this.singularMale = singularMale;
         this.pluralMale = pluralMale;

@@ -10,8 +10,10 @@ import java.util.List;
 @AllArgsConstructor
 public class MathQuestion {
 
+    private String id;
     private String expression;
     private List<String> options;
+    private String hint;
     private String correctAnswer;
     private int timeLimitSeconds;
     private int score;

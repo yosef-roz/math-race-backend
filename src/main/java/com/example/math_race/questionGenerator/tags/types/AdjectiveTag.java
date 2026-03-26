@@ -1,16 +1,18 @@
-package com.example.math_race.race.questions;
+package com.example.math_race.questionGenerator.tags.types;
+
+import com.example.math_race.questionGenerator.tags.enums.AdjectiveType;
 
 import java.util.HashMap;
 import java.util.Map;
 
 
 
-public class Adjective {
+public class AdjectiveTag {
     private String id;
     private AdjectiveType type; // שינינו ל-Enum!
     private Map<String, String> forms = new HashMap<>();
 
-    public Adjective(String id, AdjectiveType type) {
+    public AdjectiveTag(String id, AdjectiveType type) {
         this.id = id;
         this.type = type;
     }
