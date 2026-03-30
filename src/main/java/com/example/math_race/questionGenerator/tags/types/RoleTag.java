@@ -44,10 +44,10 @@ public class RoleTag implements MatchableTag {
             return String.join("|", validPlaceIds);
         }
 
-        if ("sm".equals(key) || "m_s".equals(key)) return singularMale;
-        if ("pm".equals(key) || "m_p".equals(key)) return pluralMale;
-        if ("sf".equals(key) || "f_s".equals(key)) return singularFemale;
-        if ("pf".equals(key) || "f_p".equals(key)) return pluralFemale;
+        if ("sm".equals(key) || "m_s".equals(key) || "sMALE".equals(key)) return singularMale;
+        if ("pm".equals(key) || "m_p".equals(key) || "pMALE".equals(key)) return pluralMale;
+        if ("sf".equals(key) || "f_s".equals(key) || "sFEMALE".equals(key)) return singularFemale;
+        if ("pf".equals(key) || "f_p".equals(key) || "pFEMALE".equals(key)) return pluralFemale;
 
         return singularMale;
     }

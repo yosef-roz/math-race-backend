@@ -1,10 +1,13 @@
 package com.example.math_race.race.questions;
 
+import com.example.math_race.questionGenerator.QuestionEngine;
 import com.example.math_race.questionGenerator.tags.core.TemplateTag;
 import com.example.math_race.questionGenerator.tags.core.TagInfo;
 import com.example.math_race.questionGenerator.tags.enums.*;
 import com.example.math_race.questionGenerator.tags.types.*;
 import com.example.math_race.race.RacePlayer;
+import com.example.math_race.service.QuestionTemplateService;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import java.util.*;
@@ -14,6 +17,15 @@ import static com.example.math_race.questionGenerator.tags.enums.Gender.*;
 
 @Component
 public class MathQuestionGenerator {
+
+    private final QuestionEngine questionEngine;
+    private final QuestionTemplateService questionTemplateService;
+
+    @Autowired
+    public MathQuestionGenerator(QuestionEngine questionEngine, QuestionTemplateService questionTemplateService) {
+        this.questionEngine = questionEngine;
+        this.questionTemplateService = questionTemplateService;
+    }
 
 
     static ArrayList<HumanTag> humans;
@@ -39,7 +51,6 @@ public class MathQuestionGenerator {
 // זה יכול להדפיס: "Noa קנתה 5 apples" או "Shimon קנה 3 bananas"
 
     String t = "[ITEM:param=m;param=?:take:name]";
-
 
 
     public static String gene(String template, Map<String, TemplateTag> memory) {
@@ -567,6 +578,16 @@ public class MathQuestionGenerator {
         items.add(new ItemTag("חבל", "חבלים", MALE, lengthOnly, ItemCategory.HARDWARE));
         items.add(new ItemTag("צינור", "צינורות", MALE, lengthOnly, ItemCategory.HARDWARE));
 
+
+        // פריטי כלי עבודה וחומרי בניין (HARDWARE) - ספירים
+        items.add(new ItemTag("פטיש", "פטישים", MALE, countOnly, ItemCategory.HARDWARE));
+        items.add(new ItemTag("מברג", "מברגים", MALE, countOnly, ItemCategory.HARDWARE));
+        items.add(new ItemTag("מסמר", "מסמרים", MALE, countOnly, ItemCategory.HARDWARE));
+        items.add(new ItemTag("בורג", "ברגים", MALE, countOnly, ItemCategory.HARDWARE));
+        items.add(new ItemTag("מנעול", "מנעולים", MALE, countOnly, ItemCategory.HARDWARE));
+        items.add(new ItemTag("מפתח ברגים", "מפתחות ברגים", MALE, countOnly, ItemCategory.HARDWARE));
+        items.add(new ItemTag("מברשת צבע", "מברשות צבע", FEMALE, countOnly, ItemCategory.HARDWARE));
+
         return  items;
     }
 
@@ -816,9 +837,16 @@ public class MathQuestionGenerator {
         sit.addForm("past", FEMALE, "s", "ישבה");
         sit.addForm("past", MALE, "p", "ישבו");
         sit.addForm("past", FEMALE, "p", "ישבו");
-
         sit.addForm("inf", MALE, "ANY", "לשבת");
         verbs.add(sit);
+
+        VerbTag work = new VerbTag("work");
+        work.addForm("past", MALE, "s", "עבד");
+        work.addForm("past", FEMALE, "s", "עבדה");
+        work.addForm("past", MALE, "p", "עבדו");
+        work.addForm("past", FEMALE, "p", "עבדו");
+        work.addForm("inf", MALE, "ANY", "לעבוד");
+        verbs.add(work);
 
         // --- הוסיף ---
         VerbTag add = new VerbTag("add");
@@ -912,6 +940,22 @@ public class MathQuestionGenerator {
         multiply.addForm("present", FEMALE, "p", "כופלות");
         multiply.addForm("inf", MALE, "ANY", "לכפול");
         verbs.add(multiply);
+
+        VerbTag organize = new VerbTag("organize");
+        organize.addForm("past", MALE, "s", "סידר");
+        organize.addForm("past", FEMALE, "s", "סידרה");
+        organize.addForm("past", MALE, "p", "סידרו");
+        organize.addForm("past", FEMALE, "p", "סידרו");
+        organize.addForm("inf", MALE, "ANY", "לסדר");
+        verbs.add(organize);
+
+        VerbTag start = new VerbTag("start");
+        start.addForm("past", MALE, "s", "התחיל");
+        start.addForm("past", FEMALE, "s", "התחילה");
+        start.addForm("past", MALE, "p", "התחילו");
+        start.addForm("past", FEMALE, "p", "התחילו");
+        start.addForm("inf", MALE, "ANY", "להתחיל");
+        verbs.add(start);
 
         return verbs;
     }
@@ -1079,6 +1123,13 @@ public class MathQuestionGenerator {
         tasty.addForm(FEMALE, "p", "טעימות");
         adjectives.add(tasty);
 
+        AdjectiveTag identical = new AdjectiveTag("identical", AdjectiveType.CONDITION);
+        identical.addForm(Gender.MALE, "s", "זהה נוסף");
+        identical.addForm(Gender.FEMALE, "s", "זהה נוספת");
+        identical.addForm(Gender.MALE, "p", "זהים נוספים");
+        identical.addForm(Gender.FEMALE, "p", "זהות נוספות");
+        adjectives.add(identical);
+
         return  adjectives;
     }
 
@@ -1126,7 +1177,8 @@ public class MathQuestionGenerator {
 
         // -- חנויות ועסקים --
         roles.add(new RoleTag("seller", "מוכר", "מוכרים", "מוכרת", "מוכרות", RoleType.OPERATOR,
-                "grocery", "kiosk", "toy_store", "craft_store", "stationery_store", "clothing_store", "electronics_store", "hardware_store"));
+                "grocery", "supermarket", "bakery", "kiosk", "toy_store", "craft_store", "stationery_store",
+                "mall", "clothing_store", "electronics_store", "pharmacy", "hardware_store","pizzeria"));
 
         roles.add(new RoleTag("cashier", "קופאי", "קופאים", "קופאית", "קופאיות", RoleType.OPERATOR,
                 "supermarket", "grocery"));
@@ -1189,7 +1241,7 @@ public class MathQuestionGenerator {
         // -- לקוחות קלאסיים --
         roles.add(new RoleTag("customer", "לקוח", "לקוחות", "לקוחה", "לקוחות", RoleType.TARGET,
                 "grocery", "supermarket", "bakery", "kiosk", "toy_store", "craft_store", "stationery_store",
-                "mall", "clothing_store", "electronics_store", "pharmacy", "hardware_store"));
+                "mall", "clothing_store", "electronics_store", "pharmacy", "hardware_store","pizzeria"));
 
         roles.add(new RoleTag("buyer", "קונה", "קונים", "קונה", "קונות", RoleType.TARGET,
                 "market", "antique_store"));
@@ -1241,16 +1293,7 @@ public class MathQuestionGenerator {
 
 
 
-
-
-
     public MathQuestion generateForPlayer(RacePlayer player) {
-        String expression = "המלך ביקש מעידן שיקנה לו 3 תפוחים, עידן קנה 3 תפוחים והביא מהבית עוד 2 ונתן הכל למלך. כמה תפוחים סהכ הביא עידן למלך ?";
-        List<String> options = List.of("6","3","5","2");
-        String correctAnswer = "5";
-        int timeLimitSeconds = 15;
-        int score = 20;
-
-        return new MathQuestion("",expression,options,"",correctAnswer,timeLimitSeconds,score);
+        return questionEngine.processTemplate(questionTemplateService.getTemplateByDifficulty("easy"));
     }
 }

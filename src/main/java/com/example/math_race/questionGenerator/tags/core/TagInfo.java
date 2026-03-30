@@ -51,7 +51,7 @@ public class TagInfo {
         if (parts.size() == 2) {
             String middle = parts.get(1).trim();
 
-            if (middle.contains("=")) {
+            if (hasExposedChar(middle, '=')) {
                 parseConstraints(middle, constraints);
             } else {
                 property = middle;
@@ -97,5 +97,19 @@ public class TagInfo {
         }
         result.add(current.toString().trim());
         return result;
+    }
+
+    private static boolean hasExposedChar(String s, char target) {
+        int depth = 0;
+        for (char c : s.toCharArray()) {
+            if (c == '(') {
+                depth++;
+            } else if (c == ')') {
+                depth--;
+            } else if (c == target && depth == 0) {
+                return true;
+            }
+        }
+        return false;
     }
 }

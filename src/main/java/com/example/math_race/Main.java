@@ -423,7 +423,7 @@ public class Main {
 
 // 10. חישוב מארזים - כפל דו ספרתי בחד ספרתי (גבול עליון של לוח הכפל)
         newTemplates.add(new String[]{
-                "[HUMAN:#1] [VERB:id=buy:(past_+(#1:g)+_s):#V1] [NUM:min=5;max=12:#PACKS] מארזים של [ITEM:type=DRINKS:p:#2]. " +
+                "[HUMAN:#1] [VERB:id=buy:(past_+(#1:g)+_s)] [NUM:min=5;max=12:#PACKS] מארזים של [ITEM:type=DRINKS:p:#2]. " +
                         "בכל מארז יש [NUM:min=4;max=8:#IN_PACK] [#2:p]. [NUM:min=0;max=1:*:#W]" +
                         "[IF:(#W)=0:<כמה [#2:p] יש סך הכל ב-[#PACKS] המארזים?>" +
                         ":<אם [#1:he_she] [VERB:id=give:(past_+(#1:g)+_s):#V2] לחברים מארז אחד שלם, כמה [#2:p] נשארו [#1:to_him_her]?>]",
@@ -434,6 +434,146 @@ public class Main {
                 "[IF:(#W)=0:<[NUM:value=(#PACKS:mul_(#IN_PACK)):sub_4:#R]>:<[NUM:value=(#PACKS:mul_(#IN_PACK)):add_(#IN_PACK):#R]>]",
                 "[IF:(#W)=0:<הכפל את כמות המארזים בכמות שיש בכל מארז.>:<חסר מארז אחד מסך המארזים, ואז הכפל בכמות שיש בפנים.>]"
         });
+
+        //11 - מפה חדש
+        newTemplates.add(new String[]{
+                // 0. השאלה + הגרלות נסתרות (זמן ריצה מינימלי)
+                "[PLACE:place_type=STORE:*:#P1]" +
+                        "[ROLE:place_id=(#P1:id);role_type=OPERATOR:*:#O1]" + // הוספנו: הגרלת בעל התפקיד בחנות
+                        "[ITEM:type=(#P1:t):*:#I1]" +
+                        "[ITEM:type=TOY|SWEETS:*:#I2]" +
+                        "[HUMAN:*:#1]" +
+
+                        // הגרלות מספרים (חישוב מהיר)
+                        "[NUM:min=3;max=6:*:#QTY]" +
+                        "[NUM:min=5;max=12:*:#PRICE]" +
+                        "[NUM:value=100:*:#BILL]" +
+                        "[NUM:min=10;max=20:*:#EXTRA_PRICE]" +
+                        "[NUM:value=(#QTY:mul_(#PRICE)):*:#TOTAL_COST]" +
+
+                        // פיצול עלילה (0/1) והגרלת מגדר בעל התפקיד (0=זכר, 1=נקבה)
+                        "[NUM:min=0;max=1:*:#W]" +
+                        "[NUM:min=0;max=1:*:#OG]" +
+
+                        // הסיפור הבסיסי
+                        "[#1:n] [VERB:id=buy:(past_+(#1:g)+_s)] ב[#P1:s] [#QTY] [#I1:p]. כל [#I1:s] עולה [#PRICE] שקלים. " +
+
+                        // פיצול השאלה עם השילוב של בעל התפקיד
+                        "[IF:(#W)=0:<" +
+                        "אם [#1:he_she] [VERB:id=pay:(past_+(#1:g)+_s)] [IF:(#OG)=0:<ל[#O1:sm]>:<ל[#O1:sf]>] בשטר של [#BILL] שקלים, כמה עודף [#1:he_she] [VERB:id=receive:(past_+(#1:g)+_s)]?" +
+                        ">:<" +
+                        "בנוסף, [#1:he_she] [VERB:id=buy:(past_+(#1:g)+_s)] מה[IF:(#OG)=0:<[#O1:sm]>:<[#O1:sf]>] גם [#I2:s] ב-[#EXTRA_PRICE] שקלים. כמה שקלים סך הכל [#1:he_she] [VERB:id=pay:(past_+(#1:g)+_s)]?" +
+                        ">]",
+
+                // 1. התשובה הנכונה
+                "[IF:(#W)=0:<[NUM:value=(#BILL:sub_(#TOTAL_COST)):#R]>:<[NUM:value=(#TOTAL_COST:add_(#EXTRA_PRICE)):#R]>]",
+
+                // 2. מסיח 1: טעות בפעולה החשבונית
+                "[IF:(#W)=0:<[NUM:value=(#BILL:sub_(#PRICE)):#R]>:<[NUM:value=(#PRICE:add_(#EXTRA_PRICE)):#R]>]",
+
+                // 3. מסיח 2: תשובה חלקית
+                "[NUM:value=(#TOTAL_COST):#R]",
+
+                // 4. מסיח 3: התבלבל במספרים
+                "[IF:(#W)=0:<[NUM:value=(#BILL:sub_(#QTY)):#R]>:<[NUM:value=(#QTY:add_(#EXTRA_PRICE)):#R]>]",
+
+                // 5. רמז
+                "[IF:(#W)=0:<" +
+                        "כדי למצוא את העודף, חשב קודם כמה עולים ה-[#I1:p] יחד (כמות כפול מחיר), וחסר את התוצאה מ-100." +
+                        ">:<" +
+                        "חשב קודם את מחיר ה-[#I1:p] יחד (כמות כפול מחיר), ואז חבר לסכום את מחיר ה-[#I2:s]." +
+                        ">]"
+        });
+
+        newTemplates.add(new String[]{
+                // 0. השאלה + הגרלות נסתרות (זמן ריצה מינימלי)
+                "[PLACE:place_type=HOME|EDUCATION:*:#P1]" +
+                        "[ITEM:type=(#P1:t);unit_type=COUNT:*:#I1]" +
+                        "[UNIT:type=(#I1:allowed_unit);item_category=(#I1:t):*:#U1]" +
+                        "[HUMAN:*:#1]" +
+                        "[HUMAN:n=!(#1:n):*:#2]" + // חבר שאליו נותנים את הפריטים
+
+                        // הנדסה לאחור של המספרים כדי להבטיח חילוק שלם תמיד!
+                        "[NUM:min=3;max=5:*:#BOXES]" +          // כמות הקופסאות/מארזים (מחלק קטן וקל)
+                        "[NUM:min=4;max=9:*:#IN_BOX]" +         // התוצאה הסופית - כמות בכל קופסה
+                        "[NUM:value=(#BOXES:mul_(#IN_BOX)):*:#TARGET]" + // המספר שיתחלק בשלמות (למשל 20)
+                        "[NUM:min=2;max=8:*:#DIFF]" +           // המספר שמחברים או מחסרים בהתחלה
+                        "[NUM:value=(#TARGET:add_(#DIFF)):*:#START_SUB]" + // סכום התחלתי לעלילת חיסור
+                        "[NUM:value=(#TARGET:sub_(#DIFF)):*:#START_ADD]" + // סכום התחלתי לעלילת חיבור
+
+                        // פיצול עלילה
+                        "[NUM:min=0;max=1:*:#W]" +
+
+                        // פיצול השאלה (טקסט קצר, קולע וממוקד)
+                        "[IF:(#W)=0:<" +
+                        "ל[#1:n] היו [#START_SUB] [#I1:p]. [#1:he_she] [VERB:id=give:(past_+(#1:g)+_s)] ל[#2:n] [#DIFF] [#I1:p], ואת השאר [VERB:id=divide:(past_+(#1:g)+_s)] שווה בשווה ל-[#BOXES] [#U1:p]. כמה [#I1:p] יש בכל [#U1:s]?" +
+                        ">:<" +
+                        "ל[#1:n] היו [#START_ADD] [#I1:p]. [#1:he_she] [VERB:id=find:(past_+(#1:g)+_s)] עוד [#DIFF] [#I1:p], ואז [VERB:id=divide:(past_+(#1:g)+_s)] הכל שווה בשווה ל-[#BOXES] [#U1:p]. כמה [#I1:p] יש בכל [#U1:s]?" +
+                        ">]",
+
+                // 1. התשובה הנכונה (היא תמיד המספר שקבענו מראש!)
+                "[NUM:value=(#IN_BOX):#R]",
+
+                // 2. מסיח 1: שכח לחלק (ביצע רק את פעולת החיבור/חיסור ועצר)
+                "[NUM:value=(#TARGET):#R]",
+
+                // 3. מסיח 2: כפל במקום לחלק (טעות נפוצה בלחץ זמן)
+                "[NUM:value=(#TARGET:mul_(#BOXES)):#R]",
+
+                // 4. מסיח 3: חיסר את כמות הקופסאות במקום לחלק בהן
+                "[NUM:value=(#TARGET:sub_(#BOXES)):#R]",
+
+                // 5. רמז
+                "[IF:(#W)=0:<" +
+                        "כדי לפתור, קודם חסר את ה-[#I1:p] ש[#1:n] [VERB:id=give:(past_+(#1:g)+_s)], ואז חלק את התוצאה ב-[#BOXES]." +
+                        ">:<" +
+                        "כדי לפתור, קודם חבר את ה-[#I1:p] ש[#1:n] [VERB:id=find:(past_+(#1:g)+_s)], ואז חלק את התוצאה ב-[#BOXES]." +
+                        ">]"
+        });
+
+        newTemplates.add(new String[]{
+                // 0. הגרלות נסתרות (Setup)
+                "[PLACE:place_type=STORE|FOOD_SERVICE:*:#P1]" +
+                        "[ROLE:place_id=(#P1:id);role_type=OPERATOR:*:#O1]" +
+                        "[ITEM:type=(#P1:t);unit_type=COUNT:*:#I1]" +
+                        "[HUMAN:*:*:#1]" + // הגרלה רנדומלית לחלוטין
+
+                        // מספרים קטנים לחישוב מהיר (15 שניות)
+                        "[NUM:min=8;max=12:*:#MINS_PER]" +
+                        "[NUM:min=3;max=6:*:#QTY]" +
+                        "[NUM:value=(#QTY:mul_(#MINS_PER)):*:#TOTAL_MINS]" +
+                        "[TIME:min=08.00;max=16.00;round=true:*:#T_START]" +
+
+                        "[NUM:min=0;max=1:*:#W]" +
+
+                        // בניית הסיפור - נקי ודינמי בזכות [#O1:s(#1:g)]
+                        "[#1:n] ה[#O1:s(#1:g)] [VERB:id=prepare:(past_+(#1:g)+_s):#V1] [#I1:p] ב[#P1:s]. " +
+                        "הכנת כל [#I1:s] לוקחת בדיוק [#MINS_PER] דקות. " +
+
+                        // פיצול השאלה
+                        "[IF:(#W)=0:<" +
+                        "אם [#1:he_she] [VERB:id=start:(past_+(#1:g)+_s):#V2] להכין [#QTY] [#I1:p] בשעה [#T_START], באיזו שעה [#1:he_she] [VERB:id=finish:(past_+(#1:g)+_s):#V3]?" +
+                        ">:<" +
+                        "אם [#1:he_she] [VERB:id=work:(past_+(#1:g)+_s):#V4] ברצף במשך [#TOTAL_MINS] דקות, כמה [#I1:p] [#1:he_she] [VERB:id=prepare:(past_+(#1:g)+_s):#V5] סך הכל?" +
+                        ">]",
+
+                // 1. התשובה הנכונה
+                "[IF:(#W)=0:<[TIME:value=(#T_START:add_m_(#TOTAL_MINS)):#R]>:<[NUM:value=(#TOTAL_MINS:div_(#MINS_PER)):#R]>]",
+
+                // 2. מסיחים (כולל השרשור האלגנטי של הטעות בזמנים)
+                "[IF:(#W)=0:<[TIME:value=(#T_START:add_m_(#MINS_PER)):#R]>:<[NUM:value=(#TOTAL_MINS:mul_(#MINS_PER)):#R]>]",
+                "[IF:(#W)=0:<[TIME:value=(#T_START:add_m_(#QTY)):#R]>:<[NUM:value=(#TOTAL_MINS:sub_(#MINS_PER)):#R]>]",
+                "[IF:(#W)=0:<[TIME:value=(#T_START:add_m_(#TOTAL_MINS)):add_m_10:#R]>:<[NUM:value=(#QTY:add_1):#R]>]",
+
+                // 5. רמז
+                "[IF:(#W)=0:<" +
+                        "כדי לפתור, חשב כמה דקות לוקח להכין את כל ה-[#I1:p] יחד (כפל), ואז הוסף את התוצאה לשעת ההתחלה." +
+                        ">:<" +
+                        "כדי למצוא את הכמות, חלק את סך כל דקות העבודה ([#TOTAL_MINS]) בזמן שלוקח להכין [#I1:s] אחד ([#MINS_PER])." +
+                        ">]"
+        });
+
+
         // הרצה של המנוע
         System.out.println("--- מריץ ייצור שאלות ---");
 

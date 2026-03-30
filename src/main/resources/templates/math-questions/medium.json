@@ -1,13 +1,13 @@
 [
   {
     "id": "medium_logic_1",
-    "questionTemplate": "[PLACE:place_type=EDUCATION...]",
-    "answerTemplate": "[IF:(#W)=0:<[NUM:value=(#X:mul_15):#R]>:<[TIME:value=(#T1:add_m_20):#R]>]",
-    "hintTemplate": "שים לב לשעת ההתחלה ([#T1]) ולקצב סידור ה[#2:p] בדקה.",
+    "questionTemplate": "[PLACE:*:#P1][ITEM:type=(#P1:t):*:#I1][UNIT:item_category=(#I1:t):*:#U1][HUMAN:*:#1][HUMAN:n=!(#1:n):*:#2][NUM:min=12;max=25:*:#BOXES][NUM:min=4;max=8:*:#IN_BOX][NUM:min=15;max=35:*:#GIVE][NUM:min=3;max=7:*:#EXTRA][NUM:value=(#BOXES:mul_(#IN_BOX)):*:#TOTAL][NUM:min=0;max=1:*:#W][#1:n] [VERB:id=organize:(past_+(#1:g)+_s)] את ה[#P1:s] ו[VERB:id=find:(past_+(#1:g)+_s)] [#BOXES] [#U1:p] מלאים ב[#I1:p]. בכל [#U1:s] יש בדיוק [#IN_BOX] [#I1:p]. [IF:(#W)=0:<לאחר מכן, [#1:n] [VERB:id=give:(past_+(#1:g)+_s)] ל[#2:n] [#GIVE] [#I1:p] במתנה. כמה [#I1:p] נשארו ל[#1:n] בסך הכל?>:<בהמשך היום, [#1:n] [VERB:id=find:(past_+(#1:g)+_s)] עוד [#EXTRA] [#U1:p] זהים נוספים. כמה [#I1:p] יש ל[#1:n] עכשיו בסך הכל?>]",
+    "answerTemplate": "[IF:(#W)=0:<[NUM:value=(#TOTAL:sub_(#GIVE)):#R]>:<[NUM:value=(#BOXES:add_(#EXTRA)):mul_(#IN_BOX):#R]>]",
+    "hintTemplate": "[IF:(#W)=0:<כדי לפתור, חשב קודם את הכמות הכוללת של ה-[#I1:p] (מספר ה-[#U1:p] כפול הכמות בכל [#U1:s]), ואז חסר את הכמות שניתנה במתנה.>:<כדי לפתור, חבר קודם את מספר ה-[#U1:p] הכולל (ההתחלתי פלוס החדש), ואז הכפל אותו בכמות ה-[#I1:p] שיש בכל [#U1:s].>]",
     "distractorsTemplates": [
-      "[IF:(#W)=0:<[NUM:value=(#X:mul_10)]>:<[TIME:value=(#T1:add_m_10)]>]",
-      "[IF:(#W)=0:<[NUM:value=(#X:mul_20)]>:<[TIME:value=(#T1:add_m_30)]>]",
-      "[IF:(#W)=0:<[NUM:value=(#X:mul_5)]>:<[TIME:value=(#T1:add_m_40)]>]"
+      "[IF:(#W)=0:<[NUM:value=(#TOTAL:add_(#GIVE)):#R]>:<[NUM:value=(#TOTAL:add_(#EXTRA)):#R]>]",
+      "[IF:(#W)=0:<[NUM:value=(#TOTAL:sub_(#BOXES)):#R]>:<[NUM:value=(#TOTAL:add_(#EXTRA:mul_(#BOXES))):#R]>]",
+      "[IF:(#W)=0:<[NUM:value=(#TOTAL):#R]>:<[NUM:value=(#TOTAL:sub_(#EXTRA:mul_(#IN_BOX))):#R]>]"
     ]
   }
 ]

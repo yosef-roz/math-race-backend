@@ -157,10 +157,20 @@ public class QuestionEngine {
                 };
 
                 if (chosen != null) {
-                    memory.put(info.getId(), chosen);
+                    String tagId = info.getId();
+                    boolean isTemp = false;
 
-                    String resolvedProp = resolveValue( "("+ info.getId()+ ":" + info.getProperty() + ")", memory);
+                    if (tagId == null || tagId.isEmpty()) {
+                        tagId = "#TEMP_" + java.util.UUID.randomUUID().toString().substring(0, 6);
+                        isTemp = true;
+                    }
+
+                    memory.put(tagId, chosen);
+                    String resolvedProp = resolveValue("("+ tagId + ":" + info.getProperty() + ")", memory);
+
                     result = result.replace(tag, !info.getProperty().equals("*") ? resolvedProp : "");
+
+                    if (isTemp) memory.remove(tagId);
                 }
             } else {
                 if (memory.containsKey(info.getId())) {
