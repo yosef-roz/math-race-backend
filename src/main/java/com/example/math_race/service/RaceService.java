@@ -81,7 +81,7 @@ public class RaceService {
 
     public void fullRace(boolean toDo, RaceManager race){
         if (toDo){
-            for (int i = 0; i < RaceManager.MAX_PLAYERS; i++) {
+            for (int i = 0; i < 19; i++) {
                 race.joinRace(new RacePlayer("stam" + UUID.randomUUID().toString().substring(0, 8), "", "", createNickname()));
             }
         }

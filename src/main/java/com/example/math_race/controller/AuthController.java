@@ -63,7 +63,6 @@ public class AuthController {
         return ApiResponse.success(null);
     }
 
-    //פה שינוי בסוג ל POST
     @PostMapping("/create-guestId")
     public ApiResponse<CreateGuestIdResponse> createGuestId(RequestMetadata metadata) {
         CreateGuestIdResponse createGuestIdResponse = authService.createGuestId();

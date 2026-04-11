@@ -49,11 +49,11 @@ public class RaceController {
     public ApiResponse<CreateRaceResponse> createRace(@Valid @RequestBody CreateRaceRequest request, RequestMetadata metadata) {
 
         CreateRaceResponse createRaceResponse = raceService.creatRace(request, metadata);
+        System.out.println(createRaceResponse);
+
         return ApiResponse.success(createRaceResponse);
     }
 
-    // פה שינוי כתובת נתיב
-    // וגם הורדה של הקוד חדר בפרמטרים - RequestBody
    @PostMapping("/{roomCode}/join")
     public ApiResponse<JoinRaceResponse> joinRace(@PathVariable String roomCode, @Valid @RequestBody JoinRaceRequest request, RequestMetadata metadata){
        if (!StringUtils.hasText(roomCode)) {
@@ -64,7 +64,6 @@ public class RaceController {
         return ApiResponse.success(joinRaceResponse);
     }
 
-    //פה שינוי בסוג ל GET וכתובת נתיב
     @GetMapping("/{roomCode}/info")
     public ApiResponse<RaceInfoResponse> getRaceInfo(@PathVariable String roomCode, RequestMetadata metadata){
         if (!StringUtils.hasText(roomCode)) {
