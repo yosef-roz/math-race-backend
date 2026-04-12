@@ -63,7 +63,7 @@ public class AuthController {
         return ApiResponse.success(null);
     }
 
-    @PostMapping("/create-guestId")
+    @PostMapping("/create-guestToken")
     public ApiResponse<CreateGuestTokenResponse> createGuestId(RequestMetadata metadata) {
         CreateGuestTokenResponse createGuestIdResponse = authService.createGuestToken();
         return ApiResponse.success(createGuestIdResponse);
