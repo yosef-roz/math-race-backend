@@ -1,6 +1,6 @@
 [
   {
-    "id": "easy_logic_1",
+    "id": "easy_logic0",
     "questionTemplate": "[PLACE:place_type=STORE:*:#P1][ROLE:place_id=(#P1:id);role_type=OPERATOR:*:#O1][ITEM:type=(#P1:t):*:#I1][ITEM:type=(#P1:t):*:#I2][HUMAN:*:#1][NUM:min=3;max=6:*:#QTY][NUM:min=5;max=12:*:#PRICE][NUM:value=100:*:#BILL][NUM:min=10;max=20:*:#EXTRA_PRICE][NUM:value=(#QTY:mul_(#PRICE)):*:#TOTAL_COST][NUM:min=0;max=1:*:#W][NUM:min=0;max=1:*:#OG][#1:n] [VERB:id=buy:(past_+(#1:g)+_s)] ב[#P1:s] [#QTY] [#I1:p]. כל [#I1:s] עולה [#PRICE] שקלים. [IF:(#W)=0:<אם [#1:he_she] [VERB:id=pay:(past_+(#1:g)+_s)] [IF:(#OG)=0:<ל[#O1:sm]>:<ל[#O1:sf]>] בשטר של [#BILL] שקלים, כמה עודף [#1:he_she] [VERB:id=receive:(past_+(#1:g)+_s)]?>:<בנוסף, [#1:he_she] [VERB:id=buy:(past_+(#1:g)+_s)] מה[IF:(#OG)=0:<[#O1:sm]>:<[#O1:sf]>] גם [#I2:s] ב-[#EXTRA_PRICE] שקלים. כמה שקלים סך הכל [#1:he_she] [VERB:id=pay:(past_+(#1:g)+_s)]?>]",
     "answerTemplate": "[IF:(#W)=0:<[NUM:value=(#BILL:sub_(#TOTAL_COST)):#R]>:<[NUM:value=(#TOTAL_COST:add_(#EXTRA_PRICE)):#R]>]",
     "hintTemplate": "[IF:(#W)=0:<כדי למצוא את העודף, חשב קודם כמה עולים ה-[#I1:p] יחד (כמות כפול מחיר), וחסר את התוצאה מ-100.>:<חשב קודם את מחיר ה-[#I1:p] יחד (כמות כפול מחיר), ואז חבר לסכום את מחיר ה-[#I2:s].>]",
@@ -8,6 +8,226 @@
       "[IF:(#W)=0:<[NUM:value=(#BILL:sub_(#PRICE)):#R]>:<[NUM:value=(#PRICE:add_(#EXTRA_PRICE)):#R]>]",
       "[NUM:value=(#TOTAL_COST):#R]",
       "[IF:(#W)=0:<[NUM:value=(#BILL:sub_(#QTY)):#R]>:<[NUM:value=(#QTY:add_(#EXTRA_PRICE)):#R]>]"
+    ]
+  },
+  {
+    "id": "easy_logic1",
+    "questionTemplate": "[PLACE:place_type=STORE:*:#P1][ITEM:type=(#P1:t):*:#I1][HUMAN:*:#1][NUM:min=4;max=9:*:#QTY][NUM:min=15;max=30:*:#PRICE][NUM:value=(#QTY:mul_(#PRICE)):*:#TOTAL_COST][NUM:min=0;max=1:*:#W][#1:n] [VERB:id=buy:(past_+(#1:g)+_s)] ב[#P1:s] [#QTY] [#I1:p]. [IF:(#W)=0:<כל [#I1:s] עולה [#PRICE] שקלים. כמה שקלים סך הכל [#1:he_she] [VERB:id=pay:(past_+(#1:g)+_s)]?>:<[#1:he_she] [VERB:id=pay:(past_+(#1:g)+_s)] סך הכל [#TOTAL_COST] שקלים. כמה שקלים עולה [#I1:s] אחד?>]",
+    "answerTemplate": "[IF:(#W)=0:<[NUM:value=(#TOTAL_COST):#R]>:<[NUM:value=(#PRICE):#R]>]",
+    "hintTemplate": "[IF:(#W)=0:<כדי למצוא את הסכום הכולל, עליך להכפיל את הכמות במחיר ליחידה אחת.>:<כדי למצוא את המחיר ליחידה, עליך לחלק את הסכום הכולל בכמות שנקנתה.>]",
+    "distractorsTemplates": [
+      "[IF:(#W)=0:<[NUM:value=(#TOTAL_COST:add_(#QTY)):#R]>:<[NUM:value=(#PRICE:add_(#QTY)):#R]>]",
+      "[NUM:value=(#QTY:mul_10):#R]",
+      "[NUM:value=(#TOTAL_COST:sub_(#QTY)):#R]"
+    ]
+  },
+  {
+    "id": "easy_logic2",
+    "questionTemplate": "[PLACE:place_type=STORE:*:#P1][ITEM:type=(#P1:t):*:#I1][ITEM:type=(#P1:t):*:#I2][HUMAN:*:#1][NUM:min=40;max=80:*:#PRICE1][NUM:min=15;max=30:*:#PRICE2][NUM:value=(#PRICE1:add_(#PRICE2)):*:#SUM][NUM:value=(#PRICE1:sub_(#PRICE2)):*:#DIFF][NUM:min=0;max=1:*:#W][NUM:value=10:*:#TEN][#1:n] בודק/ת מחירים ב[#P1:s]. מחירו של [#I1:s] הוא [#PRICE1] שקלים, ומחירו של [#I2:s] הוא [#PRICE2] שקלים. [IF:(#W)=0:<כמה יעלו שני הפריטים יחד?>:<בכמה שקלים יקר ה-[#I1:s] מה-[#I2:s]?>]",
+    "answerTemplate": "[IF:(#W)=0:<[NUM:value=(#SUM):#R]>:<[NUM:value=(#DIFF):#R]>]",
+    "hintTemplate": "[IF:(#W)=0:<כדי למצוא את המחיר הכולל, חבר את שני המחירים.>:<כדי למצוא את ההפרש, חסר את המחיר הזול מהמחיר היקר.>]",
+    "distractorsTemplates": [
+      "[NUM:value=(#PRICE1):#R]",
+      "[IF:(#W)=0:<[NUM:value=(#DIFF):#R]>:<[NUM:value=(#SUM):#R]>]",
+      "[NUM:value=(#PRICE1:add_(#TEN)):#R]"
+    ]
+  },
+  {
+    "id": "easy_logic3",
+    "questionTemplate": "[PLACE:place_type=STORE:*:#P1][ITEM:type=(#P1:t):*:#I1][HUMAN:*:#1][NUM:min=5;max=10:*:#ROWS][NUM:min=6;max=12:*:#COLS][NUM:value=(#ROWS:mul_(#COLS)):*:#TOTAL][NUM:min=0;max=1:*:#W][#1:n] מסדר/ת [#I1:p] ב[#P1:s]. [IF:(#W)=0:<[#1:he_she] סידר/ה אותם ב-[#ROWS] שורות, כאשר בכל שורה יש [#COLS] [#I1:p]. כמה [#I1:p] יש בסך הכל?>:<יש בסך הכל [#TOTAL] [#I1:p] שמסודרים ב-[#ROWS] שורות שוות. כמה [#I1:p] יש בכל שורה?>]",
+    "answerTemplate": "[IF:(#W)=0:<[NUM:value=(#TOTAL):#R]>:<[NUM:value=(#COLS):#R]>]",
+    "hintTemplate": "[IF:(#W)=0:<כפול את מספר השורות במספר הפריטים בכל שורה.>:<חלק את המספר הכולל של הפריטים במספר השורות.>]",
+    "distractorsTemplates": [
+      "[IF:(#W)=0:<[NUM:value=(#TOTAL:add_(#ROWS)):#R]>:<[NUM:value=(#COLS:add_(#ROWS)):#R]>]",
+      "[IF:(#W)=0:<[NUM:value=(#ROWS:add_(#COLS)):#R]>:<[NUM:value=(#TOTAL:sub_(#ROWS)):#R]>]",
+      "[NUM:value=(#TOTAL:add_(#COLS)):#R]"
+    ]
+  },
+  {
+    "id": "easy_logic4",
+    "questionTemplate": "[PLACE:place_type=STORE:*:#P1][ITEM:type=(#P1:t):*:#I1][HUMAN:*:#1][NUM:min=100;max=200:*:#ORIGINAL][NUM:min=25;max=55:*:#DISCOUNT][NUM:value=(#ORIGINAL:sub_(#DISCOUNT)):*:#FINAL][NUM:min=0;max=1:*:#W][NUM:value=10:*:#TEN][#1:n] [VERB:id=buy:(past_+(#1:g)+_s)] [#I1:s] ב[#P1:s]. המחיר ההתחלתי היה [#ORIGINAL] שקלים. [IF:(#W)=0:<[#1:he_she] קיבל/ה הנחה של [#DISCOUNT] שקלים. כמה [#1:he_she] [VERB:id=pay:(past_+(#1:g)+_s)] בסוף?>:<לאחר הנחה, [#1:he_she] [VERB:id=pay:(past_+(#1:g)+_s)] [#FINAL] שקלים. מה היה סכום ההנחה בשקלים?>]",
+    "answerTemplate": "[IF:(#W)=0:<[NUM:value=(#FINAL):#R]>:<[NUM:value=(#DISCOUNT):#R]>]",
+    "hintTemplate": "[IF:(#W)=0:<חסר את סכום ההנחה מהמחיר ההתחלתי.>:<חסר את המחיר הסופי מהמחיר ההתחלתי כדי למצוא את ההנחה.>]",
+    "distractorsTemplates": [
+      "[IF:(#W)=0:<[NUM:value=(#ORIGINAL:add_(#DISCOUNT)):#R]>:<[NUM:value=(#FINAL):#R]>]",
+      "[IF:(#W)=0:<[NUM:value=(#FINAL:add_(#TEN)):#R]>:<[NUM:value=(#DISCOUNT:sub_(#TEN)):#R]>]",
+      "[NUM:value=(#ORIGINAL):#R]"
+    ]
+  },
+  {
+    "id": "easy_logic5",
+    "questionTemplate": "[PLACE:place_type=STORE:*:#P1][ITEM:type=(#P1:t):*:#I1][ITEM:type=(#P1:t):*:#I2][HUMAN:*:#1][NUM:min=100;max=150:*:#BUDGET][NUM:min=30;max=50:*:#COST1][NUM:min=20;max=40:*:#COST2][NUM:value=(#COST1:add_(#COST2)):*:#TOTAL_COST][NUM:value=(#BUDGET:sub_(#TOTAL_COST)):*:#LEFT][NUM:min=0;max=1:*:#W][#1:n] הגיע/ה ל[#P1:s] עם [#BUDGET] שקלים. [#1:he_she] [VERB:id=buy:(past_+(#1:g)+_s)] [#I1:s] ב-[#COST1] שקלים ו-[#I2:s] ב-[#COST2] שקלים. [IF:(#W)=0:<כמה שקלים נשארו ל-[#1:n] לאחר הקנייה?>:<כמה שקלים סך הכל [#1:he_she] [VERB:id=pay:(past_+(#1:g)+_s)] על שני הפריטים?>]",
+    "answerTemplate": "[IF:(#W)=0:<[NUM:value=(#LEFT):#R]>:<[NUM:value=(#TOTAL_COST):#R]>]",
+    "hintTemplate": "[IF:(#W)=0:<חבר את מחירי שני הפריטים וחסר את התוצאה מהתקציב ההתחלתי.>:<חבר את המחירים של שני הפריטים יחד.>]",
+    "distractorsTemplates": [
+      "[IF:(#W)=0:<[NUM:value=(#TOTAL_COST):#R]>:<[NUM:value=(#LEFT):#R]>]",
+      "[IF:(#W)=0:<[NUM:value=(#BUDGET:sub_(#COST1)):#R]>:<[NUM:value=(#TOTAL_COST:add_(#COST1)):#R]>]",
+      "[NUM:value=(#BUDGET):#R]"
+    ]
+  },
+  {
+    "id": "easy_logic6",
+    "questionTemplate": "[PLACE:place_type=STORE:*:#P1][ITEM:type=(#P1:t):*:#I1][HUMAN:*:#1][HUMAN:*:#2][NUM:min=20;max=40:*:#Q1][NUM:min=10;max=20:*:#DIFF][NUM:value=(#Q1:add_(#DIFF)):*:#Q2][NUM:value=(#Q1:add_(#Q2)):*:#TOTAL][NUM:min=0;max=1:*:#W][#1:n] ו-[#2:n] אוספים [#I1:p] מ[#P1:s]. ל-[#1:n] יש [#Q1] [#I1:p]. ל-[#2:n] יש [#DIFF] [#I1:p] יותר ממה שיש ל-[#1:n]. [IF:(#W)=0:<כמה [#I1:p] יש ל-[#2:n]?>:<כמה [#I1:p] יש לשניהם יחד?>]",
+    "answerTemplate": "[IF:(#W)=0:<[NUM:value=(#Q2):#R]>:<[NUM:value=(#TOTAL):#R]>]",
+    "hintTemplate": "[IF:(#W)=0:<כדי למצוא כמה יש ל-[#2:n], הוסף את ההפרש לכמות של [#1:n].>:<מצא קודם כמה יש ל-[#2:n] (על ידי חיבור ההפרש), ואז חבר את הכמויות של שניהם.>]",
+    "distractorsTemplates": [
+      "[IF:(#W)=0:<[NUM:value=(#DIFF):#R]>:<[NUM:value=(#Q2):#R]>]",
+      "[IF:(#W)=0:<[NUM:value=(#TOTAL):#R]>:<[NUM:value=(#Q1:add_(#DIFF)):#R]>]",
+      "[NUM:value=(#Q1:add_(#Q1)):#R]"
+    ]
+  },
+  {
+    "id": "easy_logic7",
+    "questionTemplate": "[PLACE:place_type=STORE:*:#P1][ITEM:type=(#P1:t):*:#I1][HUMAN:*:#1][NUM:min=5;max=9:*:#KIDS][NUM:min=4;max=8:*:#PER_KID][NUM:value=(#KIDS:mul_(#PER_KID)):*:#TOTAL][NUM:min=0;max=1:*:#W][NUM:value=2:*:#TWO][#1:n] קנה/תה [#I1:p] ב[#P1:s] כדי לחלק ל-[#KIDS] ילדים. [IF:(#W)=0:<אם [#1:he_she] חילק/ה [#PER_KID] [#I1:p] לכל ילד, כמה [#I1:p] [#1:he_she] חילק/ה בסך הכל?>:<אם היו לו/לה [#TOTAL] [#I1:p] והוא/היא חילק/ה אותם שווה בשווה, כמה [#I1:p] קיבל כל ילד?>]",
+    "answerTemplate": "[IF:(#W)=0:<[NUM:value=(#TOTAL):#R]>:<[NUM:value=(#PER_KID):#R]>]",
+    "hintTemplate": "[IF:(#W)=0:<כפול את מספר הילדים בכמות שכל ילד קיבל.>:<חלק את המספר הכולל של ה-[#I1:p] במספר הילדים.>]",
+    "distractorsTemplates": [
+      "[IF:(#W)=0:<[NUM:value=(#TOTAL:add_(#KIDS)):#R]>:<[NUM:value=(#TOTAL:div_(#TWO)):#R]>]",
+      "[IF:(#W)=0:<[NUM:value=(#KIDS:add_(#PER_KID)):#R]>:<[NUM:value=(#PER_KID:add_(#KIDS)):#R]>]",
+      "[NUM:value=(#TOTAL:sub_(#KIDS)):#R]"
+    ]
+  },
+  {
+    "id": "easy_logic8",
+    "questionTemplate": "[PLACE:place_type=STORE:*:#P1][ITEM:type=(#P1:t):*:#I1][HUMAN:*:#1][NUM:min=3;max=6:*:#BUNDLE_SIZE][NUM:min=15;max=25:*:#B_PRICE][NUM:min=3;max=5:*:#TARGET][NUM:value=(#BUNDLE_SIZE:mul_(#TARGET)):*:#TOTAL_ITEMS][NUM:value=(#B_PRICE:mul_(#TARGET)):*:#TOTAL_PRICE][NUM:min=0;max=1:*:#W][#1:n] [VERB:id=buy:(past_+(#1:g)+_s)] מארזים של [#I1:p] ב[#P1:s]. כל מארז מכיל [#BUNDLE_SIZE] יחידות ועולה [#B_PRICE] שקלים. [IF:(#W)=0:<אם [#1:he_she] [VERB:id=buy:(past_+(#1:g)+_s)] [#TARGET] מארזים, כמה שקלים [#1:he_she] [VERB:id=pay:(past_+(#1:g)+_s)] בסך הכל?>:<אם [#1:he_she] [VERB:id=buy:(past_+(#1:g)+_s)] [#TARGET] מארזים, כמה יחידות של [#I1:p] יש לו/לה בסך הכל?>]",
+    "answerTemplate": "[IF:(#W)=0:<[NUM:value=(#TOTAL_PRICE):#R]>:<[NUM:value=(#TOTAL_ITEMS):#R]>]",
+    "hintTemplate": "[IF:(#W)=0:<כדי למצוא את המחיר הכולל, כפול את מחיר המארז במספר המארזים שנקנו.>:<כדי למצוא את כמות היחידות הכוללת, כפול את כמות היחידות במארז במספר המארזים.>]",
+    "distractorsTemplates": [
+      "[IF:(#W)=0:<[NUM:value=(#TOTAL_ITEMS):#R]>:<[NUM:value=(#TOTAL_PRICE):#R]>]",
+      "[IF:(#W)=0:<[NUM:value=(#B_PRICE:add_(#TARGET)):#R]>:<[NUM:value=(#BUNDLE_SIZE:add_(#TARGET)):#R]>]",
+      "[NUM:value=(#TOTAL_PRICE:add_(#BUNDLE_SIZE)):#R]"
+    ]
+  },
+  {
+    "id": "easy_logic9",
+    "questionTemplate": "[PLACE:place_type=STORE:*:#P1][ITEM:type=(#P1:t):*:#I1][HUMAN:*:#1][NUM:min=3;max=6:*:#QTY1][NUM:min=4;max=8:*:#QTY2][NUM:min=12;max=20:*:#PRICE][NUM:value=(#QTY1:add_(#QTY2)):*:#TOTAL_QTY][NUM:value=(#TOTAL_QTY:mul_(#PRICE)):*:#TOTAL_PRICE][NUM:min=0;max=1:*:#W][#1:n] מצא/ה ב[#P1:s] מבצע על [#I1:p]. בבוקר [#1:he_she] [VERB:id=buy:(past_+(#1:g)+_s)] [#QTY1] יחידות, ובערב עוד [#QTY2] יחידות. כל יחידה עולה [#PRICE] שקלים. [IF:(#W)=0:<כמה יחידות של [#I1:p] [#1:he_she] [VERB:id=buy:(past_+(#1:g)+_s)] בסך הכל באותו יום?>:<כמה שקלים [#1:he_she] [VERB:id=pay:(past_+(#1:g)+_s)] בסך הכל על כל היחידות שקנה/תה?>]",
+    "answerTemplate": "[IF:(#W)=0:<[NUM:value=(#TOTAL_QTY):#R]>:<[NUM:value=(#TOTAL_PRICE):#R]>]",
+    "hintTemplate": "[IF:(#W)=0:<חבר את הכמות שנקנתה בבוקר לכמות שנקנתה בערב.>:<קודם חבר את הכמויות (בוקר וערב), ואז כפול את הסכום במחיר ליחידה.>]",
+    "distractorsTemplates": [
+      "[IF:(#W)=0:<[NUM:value=(#TOTAL_PRICE):#R]>:<[NUM:value=(#TOTAL_QTY):#R]>]",
+      "[IF:(#W)=0:<[NUM:value=(#QTY1:mul_(#QTY2)):#R]>:<[NUM:value=(#QTY1:mul_(#PRICE)):#R]>]",
+      "[NUM:value=(#TOTAL_PRICE:sub_(#PRICE)):#R]"
+    ]
+  },
+  {
+    "id": "easy_logic10",
+    "questionTemplate": "[PLACE:place_type=STORE:*:#P1][ITEM:type=(#P1:t):*:#I1][HUMAN:*:#1][NUM:min=2;max=5:*:#QTY][NUM:min=15;max=25:*:#PRICE][NUM:value=(#QTY:mul_(#PRICE)):*:#COST][NUM:value=200:*:#BILL][NUM:value=(#BILL:sub_(#COST)):*:#CHANGE][NUM:min=0;max=1:*:#W][#1:n] [VERB:id=buy:(past_+(#1:g)+_s)] [#QTY] [#I1:p] ב[#P1:s]. כל יחידה עולה [#PRICE] שקלים. [#1:he_she] שילם/מה בשטר של [#BILL] שקלים. [IF:(#W)=0:<כמה שקלים עלו כל ה-[#I1:p] יחד (לפני קבלת העודף)?>:<כמה עודף [#1:he_she] [VERB:id=receive:(past_+(#1:g)+_s)]?>]",
+    "answerTemplate": "[IF:(#W)=0:<[NUM:value=(#COST):#R]>:<[NUM:value=(#CHANGE):#R]>]",
+    "hintTemplate": "[IF:(#W)=0:<כפול את מספר היחידות שנקנו במחיר ליחידה.>:<חשב קודם כמה עלו היחידות יחד, וחסר את התוצאה מהשטר של [#BILL] שקלים.>]",
+    "distractorsTemplates": [
+      "[IF:(#W)=0:<[NUM:value=(#CHANGE):#R]>:<[NUM:value=(#COST):#R]>]",
+      "[IF:(#W)=0:<[NUM:value=(#QTY:add_(#PRICE)):#R]>:<[NUM:value=(#BILL:sub_(#PRICE)):#R]>]",
+      "[NUM:value=(#BILL:sub_(#QTY)):#R]"
+    ]
+  },
+  {
+    "id": "easy_logic11",
+    "questionTemplate": "[HUMAN:*:#1][PLACE:place_type=OUTDOORS:*:#P1][NUM:min=15;max=40:*:#SPEED][NUM:min=3;max=8:*:#TIME][NUM:value=(#SPEED:mul_(#TIME)):*:#DIST][NUM:min=0;max=1:*:#W][#1:n] [VERB:id=run:(past_+(#1:g)+_s)] ב[#P1:s]. הקצב היה בדיוק [#SPEED] מטרים בדקה. [IF:(#W)=0:<אם [#1:he_she] [VERB:id=run:(past_+(#1:g)+_s)] במשך [#TIME] דקות ברצף, איזה מרחק [#1:he_she] עבר/ה בסך הכל?>:<אם [#1:he_she] עבר/ה מרחק כולל של [#DIST] מטרים באותו הקצב, כמה דקות נמשכה הריצה?>]",
+    "answerTemplate": "[IF:(#W)=0:<[NUM:value=(#DIST):#R]>:<[NUM:value=(#TIME):#R]>]",
+    "hintTemplate": "[IF:(#W)=0:<כדי למצוא את הדרך, כפול את המהירות (קצב) בזמן.>:<כדי למצוא את הזמן, חלק את הדרך (המרחק הכולל) במהירות.>]",
+    "distractorsTemplates": [
+      "[IF:(#W)=0:<[NUM:value=(#DIST:add_(#SPEED)):#R]>:<[NUM:value=(#TIME:add_2):#R]>]",
+      "[IF:(#W)=0:<[NUM:value=(#SPEED:add_(#TIME)):#R]>:<[NUM:value=(#DIST:sub_(#SPEED)):#R]>]",
+      "[NUM:value=(#SPEED:mul_10):#R]"
+    ]
+  },
+  {
+    "id": "easy_logic12",
+    "questionTemplate": "[HUMAN:*:#1][ITEM:type=MONEY|ENTERTAINMENT:*:#I1][NUM:min=50;max=120:*:#START][NUM:min=10;max=25:*:#RATE][NUM:min=4;max=8:*:#DAYS][NUM:value=(#RATE:mul_(#DAYS)):*:#ADDED][NUM:value=(#START:add_(#ADDED)):*:#TOTAL][NUM:min=0;max=1:*:#W][#1:n] אוסף/ת [#I1:p]. בהתחלה היו [#1:to_him_her] [#START] [#I1:p], ובכל יום [#1:he_she] מוסיף/פה לאוסף עוד [#RATE] [#I1:p]. [IF:(#W)=0:<כמה [#I1:p] יהיו ל-[#1:n] בעוד [#DAYS] ימים?>:<לאחר מספר ימים היו באוסף [#TOTAL] [#I1:p]. כמה ימים עברו מאז שהתחיל/ה לאסוף?>]",
+    "answerTemplate": "[IF:(#W)=0:<[NUM:value=(#TOTAL):#R]>:<[NUM:value=(#DAYS):#R]>]",
+    "hintTemplate": "[IF:(#W)=0:<חשב קודם כמה פריטים נוספו (קצב כפול ימים), ואז חבר לסכום ההתחלתי.>:<חסר את הכמות ההתחלתית מהכמות הסופית, ואת התוצאה חלק בכמות שמתווספת כל יום.>]",
+    "distractorsTemplates": [
+      "[IF:(#W)=0:<[NUM:value=(#ADDED):#R]>:<[NUM:value=(#DAYS:add_1):#R]>]",
+      "[IF:(#W)=0:<[NUM:value=(#TOTAL:sub_(#RATE)):#R]>:<[NUM:value=(#TOTAL:sub_(#START)):#R]>]",
+      "[IF:(#W)=0:<[NUM:value=(#START:add_(#DAYS)):#R]>:<[NUM:value=(#TOTAL:div_(#RATE)):#R]>]"
+    ]
+  },
+  {
+    "id": "easy_logic13",
+    "questionTemplate": "[HUMAN:*:#1][ITEM:*:#I1][PLACE:*:#P1][NUM:min=20;max=40:*:#AVG][NUM:min=4;max=12:*:#DEV][NUM:value=(#AVG:sub_(#DEV)):*:#D1][NUM:value=(#AVG:add_(#DEV)):*:#D2][NUM:min=0;max=1:*:#W][#1:n] [VERB:id=collect:(past_+(#1:g)+_s)] [#I1:p] ב[#P1:s]. ביום הראשון [#1:he_she] [VERB:id=collect:(past_+(#1:g)+_s)] [#D1] [#I1:p], וביום השני [#D2] [#I1:p]. [IF:(#W)=0:<מהו הממוצע של מספר ה-[#I1:p] שנאספו ביום?>:<אם הממוצע היומי היה [#AVG], וכמות ה-[#I1:p] ביום השני הייתה [#D2], כמה [#I1:p] נאספו ביום הראשון?>]",
+    "answerTemplate": "[IF:(#W)=0:<[NUM:value=(#AVG):#R]>:<[NUM:value=(#D1):#R]>]",
+    "hintTemplate": "[IF:(#W)=0:<כדי למצוא ממוצע של שני ימים, חבר את שתי הכמויות וחלק ב-2.>:<כפול את הממוצע ב-2 כדי למצוא את הסכום הכולל, ואז חסר ממנו את הכמות של היום השני.>]",
+    "distractorsTemplates": [
+      "[IF:(#W)=0:<[NUM:value=(#D1:add_(#D2)):#R]>:<[NUM:value=(#D2:sub_(#AVG)):#R]>]",
+      "[IF:(#W)=0:<[NUM:value=(#AVG:add_2):#R]>:<[NUM:value=(#AVG:sub_(#DEV)):add_(#DEV):#R]>]",
+      "[IF:(#W)=0:<[NUM:value=(#D2:sub_(#D1)):#R]>:<[NUM:value=(#D1:add_2):#R]>]"
+    ]
+  },
+  {
+    "id": "easy_logic14",
+    "questionTemplate": "[HUMAN:*:#1][HUMAN:n=!(#1:n):*:#2][ITEM:*:#I1][PLACE:*:#P1][NUM:min=10;max=20:*:#H1][NUM:min=3;max=6:*:#RATIO][NUM:value=(#H1:mul_(#RATIO)):*:#H2][NUM:value=(#H1:add_(#H2)):*:#TOTAL][NUM:min=0;max=1:*:#W][#1:n] ו[#2:n] מסדרים [#I1:p] ב[#P1:s]. ל-[#1:n] יש [#H1] [#I1:p]. ל-[#2:n] יש פי [#RATIO] יותר מאשר ל-[#1:n]. [IF:(#W)=0:<כמה [#I1:p] יש לשניהם יחד?>:<בכמה [#I1:p] יותר יש ל-[#2:n] מאשר ל-[#1:n]?>]",
+    "answerTemplate": "[IF:(#W)=0:<[NUM:value=(#TOTAL):#R]>:<[NUM:value=(#H2:sub_(#H1)):#R]>]",
+    "hintTemplate": "[IF:(#W)=0:<חשב קודם כמה יש ל-[#2:n] (כפל), ואז חבר לכמות של [#1:n].>:<חשב כמה יש ל-[#2:n] (כפל), ואז חסר מזה את הכמות של [#1:n] כדי למצוא את ההפרש.>]",
+    "distractorsTemplates": [
+      "[IF:(#W)=0:<[NUM:value=(#H2):#R]>:<[NUM:value=(#H2):#R]>]",
+      "[IF:(#W)=0:<[NUM:value=(#H1:add_(#RATIO)):#R]>:<[NUM:value=(#TOTAL):#R]>]",
+      "[IF:(#W)=0:<[NUM:value=(#TOTAL:add_(#H1)):#R]>:<[NUM:value=(#H1:mul_2):#R]>]"
+    ]
+  },
+  {
+    "id": "easy_logic15",
+    "questionTemplate": "[PLACE:place_type=HOME|EDUCATION:*:#P1][ITEM:type=STATIONERY|FOOD:*:#I1][HUMAN:*:#1][NUM:min=6;max=12:*:#WIDTH][NUM:min=15;max=25:*:#LENGTH][NUM:value=(#WIDTH:mul_(#LENGTH)):*:#AREA][NUM:min=0;max=1:*:#W][#1:n] מסדר/ת [#I1:p] בצורת מלבן גדול ב[#P1:s]. בשורה אחת יש [#LENGTH] [#I1:p], ובעמודה אחת יש [#WIDTH] [#I1:p]. [IF:(#W)=0:<כמה [#I1:p] סך הכל יש במלבן המלא?>:<אם המלבן המלא מכיל בדיוק [#AREA] [#I1:p], ובשורה אחת יש [#LENGTH] [#I1:p], כמה [#I1:p] יש בעמודה אחת?>]",
+    "answerTemplate": "[IF:(#W)=0:<[NUM:value=(#AREA):#R]>:<[NUM:value=(#WIDTH):#R]>]",
+    "hintTemplate": "[IF:(#W)=0:<כדי למצוא את הכמות הכוללת במלבן (שטח), כפול את מספר הפריטים בשורה במספר הפריטים בעמודה.>:<חלק את הכמות הכוללת במספר הפריטים שבשורה אחת.>]",
+    "distractorsTemplates": [
+      "[IF:(#W)=0:<[NUM:value=(#WIDTH:add_(#LENGTH)):#R]>:<[NUM:value=(#AREA:div_10):#R]>]",
+      "[IF:(#W)=0:<[NUM:value=(#WIDTH:add_(#LENGTH)):mul_2:#R]>:<[NUM:value=(#LENGTH:sub_(#WIDTH)):#R]>]",
+      "[IF:(#W)=0:<[NUM:value=(#AREA:sub_(#WIDTH)):#R]>:<[NUM:value=(#WIDTH:add_2):#R]>]"
+    ]
+  },
+  {
+    "id": "easy_logic16",
+    "questionTemplate": "[HUMAN:*:#1][ITEM:type=FOOD|TOY:*:#I1][PLACE:*:#P1][NUM:min=3;max=6:*:#PARTS][NUM:min=6;max=12:*:#PER_PART][NUM:value=(#PARTS:mul_(#PER_PART)):*:#TOTAL][NUM:value=(#TOTAL:sub_(#PER_PART)):*:#LEFT][NUM:min=0;max=1:*:#W]ל-[#1:n] היו [#TOTAL] [#I1:p] ב[#P1:s]. [#1:he_she] נתן/נה לחבר בדיוק 1 חלקי [#PARTS] מכל ה-[#I1:p] שהיו לו/לה. [IF:(#W)=0:<כמה [#I1:p] קיבל החבר?>:<כמה [#I1:p] נשארו ל-[#1:n] בסוף?>]",
+    "answerTemplate": "[IF:(#W)=0:<[NUM:value=(#PER_PART):#R]>:<[NUM:value=(#LEFT):#R]>]",
+    "hintTemplate": "[IF:(#W)=0:<כדי למצוא כמה זה 1 חלקי [#PARTS], עליך לחלק את הכמות הכוללת ב-[#PARTS].>:<קודם חלק את הכמות הכוללת ב-[#PARTS] כדי לדעת כמה החבר קיבל, ואז חסר את זה מהכמות ההתחלתית.>]",
+    "distractorsTemplates": [
+      "[IF:(#W)=0:<[NUM:value=(#LEFT):#R]>:<[NUM:value=(#PER_PART):#R]>]",
+      "[IF:(#W)=0:<[NUM:value=(#TOTAL:sub_(#PARTS)):#R]>:<[NUM:value=(#TOTAL:sub_(#PARTS)):#R]>]",
+      "[IF:(#W)=0:<[NUM:value=(#PARTS):#R]>:<[NUM:value=(#TOTAL:add_(#PARTS)):#R]>]"
+    ]
+  },
+  {
+    "id": "easy_logic17",
+    "questionTemplate": "[PLACE:place_type=STORE:*:#P1][ITEM:type=(#P1:t):*:#I1][NUM:min=5;max=12:*:#PER_BOX][NUM:min=2;max=4:*:#BASE_BOX][NUM:value=(#BASE_BOX:mul_(#PER_BOX)):*:#BASE_ITEM][NUM:min=6;max=10:*:#NEW_BOX][NUM:value=(#NEW_BOX:mul_(#PER_BOX)):*:#NEW_ITEM][NUM:min=0;max=1:*:#W]ב[#P1:s], ארזו [#BASE_ITEM] [#I1:p] בתוך [#BASE_BOX] קופסאות שוות בגודלן. [IF:(#W)=0:<כמה [#I1:p] יהיו בתוך [#NEW_BOX] קופסאות מאותו סוג?>:<אם יש למפעל [#NEW_ITEM] [#I1:p], לכמה קופסאות מאותו סוג הם יזדקקו?>]",
+    "answerTemplate": "[IF:(#W)=0:<[NUM:value=(#NEW_ITEM):#R]>:<[NUM:value=(#NEW_BOX):#R]>]",
+    "hintTemplate": "[IF:(#W)=0:<חשב תחילה כמה יש בקופסה אחת (על ידי חילוק), ואז כפול במספר הקופסאות החדש.>:<חשב תחילה כמה יש בקופסה אחת, ואז חלק את הכמות הכוללת החדשה בכמות שבקופסה אחת.>]",
+    "distractorsTemplates": [
+      "[IF:(#W)=0:<[NUM:value=(#BASE_ITEM:add_(#NEW_BOX)):#R]>:<[NUM:value=(#NEW_ITEM:div_2):#R]>]",
+      "[IF:(#W)=0:<[NUM:value=(#NEW_BOX:mul_(#BASE_ITEM)):#R]>:<[NUM:value=(#NEW_BOX:add_2):#R]>]",
+      "[IF:(#W)=0:<[NUM:value=(#NEW_ITEM:sub_(#PER_BOX)):#R]>:<[NUM:value=(#NEW_ITEM:sub_(#BASE_ITEM)):#R]>]"
+    ]
+  },
+  {
+    "id": "easy_logic18",
+    "questionTemplate": "[HUMAN:*:#1][HUMAN:n=!(#1:n):*:#2][NUM:min=10;max=16:*:#AGE1][NUM:min=3;max=7:*:#DIFF][NUM:value=(#AGE1:add_(#DIFF)):*:#AGE2][NUM:min=4;max=10:*:#YEARS][NUM:value=(#AGE1:add_(#YEARS)):*:#F1][NUM:value=(#AGE2:add_(#YEARS)):*:#F2][NUM:value=(#F1:add_(#F2)):*:#SUM_FUTURE][NUM:min=0;max=1:*:#W][#1:n] בן/בת [#AGE1] כיום. [#2:n] מבוגר/ת מ-[#1:n] ב-[#DIFF] שנים. [IF:(#W)=0:<בעוד [#YEARS] שנים, בן/בת כמה יהיה/תהיה [#2:n]?>:<בעוד [#YEARS] שנים, מה יהיה סכום הגילים של שניהם יחד?>]",
+    "answerTemplate": "[IF:(#W)=0:<[NUM:value=(#F2):#R]>:<[NUM:value=(#SUM_FUTURE):#R]>]",
+    "hintTemplate": "[IF:(#W)=0:<חשב קודם את הגיל של [#2:n] כיום, ואז הוסף לו [#YEARS] שנים.>:<חשב את הגיל של כל אחד מהם בעוד [#YEARS] שנים (אל תשכח להוסיף [#YEARS] לכל אחד בנפרד!), ואז חבר אותם.>]",
+    "distractorsTemplates": [
+      "[IF:(#W)=0:<[NUM:value=(#AGE2):#R]>:<[NUM:value=(#AGE1:add_(#AGE2)):add_(#YEARS):#R]>]",
+      "[IF:(#W)=0:<[NUM:value=(#AGE1:add_(#YEARS)):#R]>:<[NUM:value=(#F1:add_(#AGE2)):#R]>]",
+      "[IF:(#W)=0:<[NUM:value=(#F2:add_(#DIFF)):#R]>:<[NUM:value=(#SUM_FUTURE:sub_(#DIFF)):#R]>]"
+    ]
+  },
+  {
+    "id": "easy_logic19",
+    "questionTemplate": "[HUMAN:*:#1][ITEM:type=COLLECTIBLE|MONEY:*:#I1][PLACE:*:#P1][NUM:min=300;max=600;round=50:*:#TARGET][NUM:min=80;max=150;round=10:*:#D1][NUM:min=60;max=120;round=10:*:#D2][NUM:value=(#D1:add_(#D2)):*:#COLLECTED][NUM:value=(#TARGET:sub_(#COLLECTED)):*:#LEFT][NUM:min=0;max=1:*:#W]היעד של [#1:n] הוא לאסוף [#TARGET] [#I1:p] ב[#P1:s]. בשבוע הראשון [#1:he_she] [VERB:id=collect:(past_+(#1:g)+_s)] [#D1] [#I1:p], ובשבוע השני עוד [#D2] [#I1:p]. [IF:(#W)=0:<כמה [#I1:p] עוד נשארו ל-[#1:n] לאסוף כדי להגיע ליעד?>:<כמה [#I1:p] [#1:he_she] [VERB:id=collect:(past_+(#1:g)+_s)] בשבועיים הראשונים יחד?>]",
+    "answerTemplate": "[IF:(#W)=0:<[NUM:value=(#LEFT):#R]>:<[NUM:value=(#COLLECTED):#R]>]",
+    "hintTemplate": "[IF:(#W)=0:<חבר את מה שנאסף בשבוע הראשון והשני, וחסר את הסכום מתוך היעד הכולל.>:<פשוט חבר את שתי הכמויות שנאספו בשבוע הראשון והשני.>]",
+    "distractorsTemplates": [
+      "[IF:(#W)=0:<[NUM:value=(#COLLECTED):#R]>:<[NUM:value=(#LEFT):#R]>]",
+      "[IF:(#W)=0:<[NUM:value=(#TARGET:sub_(#D1)):#R]>:<[NUM:value=(#COLLECTED:add_(#D2)):#R]>]",
+      "[IF:(#W)=0:<[NUM:value=(#LEFT:add_10):#R]>:<[NUM:value=(#COLLECTED:sub_10):#R]>]"
+    ]
+  },
+  {
+    "id": "easy_logic20",
+    "questionTemplate": "[HUMAN:*:#1][ITEM:type=TOY|STATIONERY:*:#I1][PLACE:place_type=HOME:*:#P1][NUM:min=5;max=12:*:#WIDTH][NUM:min=15;max=25:*:#LENGTH][NUM:value=(#WIDTH:add_(#LENGTH)):*:#HALF][NUM:value=(#HALF:mul_2):*:#PERIMETER][NUM:min=0;max=1:*:#W][#1:n] מכין/נה מסגרת בצורת מלבן ב[#P1:s] בעזרת [#I1:p]. אורך המסגרת הוא [#LENGTH] [#I1:p] ורוחבה הוא [#WIDTH] [#I1:p]. [IF:(#W)=0:<כמה [#I1:p] יצטרך/תצטרך [#1:n] סך הכל כדי להקיף את כל המסגרת (היקף המלבן)?>:<אם היקף המסגרת דורש בסך הכל [#PERIMETER] [#I1:p], והאורך שלה הוא [#LENGTH] [#I1:p], מהו הרוחב?>]",
+    "answerTemplate": "[IF:(#W)=0:<[NUM:value=(#PERIMETER):#R]>:<[NUM:value=(#WIDTH):#R]>]",
+    "hintTemplate": "[IF:(#W)=0:<היקף מלבן שווה לפעמיים האורך ועוד פעמיים הרוחב.>:<כדי למצוא את הרוחב, חלק את ההיקף ב-2 (כדי למצוא סכום של אורך ורוחב אחד), ואז חסר מזה את האורך.>]",
+    "distractorsTemplates": [
+      "[IF:(#W)=0:<[NUM:value=(#HALF):#R]>:<[NUM:value=(#WIDTH:mul_2):#R]>]",
+      "[IF:(#W)=0:<[NUM:value=(#WIDTH:mul_(#LENGTH)):#R]>:<[NUM:value=(#PERIMETER:sub_(#LENGTH)):#R]>]",
+      "[IF:(#W)=0:<[NUM:value=(#PERIMETER:sub_(#WIDTH)):#R]>:<[NUM:value=(#PERIMETER:div_2):#R]>]"
     ]
   }
 ]

@@ -9,5 +9,381 @@
       "[NUM:value=(#TOTAL_WIN):#R]",
       "[IF:(#W)=0:<[NUM:value=(#WINS:sub_(#PTS_LOSS)):#R]>:<[NUM:value=(#TOTAL_WIN:sub_(#LOSSES)):#R]>]"
     ]
+  },
+  {
+    "id": "hard_logic_2",
+    "questionTemplate": "[HUMAN:*:#1][PLACE:place_type=STORE:*:#P1][NUM:min=3;max=6:*:#A][NUM:min=15;max=25:*:#P1_PRICE][NUM:value=(#A:mul_(#P1_PRICE)):*:#COST_A][NUM:min=4;max=8:*:#B][NUM:min=12;max=20:*:#P2_PRICE][NUM:value=(#B:mul_(#P2_PRICE)):*:#COST_B][NUM:value=(#COST_A:add_(#COST_B)):*:#TOTAL_COST][NUM:value=(#TOTAL_COST:add_20):*:#BUDGET][NUM:min=0;max=1:*:#W]ל-[#1:n] היו [#BUDGET] שקלים. [#1:he_she] הלך/ה ל[#P1:s] וקנה/תה [#A] יחידות של מוצר א' במחיר של [#P1_PRICE] שקלים ליחידה, ועוד [#B] יחידות של מוצר ב' במחיר של [#P2_PRICE] שקלים ליחידה. [IF:(#W)=0:<כמה עודף נשאר ל-[#1:n] לאחר קניית כל המוצרים?>:<אם ידוע ש-[#1:n] קיבל/ה 20 שקלים עודף, ומוצר א' עלה [#P1_PRICE] ליחידה, כמה שילם/מה סך הכל על כל היחידות של מוצר ב' יחד?>]",
+    "answerTemplate": "[IF:(#W)=0:<[NUM:value=20:#R]>:<[NUM:value=(#COST_B):#R]>]",
+    "hintTemplate": "[IF:(#W)=0:<חשב את העלות של מוצר א' (כפל), את העלות של מוצר ב' (כפל), חבר אותן, וחסר מהתקציב ההתחלתי.>:<חסר מהתקציב ההתחלתי את העודף ואת העלות הכוללת של יחידות מוצר א'.>]",
+    "distractorsTemplates": [
+      "[IF:(#W)=0:<[NUM:value=(#TOTAL_COST):#R]>:<[NUM:value=(#P2_PRICE):#R]>]",
+      "[IF:(#W)=0:<[NUM:value=(#BUDGET:sub_(#COST_A)):#R]>:<[NUM:value=(#TOTAL_COST):#R]>]",
+      "[IF:(#W)=0:<[NUM:value=(#BUDGET:sub_(#COST_B)):#R]>:<[NUM:value=(#COST_A):#R]>]"
+    ]
+  },
+  {
+    "id": "hard_logic_3",
+    "questionTemplate": "[HUMAN:*:#1][NUM:min=20;max=30:*:#AVG1][NUM:value=(#AVG1:mul_4):*:#SUM1][NUM:min=31;max=45:*:#AVG2][NUM:value=(#AVG2:mul_5):*:#SUM2][NUM:value=(#SUM2:sub_(#SUM1)):*:#NEW_VAL][NUM:min=0;max=1:*:#W]ממוצע הציונים של [#1:n] ב-4 מבחנים היה [#AVG1]. [IF:(#W)=0:<במבחן החמישי [#1:he_she] קיבל/ה ציון של [#NEW_VAL]. מהו הממוצע החדש של [#1:n] בכל 5 המבחנים יחד?>:<לאחר המבחן החמישי, הממוצע של [#1:n] בכל 5 המבחנים עלה ל-[#AVG2]. איזה ציון הוא/היא קיבל/ה במבחן החמישי בלבד?>]",
+    "answerTemplate": "[IF:(#W)=0:<[NUM:value=(#AVG2):#R]>:<[NUM:value=(#NEW_VAL):#R]>]",
+    "hintTemplate": "[IF:(#W)=0:<מצא את סכום הציונים של 4 המבחנים (ממוצע כפול 4), הוסף את הציון החמישי, וחלק הכל ב-5.>:<מצא את סכום הציונים החדש (ממוצע חדש כפול 5), וחסר ממנו את סכום הציונים הישן (ממוצע ישן כפול 4).>]",
+    "distractorsTemplates": [
+      "[IF:(#W)=0:<[NUM:value=(#AVG1:add_(#NEW_VAL)):div_2:#R]>:<[NUM:value=(#SUM2):#R]>]",
+      "[IF:(#W)=0:<[NUM:value=(#SUM2):#R]>:<[NUM:value=(#AVG2:sub_(#AVG1)):#R]>]",
+      "[IF:(#W)=0:<[NUM:value=(#AVG2:add_5):#R]>:<[NUM:value=(#SUM1:add_(#AVG2)):#R]>]"
+    ]
+  },
+  {
+    "id": "hard_logic_4",
+    "questionTemplate": "[NUM:min=200;max=500;round=100:*:#TOTAL][NUM:min=20;max=40;round=10:*:#P1][NUM:value=(#TOTAL:mul_(#P1)):div_100:*:#PART1][NUM:value=(#TOTAL:sub_(#PART1)):*:#REM1][NUM:value=(#REM1:div_2):*:#PART2][NUM:value=(#REM1:sub_(#PART2)):*:#FINAL][NUM:value=(#PART1:add_(#PART2)):*:#SOLD_TOTAL][NUM:min=0;max=1:*:#W]בחנות היו [#TOTAL] פריטים בתחילת היום. בבוקר נמכרו [#P1] אחוזים (%) מכל הפריטים. בערב, נמכרו בדיוק חצי (50%) מכל הפריטים **שנשארו** בחנות אחרי הבוקר. [IF:(#W)=0:<כמה פריטים נשארו בחנות בסוף היום כולו?>:<כמה פריטים נמכרו בסך הכל (בבוקר ובערב יחד) במהלך היום?>]",
+    "answerTemplate": "[IF:(#W)=0:<[NUM:value=(#FINAL):#R]>:<[NUM:value=(#SOLD_TOTAL):#R]>]",
+    "hintTemplate": "[IF:(#W)=0:<חשב כמה נמכרו בבוקר (אחוז מהסך הכל), חסר כדי למצוא כמה נשארו, ואז חלק ב-2 כדי למצוא מה נשאר בסוף.>:<חשב את המכירות של הבוקר, מצא כמה נשאר, חלק ב-2 כדי למצוא את המכירות של הערב, וחבר את שתי המכירות.>]",
+    "distractorsTemplates": [
+      "[IF:(#W)=0:<[NUM:value=(#REM1):#R]>:<[NUM:value=(#PART1):#R]>]",
+      "[IF:(#W)=0:<[NUM:value=(#PART1):#R]>:<[NUM:value=(#TOTAL:sub_(#PART2)):#R]>]",
+      "[IF:(#W)=0:<[NUM:value=(#TOTAL:div_2):#R]>:<[NUM:value=(#TOTAL:sub_(#P1)):#R]>]"
+    ]
+  },
+  {
+    "id": "hard_logic_5",
+    "questionTemplate": "[NUM:min=60;max=90;round=10:*:#SPEED1][NUM:min=2;max=4:*:#TIME1][NUM:value=(#SPEED1:mul_(#TIME1)):*:#DIST1][NUM:min=40;max=70;round=10:*:#SPEED2][NUM:min=1;max=3:*:#TIME2][NUM:value=(#SPEED2:mul_(#TIME2)):*:#DIST2][NUM:value=(#DIST1:add_(#DIST2)):*:#TOTAL_DIST][NUM:min=0;max=1:*:#W]נהג יצא למסע. בחלק הראשון של הדרך הוא נסע במהירות של [#SPEED1] קמ\"ש במשך [#TIME1] שעות. לאחר מכן נכנס לפקקים, ובחלק השני של הדרך נסע במהירות של [#SPEED2] קמ\"ש. [IF:(#W)=0:<אם החלק השני של הדרך לקח לו [#TIME2] שעות, מהו המרחק הכולל (בקילומטרים) שעבר מתחילת המסע ועד סופו?>:<אם ידוע שהמרחק הכולל שעבר במסע (בשני החלקים יחד) היה בדיוק [#TOTAL_DIST] קילומטרים, כמה שעות לקח לו לנסוע את החלק השני של הדרך?>]",
+    "answerTemplate": "[IF:(#W)=0:<[NUM:value=(#TOTAL_DIST):#R]>:<[NUM:value=(#TIME2):#R]>]",
+    "hintTemplate": "[IF:(#W)=0:<חשב את המרחק של החלק הראשון (מהירות כפול זמן), את המרחק של החלק השני, וחבר אותם.>:<חשב את המרחק של החלק הראשון, חסר אותו מהמרחק הכולל, ואת התוצאה חלק במהירות של החלק השני.>]",
+    "distractorsTemplates": [
+      "[IF:(#W)=0:<[NUM:value=(#DIST1):#R]>:<[NUM:value=(#TOTAL_DIST:div_(#SPEED2)):#R]>]",
+      "[IF:(#W)=0:<[NUM:value=(#SPEED1:add_(#SPEED2)):mul_(#TIME1:add_(#TIME2)):#R]>:<[NUM:value=(#DIST2):#R]>]",
+      "[IF:(#W)=0:<[NUM:value=(#TOTAL_DIST:sub_20):#R]>:<[NUM:value=(#TIME1:add_(#TIME2)):#R]>]"
+    ]
+  },
+  {
+    "id": "hard_logic_6",
+    "questionTemplate": "[NUM:min=10;max=20:*:#BOTH][NUM:min=15;max=30:*:#ONLY_A][NUM:min=10;max=25:*:#ONLY_B][NUM:value=(#ONLY_A:add_(#BOTH)):*:#A][NUM:value=(#ONLY_B:add_(#BOTH)):*:#B][NUM:value=(#ONLY_A:add_(#ONLY_B)):add_(#BOTH):*:#TOTAL][NUM:min=0;max=1:*:#W]בכיתה יש [#TOTAL] תלמידים. כל תלמיד חבר לפחות בחוג אחד (מתמטיקה או אנגלית). ידוע שיש [#A] תלמידים בחוג מתמטיקה, ו-[#B] תלמידים בחוג אנגלית. [IF:(#W)=0:<כמה תלמידים חברים ב**שני** החוגים יחד (גם מתמטיקה וגם אנגלית)?>:<כמה תלמידים חברים **רק** בחוג אנגלית (ולא במתמטיקה)?>]",
+    "answerTemplate": "[IF:(#W)=0:<[NUM:value=(#BOTH):#R]>:<[NUM:value=(#ONLY_B):#R]>]",
+    "hintTemplate": "[IF:(#W)=0:<חבר את מספר תלמידי מתמטיקה ואנגלית. ההפרש בין הסכום הזה לסך כל התלמידים בכיתה הוא מספר התלמידים שבשני החוגים.>:<חסר מסך כל התלמידים בכיתה את כל התלמידים שנמצאים בחוג מתמטיקה (כי מי שלא במתמטיקה חייב להיות רק באנגלית).>]",
+    "distractorsTemplates": [
+      "[IF:(#W)=0:<[NUM:value=(#ONLY_A:add_(#ONLY_B)):#R]>:<[NUM:value=(#B):#R]>]",
+      "[IF:(#W)=0:<[NUM:value=(#TOTAL:sub_(#A)):#R]>:<[NUM:value=(#TOTAL:sub_(#BOTH)):#R]>]",
+      "[IF:(#W)=0:<[NUM:value=(#A:add_(#B)):#R]>:<[NUM:value=(#BOTH):#R]>]"
+    ]
+  },
+  {
+    "id": "hard_logic_7",
+    "questionTemplate": "[NUM:min=5;max=15:*:#WIDTH][NUM:value=(#WIDTH:mul_2):*:#LENGTH][NUM:value=(#WIDTH:mul_6):*:#PERIM][NUM:value=(#WIDTH:mul_(#LENGTH)):*:#AREA][NUM:min=0;max=1:*:#W]נתון מגרש מלבני. אורך המגרש גדול בדיוק פי 2 מהרוחב שלו. [IF:(#W)=0:<אם ידוע שהיקף המגרש הוא [#PERIM] מטרים, מהו שטח המגרש במטרים רבועים (מ\"ר)?>:<אם ידוע ששטח המגרש הוא [#AREA] מ\"ר ורוחבו הוא [#WIDTH] מטרים, מהו היקף המגרש במטרים?>]",
+    "answerTemplate": "[IF:(#W)=0:<[NUM:value=(#AREA):#R]>:<[NUM:value=(#PERIM):#R]>]",
+    "hintTemplate": "[IF:(#W)=0:<היקף מלבן שווה ל-6 פעמים הרוחב (כי האורך הוא פעמיים הרוחב). מצא את הרוחב, מצא את האורך, וכפול ביניהם לשטח.>:<מצא קודם את האורך (כפול את הרוחב ב-2 או חלוק שטח ברוחב), ואז חשב את סכום כל הצלעות להיקף.>]",
+    "distractorsTemplates": [
+      "[IF:(#W)=0:<[NUM:value=(#PERIM:div_2):mul_(#PERIM:div_2):#R]>:<[NUM:value=(#LENGTH:add_(#WIDTH)):#R]>]",
+      "[IF:(#W)=0:<[NUM:value=(#PERIM):#R]>:<[NUM:value=(#AREA:div_(#WIDTH)):#R]>]",
+      "[IF:(#W)=0:<[NUM:value=(#LENGTH:mul_4):#R]>:<[NUM:value=(#AREA:add_(#WIDTH)):#R]>]"
+    ]
+  },
+  {
+    "id": "hard_logic_8",
+    "questionTemplate": "[NUM:min=5;max=12:*:#M][NUM:value=(#M:mul_3):*:#A][NUM:value=(#M:mul_5):*:#B][NUM:value=(#A:add_(#B)):*:#SUM][NUM:value=(#B:sub_(#A)):*:#DIFF][NUM:min=0;max=1:*:#W]בקופסה יש כדורים אדומים וכחולים. היחס בין מספר הכדורים האדומים למספר הכדורים הכחולים הוא 3:5 (על כל 3 אדומים יש 5 כחולים). [IF:(#W)=0:<אם ידוע שיש בקופסה סך הכל [#SUM] כדורים, בכמה גדול מספר הכדורים הכחולים ממספר הכדורים האדומים?>:<אם ידוע שיש בקופסה [#DIFF] כדורים כחולים יותר מאשר אדומים, כמה כדורים יש בסך הכל בקופסה (אדומים וכחולים יחד)?>]",
+    "answerTemplate": "[IF:(#W)=0:<[NUM:value=(#DIFF):#R]>:<[NUM:value=(#SUM):#R]>]",
+    "hintTemplate": "[IF:(#W)=0:<חבר את חלקי היחס (3+5) וחלק את הסכום הכולל בתוצאה כדי למצוא \"מנה\" אחת. ההפרש בין החלקים (2) כפול המנה ייתן את התשובה.>:<מצא כמה שווה \"מנה\" אחת על ידי חלוקת ההפרש להפרש חלקי היחס (5-3), ואז כפול את המנה בסכום כל החלקים (8).>]",
+    "distractorsTemplates": [
+      "[IF:(#W)=0:<[NUM:value=(#SUM:div_8):#R]>:<[NUM:value=(#DIFF:mul_5):#R]>]",
+      "[IF:(#W)=0:<[NUM:value=(#B):#R]>:<[NUM:value=(#A):#R]>]",
+      "[IF:(#W)=0:<[NUM:value=(#A):#R]>:<[NUM:value=(#DIFF:mul_3):#R]>]"
+    ]
+  },
+  {
+    "id": "hard_logic_9",
+    "questionTemplate": "[NUM:min=2;max=4:*:#NUM_BULK][NUM:min=2;max=4:*:#REMAIN][NUM:value=(#NUM_BULK:mul_6):add_(#REMAIN):*:#TARGET][NUM:min=40;max=60;round=10:*:#BULK_PRICE][NUM:min=10;max=15:*:#SINGLE_PRICE][NUM:value=(#NUM_BULK:mul_(#BULK_PRICE)):*:#COST_BULK][NUM:value=(#REMAIN:mul_(#SINGLE_PRICE)):*:#COST_SINGLE][NUM:value=(#COST_BULK:add_(#COST_SINGLE)):*:#TOTAL_COST][NUM:min=0;max=1:*:#W]חנות מוכרת מחברות: מארז של 6 מחברות עולה [#BULK_PRICE] שקלים, ומחברת בודדת עולה [#SINGLE_PRICE] שקלים. לקוח רוצה לקנות מחברות ולשלם כמה שפחות. [IF:(#W)=0:<אם הלקוח זקוק ל-[#TARGET] מחברות בדיוק, וקונה את הכמות המקסימלית של מארזים ואת השאר כבודדות, כמה ישלם סך הכל?>:<הלקוח קנה [#NUM_BULK] מארזים ועוד כמה מחברות בודדות. סך הכל הוא שילם [#TOTAL_COST] שקלים. כמה מחברות בודדות הוא קנה מחוץ למארזים?>]",
+    "answerTemplate": "[IF:(#W)=0:<[NUM:value=(#TOTAL_COST):#R]>:<[NUM:value=(#REMAIN):#R]>]",
+    "hintTemplate": "[IF:(#W)=0:<בדוק כמה מארזים מלאים של 6 נכנסים בכמות המבוקשת, חשב את מחירם, ואז הוסף את מחיר השארית כפול מחיר מחברת בודדת.>:<חסר מהתשלום הכולל את המחיר של המארזים, ואת העודף שנשאר חלק במחיר של מחברת בודדת.>]",
+    "distractorsTemplates": [
+      "[IF:(#W)=0:<[NUM:value=(#TARGET:mul_(#SINGLE_PRICE)):#R]>:<[NUM:value=(#COST_SINGLE):#R]>]",
+      "[IF:(#W)=0:<[NUM:value=(#COST_BULK):#R]>:<[NUM:value=(#TARGET):#R]>]",
+      "[IF:(#W)=0:<[NUM:value=(#TOTAL_COST:sub_10):#R]>:<[NUM:value=(#REMAIN:add_1):#R]>]"
+    ]
+  },
+  {
+    "id": "hard_logic_10",
+    "questionTemplate": "[HUMAN:*:#1][HUMAN:n=!(#1:n):*:#2][NUM:min=12;max=20:*:#FUT_B][NUM:value=(#FUT_B:mul_2):*:#FUT_A][NUM:min=5;max=9:*:#Y][NUM:value=(#FUT_B:sub_(#Y)):*:#B_AGE][NUM:value=(#FUT_A:sub_(#Y)):*:#A_AGE][NUM:value=(#A_AGE:add_(#B_AGE)):*:#SUM_NOW][NUM:min=0;max=1:*:#W]כיום, גילו של האח הגדול ([#1:n]) הוא [#A_AGE] שנים, וגילו של האח הקטן ([#2:n]) הוא [#B_AGE] שנים. [IF:(#W)=0:<בעוד כמה שנים מהיום, גילו של האח הגדול יהיה בדיוק פי 2 מגילו של האח הקטן?>:<בעוד [#Y] שנים מהיום, גילו של האח הגדול יהיה בדיוק פי 2 מגילו של האח הקטן (שיגיע לגיל [#FUT_B]). מהו סכום הגילים של שני האחים כיום?>]",
+    "answerTemplate": "[IF:(#W)=0:<[NUM:value=(#Y):#R]>:<[NUM:value=(#SUM_NOW):#R]>]",
+    "hintTemplate": "[IF:(#W)=0:<מצא את ההפרש בין הגילים שלהם (הפרש שתמיד נשאר קבוע). בעתיד, הגיל של הקטן חייב להיות שווה להפרש הזה כדי שהגדול יהיה פי 2. חסר מזה את הגיל הנוכחי של הקטן.>:<חסר [#Y] שנים מגיל העתיד של הקטן כדי למצוא את גילו היום, וחסר [#Y] מגיל העתיד של הגדול כדי למצוא את גילו היום. חבר אותם.>]",
+    "distractorsTemplates": [
+      "[IF:(#W)=0:<[NUM:value=(#FUT_B):#R]>:<[NUM:value=(#FUT_A:add_(#FUT_B)):#R]>]",
+      "[IF:(#W)=0:<[NUM:value=(#A_AGE:sub_(#B_AGE)):#R]>:<[NUM:value=(#SUM_NOW:add_(#Y)):#R]>]",
+      "[IF:(#W)=0:<[NUM:value=(#Y:add_2):#R]>:<[NUM:value=(#A_AGE):#R]>]"
+    ]
+  },
+  {
+    "id": "hard_logic_11",
+    "questionTemplate": "[NUM:min=30;max=60;round=5:*:#COST_P][NUM:min=10;max=25;round=5:*:#PROFIT_P][NUM:value=(#COST_P:add_(#PROFIT_P)):*:#SELL_P][NUM:min=15;max=30:*:#QTY][NUM:value=(#QTY:mul_(#PROFIT_P)):*:#TOTAL_PROFIT][NUM:value=(#QTY:mul_(#SELL_P)):*:#TOTAL_REVENUE][NUM:value=(#QTY:mul_(#COST_P)):*:#TOTAL_COST][NUM:min=0;max=1:*:#W]בעל חנות מחשבים קנה [#QTY] פריטים זהים. [IF:(#W)=0:<הוא קנה כל פריט ב-[#COST_P] שקלים. הוא מכר את כל הפריטים ברווח נקי כולל של [#TOTAL_PROFIT] שקלים. בכמה שקלים הוא מכר פריט אחד (מהו מחיר המכירה ליחידה)?>:<הוא מוכר כל פריט ב-[#SELL_P] שקלים, ומרוויח עליו בדיוק [#PROFIT_P] שקלים נטו (מעבר לעלות הקנייה). אם סך כל ההכנסות שלו מהמכירות (הפדיון הכולל) היה [#TOTAL_REVENUE] שקלים, כמה עלה לו לקנות את כל הפריטים יחד בהתחלה (עלות הקנייה הכוללת)?>]",
+    "answerTemplate": "[IF:(#W)=0:<[NUM:value=(#SELL_P):#R]>:<[NUM:value=(#TOTAL_COST):#R]>]",
+    "hintTemplate": "[IF:(#W)=0:<חלק את הרווח הכולל במספר הפריטים כדי למצוא את הרווח לפריט אחד, ואז הוסף אותו למחיר הקנייה המקורי של הפריט.>:<חסר את הרווח ליחידה ממחיר המכירה ליחידה כדי למצוא את עלות הקנייה, ואז כפול במספר הפריטים (פדיון כולל חלקי מחיר יחידה).>]",
+    "distractorsTemplates": [
+      "[IF:(#W)=0:<[NUM:value=(#PROFIT_P):#R]>:<[NUM:value=(#TOTAL_PROFIT):#R]>]",
+      "[IF:(#W)=0:<[NUM:value=(#TOTAL_PROFIT:div_(#QTY)):#R]>:<[NUM:value=(#TOTAL_REVENUE):#R]>]",
+      "[IF:(#W)=0:<[NUM:value=(#COST_P:add_(#TOTAL_PROFIT)):#R]>:<[NUM:value=(#TOTAL_COST:add_(#PROFIT_P)):#R]>]"
+    ]
+  },
+  {
+    "id": "hard_logic_12",
+    "questionTemplate": "[HUMAN:*:#1][NUM:min=150;max=350;round=50:*:#TOTAL][NUM:value=(#TOTAL:div_5):mul_2:*:#READ1][NUM:min=30;max=60;round=10:*:#READ2][NUM:value=(#TOTAL:sub_(#READ1)):sub_(#READ2):*:#FINAL_LEFT][NUM:min=0;max=1:*:#W][#1:n] קורא/ת ספר. ביום הראשון [#1:he_she] קרא/ה בדיוק שתי חמישיות (2/5) מכל העמודים בספר. ביום השני [#1:he_she] קרא/ה עוד [#READ2] עמודים. [IF:(#W)=0:<אם ידוע שיש בספר [#TOTAL] עמודים סך הכל, כמה עמודים נשארו ל-[#1:n] לקרוא כדי לסיים את הספר?>:<אם ידוע שלאחר היום השני נותרו ל-[#1:n] בדיוק [#FINAL_LEFT] עמודים לסיום הספר, כמה עמודים יש בספר סך הכל?>]",
+    "answerTemplate": "[IF:(#W)=0:<[NUM:value=(#FINAL_LEFT):#R]>:<[NUM:value=(#TOTAL):#R]>]",
+    "hintTemplate": "[IF:(#W)=0:<מצא כמה זה 2/5 מתוך סך העמודים, וחבר למספר העמודים שנקראו ביום השני. חסר את הסכום מסך העמודים בספר.>:<אם נחבר את העמודים מהיום השני והעמודים שנשארו, נקבל שלוש חמישיות (3/5) מהספר (כי 2/5 נקראו). חלק ב-3 וכפול ב-5 כדי למצוא את השלם.>]",
+    "distractorsTemplates": [
+      "[IF:(#W)=0:<[NUM:value=(#READ1):#R]>:<[NUM:value=(#TOTAL:sub_(#READ1)):#R]>]",
+      "[IF:(#W)=0:<[NUM:value=(#TOTAL:sub_(#READ1)):#R]>:<[NUM:value=(#READ1:add_(#READ2)):#R]>]",
+      "[IF:(#W)=0:<[NUM:value=(#FINAL_LEFT:add_10):#R]>:<[NUM:value=(#TOTAL:div_5):mul_3:#R]>]"
+    ]
+  },
+  {
+    "id": "hard_logic_13",
+    "questionTemplate": "[NUM:min=20;max=40;round=10:*:#NET_RATE][NUM:min=10;max=20:*:#TIME][NUM:value=(#NET_RATE:mul_(#TIME)):*:#CAP][NUM:min=10;max=25:*:#RATE_OUT][NUM:value=(#NET_RATE:add_(#RATE_OUT)):*:#RATE_IN][NUM:min=0;max=1:*:#W]לבאר מים מחוברים שני צינורות: צינור אחד מכניס מים פנימה בקצב של [#RATE_IN] ליטרים בדקה, וצינור שני מוציא (מרוקן) מים החוצה בקצב של [#RATE_OUT] ליטרים בדקה. שני הצינורות הופעלו יחד כשהבאר הייתה ריקה לחלוטין. [IF:(#W)=0:<אם נפח הבאר הוא [#CAP] ליטרים, אחרי כמה דקות הבאר תתמלא לחלוטין?>:<אם לקח לבאר בדיוק [#TIME] דקות להתמלא לחלוטין, מהו הנפח הכולל של הבאר בליטרים?>]",
+    "answerTemplate": "[IF:(#W)=0:<[NUM:value=(#TIME):#R]>:<[NUM:value=(#CAP):#R]>]",
+    "hintTemplate": "[IF:(#W)=0:<חשב את קצב המילוי הנטו (הכנסה פחות הוצאה) בדקה אחת, ואז חלק את נפח הבאר בקצב הזה.>:<חשב את קצב המילוי הנטו של הבאר בדקה אחת (כמה נכנס פחות כמה יוצא), והכפל במספר הדקות שלקח למלא אותה.>]",
+    "distractorsTemplates": [
+      "[IF:(#W)=0:<[NUM:value=(#CAP:div_(#RATE_IN)):#R]>:<[NUM:value=(#RATE_IN:mul_(#TIME)):#R]>]",
+      "[IF:(#W)=0:<[NUM:value=(#CAP:div_(#RATE_OUT)):#R]>:<[NUM:value=(#NET_RATE):#R]>]",
+      "[IF:(#W)=0:<[NUM:value=(#TIME:add_5):#R]>:<[NUM:value=(#CAP:sub_50):#R]>]"
+    ]
+  },
+  {
+    "id": "hard_logic_14",
+    "questionTemplate": "[NUM:min=15;max=35:*:#X][NUM:value=(#X:add_1):*:#X1][NUM:value=(#X:add_2):*:#X2][NUM:value=(#X:mul_3):add_3:*:#SUM][NUM:value=(#X:add_(#X2)):*:#EXTREMES][NUM:min=0;max=1:*:#W]הסכום של שלושה מספרים שלמים ועוקבים (שבאים אחד אחרי השני, כמו 4, 5, 6) הוא בדיוק [#SUM]. [IF:(#W)=0:<מהו המספר הגדול ביותר מבין השלושה?>:<מהו סכום שני המספרים הקיצוניים (המספר הקטן ביותר והמספר הגדול ביותר יחד) מתוך השלושה?>]",
+    "answerTemplate": "[IF:(#W)=0:<[NUM:value=(#X2):#R]>:<[NUM:value=(#EXTREMES):#R]>]",
+    "hintTemplate": "[IF:(#W)=0:<אם נחסר 3 מהסכום הכולל, נקבל שלוש פעמים את המספר הקטן ביותר. חלק ב-3, ומצא את הקטן, ואז הוסף 2 כדי למצוא את הגדול.>:<סכום שלושה מספרים עוקבים שווה לפי 3 מהמספר האמצעי. מצא את האמצעי, ואז סכום הקיצוניים הוא פשוט המספר האמצעי כפול 2.>]",
+    "distractorsTemplates": [
+      "[IF:(#W)=0:<[NUM:value=(#X):#R]>:<[NUM:value=(#X2):#R]>]",
+      "[IF:(#W)=0:<[NUM:value=(#X1):#R]>:<[NUM:value=(#SUM:div_3):#R]>]",
+      "[IF:(#W)=0:<[NUM:value=(#SUM:div_3):#R]>:<[NUM:value=(#EXTREMES:add_1):#R]>]"
+    ]
+  },
+  {
+    "id": "hard_logic_15",
+    "questionTemplate": "[NUM:min=3;max=5:*:#M_B][NUM:value=(#M_B:mul_5):*:#BOYS][NUM:value=(#M_B):*:#GLASS_B][NUM:min=4;max=6:*:#M_G][NUM:value=(#M_G:mul_4):*:#GIRLS][NUM:value=(#M_G):*:#GLASS_G][NUM:value=(#BOYS:add_(#GIRLS)):*:#TOTAL][NUM:value=(#GLASS_B:add_(#GLASS_G)):*:#TOTAL_GLASS][NUM:value=(#TOTAL:sub_(#TOTAL_GLASS)):*:#NO_GLASS][NUM:min=0;max=1:*:#W]בשכבת כיתות ח' יש [#TOTAL] תלמידים. ידוע ש-[#BOYS] מהם הם בנים והשאר הן בנות. חמישית (1/5) מהבנים מרכיבים משקפיים, ורבע (1/4) מהבנות מרכיבות משקפיים. [IF:(#W)=0:<כמה תלמידים סך הכל (בנים ובנות יחד) מרכיבים משקפיים בשכבה?>:<כמה תלמידים (בנים ובנות יחד) בשכבה **אינם** מרכיבים משקפיים כלל?>]",
+    "answerTemplate": "[IF:(#W)=0:<[NUM:value=(#TOTAL_GLASS):#R]>:<[NUM:value=(#NO_GLASS):#R]>]",
+    "hintTemplate": "[IF:(#W)=0:<מצא כמה בנות יש בשכבה (חיסור הבנים מהסך הכל). חלק את הבנים ב-5 ואת הבנות ב-4, וחבר את התוצאות.>:<חשב קודם כמה מרכיבים משקפיים (חמישית מהבנים ועוד רבע מהבנות), וחסר את התוצאה מסך כל התלמידים בשכבה.>]",
+    "distractorsTemplates": [
+      "[IF:(#W)=0:<[NUM:value=(#NO_GLASS):#R]>:<[NUM:value=(#TOTAL_GLASS):#R]>]",
+      "[IF:(#W)=0:<[NUM:value=(#GLASS_B):#R]>:<[NUM:value=(#BOYS:sub_(#GLASS_B)):add_(#GIRLS):#R]>]",
+      "[IF:(#W)=0:<[NUM:value=(#GLASS_G):#R]>:<[NUM:value=(#NO_GLASS:add_2):#R]>]"
+    ]
   }
+  ,
+    {
+      "id": "hard_logic_16",
+      "questionTemplate": "[HUMAN:*:#1][HUMAN:n=!(#1:n):*:#2][HUMAN:n=!(#1:n);n=!(#2:n):*:#3][ITEM:*:#I1][NUM:min=4;max=8:*:#RA][NUM:min=5;max=9:*:#RB][NUM:min=3;max=7:*:#RC][NUM:value=(#RA:add_(#RB)):add_(#RC):*:#SUM_R][NUM:min=3;max=6:*:#H][NUM:value=(#SUM_R:mul_(#H)):*:#TOTAL][NUM:min=0;max=1:*:#W][#1:n], [#2:n] ו-[#3:n] אורזים [#I1:p]. ההספק של כל אחד בשעה אחת הוא: [#1:n] אורז/ת [#RA] פריטים, [#2:n] אורז/ת [#RB] פריטים, ו-[#3:n] אורז/ת [#RC] פריטים. [IF:(#W)=0:<אם שלושתם יעבדו יחד במשך [#H] שעות ברצף, כמה [#I1:p] הם יארזו סך הכל?>:<אם שלושתם עבדו יחד וארזו סך הכל [#TOTAL] [#I1:p], כמה שעות הם עבדו?>]",
+      "answerTemplate": "[IF:(#W)=0:<[NUM:value=(#TOTAL):#R]>:<[NUM:value=(#H):#R]>]",
+      "hintTemplate": "[IF:(#W)=0:<חבר את ההספק של שלושתם יחד כדי למצוא כמה הם אורזים בשעה אחת, ואז כפול במספר השעות.>:<מצא את ההספק המשותף של שלושתם בשעה אחת (חיבור), ואז חלק את הכמות הכוללת בהספק הזה.>]",
+      "distractorsTemplates": [
+        "[IF:(#W)=0:<[NUM:value=(#RA:add_(#RB)):mul_(#H):#R]>:<[NUM:value=(#TOTAL:div_(#RA)):#R]>]",
+        "[IF:(#W)=0:<[NUM:value=(#TOTAL:sub_(#H)):#R]>:<[NUM:value=(#H:add_2):#R]>]",
+        "[IF:(#W)=0:<[NUM:value=(#SUM_R:add_(#H)):#R]>:<[NUM:value=(#TOTAL:div_(#RB)):#R]>]"
+      ]
+    },
+    {
+      "id": "hard_logic_17",
+      "questionTemplate": "[ITEM:*:#I1][NUM:min=2;max=5:*:#HUNDREDS][NUM:value=(#HUNDREDS:mul_100):*:#TOTAL][NUM:min=20;max=30;round=5:*:#P1][NUM:min=10;max=15:*:#P2][NUM:value=(#TOTAL:mul_(#P1)):div_100:*:#S1][NUM:value=(#TOTAL:mul_(#P2)):div_100:*:#S2][NUM:value=(#S1:add_(#S2)):*:#SOLD][NUM:value=(#TOTAL:sub_(#SOLD)):*:#LEFT][NUM:min=0;max=1:*:#W]בחנות היו [#TOTAL] [#I1:p]. ביום הראשון נמכרו [#P1]% מכל הפריטים שהיו בהתחלה. ביום השני נמכרו עוד [#P2]% מסך הפריטים **ההתחלתי**. [IF:(#W)=0:<כמה [#I1:p] נמכרו בסך הכל בשני הימים יחד?>:<כמה [#I1:p] נשארו בחנות לאחר שני ימי המכירות?>]",
+      "answerTemplate": "[IF:(#W)=0:<[NUM:value=(#SOLD):#R]>:<[NUM:value=(#LEFT):#R]>]",
+      "hintTemplate": "[IF:(#W)=0:<חבר את האחוזים של שני הימים (אחוז המכירה הכולל), וחשב את האחוז הזה מתוך הכמות ההתחלתית.>:<חשב כמה פריטים נמכרו (בעזרת חיבור האחוזים), וחסר את התוצאה מהכמות ההתחלתית הכוללת.>]",
+      "distractorsTemplates": [
+        "[IF:(#W)=0:<[NUM:value=(#S1):#R]>:<[NUM:value=(#SOLD):#R]>]",
+        "[IF:(#W)=0:<[NUM:value=(#LEFT):#R]>:<[NUM:value=(#TOTAL:sub_(#S1)):#R]>]",
+        "[IF:(#W)=0:<[NUM:value=(#SOLD:add_10):#R]>:<[NUM:value=(#LEFT:sub_10):#R]>]"
+      ]
+    },
+    {
+      "id": "hard_logic_18",
+      "questionTemplate": "[NUM:min=80;max=110;round=10:*:#V2][NUM:min=50;max=70;round=10:*:#V1][NUM:value=(#V2:sub_(#V1)):*:#DIFF_V][NUM:min=2;max=5:*:#H][NUM:value=(#DIFF_V:mul_(#H)):*:#DIST][NUM:min=0;max=1:*:#W]שתי מכוניות יצאו מאותה נקודה ונסעו בדיוק באותו כיוון. המכונית הראשונה נסעה במהירות קבועה של [#V1] קמ\"ש, והשנייה נסעה במהירות קבועה של [#V2] קמ\"ש. [IF:(#W)=0:<מה יהיה המרחק בקילומטרים בין המכוניות לאחר [#H] שעות נסיעה?>:<לאחר כמה שעות נסיעה המרחק ביניהן יהיה בדיוק [#DIST] קילומטרים?>]",
+      "answerTemplate": "[IF:(#W)=0:<[NUM:value=(#DIST):#R]>:<[NUM:value=(#H):#R]>]",
+      "hintTemplate": "[IF:(#W)=0:<מצא את הפרש המהירויות ביניהן (בכמה ק\"מ השנייה מתרחקת מהראשונה בכל שעה), ואז כפול במספר השעות.>:<מצא את הפרש המהירויות ביניהן, וחלק את המרחק הנתון בהפרש הזה.>]",
+      "distractorsTemplates": [
+        "[IF:(#W)=0:<[NUM:value=(#V2:mul_(#H)):#R]>:<[NUM:value=(#DIST:div_(#V2)):#R]>]",
+        "[IF:(#W)=0:<[NUM:value=(#V1:mul_(#H)):#R]>:<[NUM:value=(#H:add_2):#R]>]",
+        "[IF:(#W)=0:<[NUM:value=(#V1:add_(#V2)):mul_(#H):#R]>:<[NUM:value=(#DIST:div_(#V1)):#R]>]"
+      ]
+    },
+    {
+      "id": "hard_logic_19",
+      "questionTemplate": "[NUM:min=8;max=15:*:#L][NUM:min=6;max=10:*:#W_VAL][NUM:value=(#L:mul_(#W_VAL)):*:#A_ROOM][NUM:value=(#L:sub_2):*:#C_L][NUM:value=(#W_VAL:sub_2):*:#C_W][NUM:value=(#C_L:mul_(#C_W)):*:#A_CARPET][NUM:value=(#A_ROOM:sub_(#A_CARPET)):*:#UNCOVERED][NUM:min=0;max=1:*:#W]אורך רצפת חדר מלבני הוא [#L] מטרים ורוחבה [#W_VAL] מטרים. הניחו במרכז החדר שטיח מלבני, כך שנשאר רווח (שוליים) של 1 מטר בדיוק בין כל צלע של השטיח לבין קירות החדר (מכל 4 הכיוונים). [IF:(#W)=0:<מהו שטח השטיח במ\"ר?>:<מהו השטח של רצפת החדר שנותר גלוי (ללא שטיח) במ\"ר?>]",
+      "answerTemplate": "[IF:(#W)=0:<[NUM:value=(#A_CARPET):#R]>:<[NUM:value=(#UNCOVERED):#R]>]",
+      "hintTemplate": "[IF:(#W)=0:<כדי למצוא את אורך השטיח חסר 2 מטרים (1 מכל צד) מאורך החדר. עשה אותו דבר לרוחב, ואז חשב שטח (אורך כפול רוחב).>:<חשב את השטח הכולל של החדר, חשב את שטח השטיח (זכור להוריד 2 מטרים מהאורך ו-2 מהרוחב), וחסר את שטח השטיח משטח החדר.>]",
+      "distractorsTemplates": [
+        "[IF:(#W)=0:<[NUM:value=(#A_ROOM):#R]>:<[NUM:value=(#A_CARPET):#R]>]",
+        "[IF:(#W)=0:<[NUM:value=(#L:sub_1):mul_(#W_VAL:sub_1):#R]>:<[NUM:value=(#A_ROOM:sub_(#L:sub_1):mul_(#W_VAL:sub_1)):#R]>]",
+        "[IF:(#W)=0:<[NUM:value=(#C_L:add_(#C_W)):mul_2:#R]>:<[NUM:value=(#A_ROOM:sub_2):#R]>]"
+      ]
+    },
+    {
+      "id": "hard_logic_20",
+      "questionTemplate": "[HUMAN:*:#1][NUM:min=10;max=30:*:#K][NUM:value=(#K:mul_12):*:#TOTAL][NUM:value=(#TOTAL:div_3):*:#FOOD][NUM:value=(#TOTAL:sub_(#FOOD)):*:#REM1][NUM:value=(#REM1:div_4):*:#CLOTHES][NUM:value=(#REM1:sub_(#CLOTHES)):*:#LEFT][NUM:min=0;max=1:*:#W]ל-[#1:n] היו [#TOTAL] שקלים. [#1:he_she] הוציא/ה בדיוק שליש (1/3) מהסכום הכולל על אוכל, ולאחר מכן הוציא/ה רבע (1/4) **ממה שנשאר** על קניית בגדים. [IF:(#W)=0:<כמה שקלים נשארו ל-[#1:n] בסוף שתי הקניות?>:<כמה שקלים הוציא/ה [#1:n] על קניית בגדים בלבד?>]",
+      "answerTemplate": "[IF:(#W)=0:<[NUM:value=(#LEFT):#R]>:<[NUM:value=(#CLOTHES):#R]>]",
+      "hintTemplate": "[IF:(#W)=0:<מצא כמה הוציא/ה על אוכל (חלק ב-3). חסר מהסכום כדי לדעת כמה נשאר. מצא רבע ממה שנשאר, וחסר שוב כדי לגלות את העודף הסופי.>:<מצא את הסכום שהוצא על אוכל, חסר אותו מהסכום הכולל כדי למצוא את השארית, ואת השארית הזו חלק ב-4.>]",
+      "distractorsTemplates": [
+        "[IF:(#W)=0:<[NUM:value=(#CLOTHES):#R]>:<[NUM:value=(#LEFT):#R]>]",
+        "[IF:(#W)=0:<[NUM:value=(#TOTAL:div_4):mul_3:#R]>:<[NUM:value=(#TOTAL:div_4):#R]>]",
+        "[IF:(#W)=0:<[NUM:value=(#REM1):#R]>:<[NUM:value=(#FOOD):#R]>]"
+      ]
+    },
+    {
+      "id": "hard_logic_21",
+      "questionTemplate": "[NUM:min=25;max=50:*:#S][NUM:min=4;max=8:*:#Y][NUM:value=(#Y:mul_3):*:#DIFF_YEARS][NUM:value=(#S:add_(#DIFF_YEARS)):*:#FUT][NUM:value=(#S:sub_(#DIFF_YEARS)):*:#PAST][NUM:min=0;max=1:*:#W]סכום הגילים של שלושה אחים כיום הוא בדיוק [#S] שנים. [IF:(#W)=0:<מה יהיה סכום הגילים של שלושתם יחד בעוד [#Y] שנים מהיום?>:<מה היה סכום הגילים של שלושתם יחד לפני [#Y] שנים (בהנחה שכולם כבר נולדו אז)?>]",
+      "answerTemplate": "[IF:(#W)=0:<[NUM:value=(#FUT):#R]>:<[NUM:value=(#PAST):#R]>]",
+      "hintTemplate": "[IF:(#W)=0:<זכור שכל אחד משלושת האחים גדל ב-[#Y] שנים. הוסף לסכום הנוכחי 3 פעמים את [#Y].>:<זכור שלפני [#Y] שנים, כל אחד משלושת האחים היה צעיר ב-[#Y] שנים. חסר מהסכום הנוכחי 3 פעמים את [#Y].>]",
+      "distractorsTemplates": [
+        "[IF:(#W)=0:<[NUM:value=(#S:add_(#Y)):#R]>:<[NUM:value=(#S:sub_(#Y)):#R]>]",
+        "[IF:(#W)=0:<[NUM:value=(#S:add_(#Y:mul_2)):#R]>:<[NUM:value=(#S:sub_(#Y:mul_2)):#R]>]",
+        "[IF:(#W)=0:<[NUM:value=(#PAST):#R]>:<[NUM:value=(#FUT):#R]>]"
+      ]
+    },
+    {
+      "id": "hard_logic_22",
+      "questionTemplate": "[HUMAN:*:#1][NUM:min=10;max=25:*:#X][NUM:min=5;max=12:*:#D][NUM:value=(#D:mul_3):*:#D3][NUM:value=(#X:add_(#D3)):*:#DAY4][NUM:value=(#X:mul_4):add_(#D:mul_6):*:#TOTAL][NUM:min=0;max=1:*:#W][#1:n] חוסך/ת כסף. ביום הראשון [#1:he_she] שמר/ה [#X] שקלים. בכל יום נוסף, [#1:he_she] מוסיף/פה לסכום השמירה היומי עוד [#D] שקלים יותר ממה ששמר/ה ביום הקודם (למשל, ביום השני שמר/ה [#X]+[#D] שקלים). [IF:(#W)=0:<כמה שקלים הוא/היא שמר/ה בקופה **רק ביום הרביעי** בלבד?>:<כמה שקלים הוא/היא שמר/ה בסך הכל במהלך כל 4 הימים הראשונים יחד?>]",
+      "answerTemplate": "[IF:(#W)=0:<[NUM:value=(#DAY4):#R]>:<[NUM:value=(#TOTAL):#R]>]",
+      "hintTemplate": "[IF:(#W)=0:<חשב שלב אחרי שלב: יום 1 הוא [#X], יום 2 הוא התוספת על יום 1, יום 3 הוא התוספת על יום 2, וכו'.>:<חשב כמה שקלים נשמרו בכל אחד מ-4 הימים בנפרד, ואז חבר את כל ארבעת הסכומים יחד.>]",
+      "distractorsTemplates": [
+        "[IF:(#W)=0:<[NUM:value=(#X:add_(#D:mul_4)):#R]>:<[NUM:value=(#DAY4):#R]>]",
+        "[IF:(#W)=0:<[NUM:value=(#X:add_(#D:mul_2)):#R]>:<[NUM:value=(#X:mul_4):add_(#D:mul_4):#R]>]",
+        "[IF:(#W)=0:<[NUM:value=(#TOTAL):#R]>:<[NUM:value=(#X:add_(#D:mul_6)):#R]>]"
+      ]
+    },
+    {
+      "id": "hard_logic_23",
+      "questionTemplate": "[ITEM:*:#I1][NUM:min=12;max=25:*:#K][NUM:value=(#K:mul_7):*:#TOTAL][NUM:value=(#K:mul_2):*:#RED][NUM:value=(#K:mul_5):*:#BLUE][NUM:value=(#BLUE:sub_(#RED)):*:#DIFF][NUM:min=0;max=1:*:#W]בקופסה גדולה יש [#TOTAL] [#I1:p]. ידוע שחלקם אדומים וחלקם כחולים, והיחס בין מספר ה-[#I1:p] האדומים לכחולים הוא 2:5 (על כל 2 אדומים יש 5 כחולים). [IF:(#W)=0:<כמה [#I1:p] כחולים יש בקופסה?>:<בכמה גדול מספר ה-[#I1:p] הכחולים ממספר ה-[#I1:p] האדומים בקופסה?>]",
+      "answerTemplate": "[IF:(#W)=0:<[NUM:value=(#BLUE):#R]>:<[NUM:value=(#DIFF):#R]>]",
+      "hintTemplate": "[IF:(#W)=0:<חבר את חלקי היחס (2+5=7). חלק את הסכום הכולל ב-7 כדי למצוא שווי של \"חלק\" אחד, ואז כפול ב-5.>:<מצא מהו שווי של \"חלק\" אחד (חלוקת הסך הכל ב-7). ההפרש ביחס הוא 3 (5-2), לכן כפול את החלק ב-3.>]",
+      "distractorsTemplates": [
+        "[IF:(#W)=0:<[NUM:value=(#RED):#R]>:<[NUM:value=(#BLUE):#R]>]",
+        "[IF:(#W)=0:<[NUM:value=(#TOTAL:div_5):#R]>:<[NUM:value=(#TOTAL:sub_(#BLUE)):#R]>]",
+        "[IF:(#W)=0:<[NUM:value=(#DIFF):#R]>:<[NUM:value=(#RED):#R]>]"
+      ]
+    },
+    {
+      "id": "hard_logic_24",
+      "questionTemplate": "[HUMAN:*:#1][NUM:min=12;max=20:*:#P][NUM:min=15;max=30:*:#K][NUM:value=(#P:mul_(#K)):*:#TOTAL][NUM:value=(#K:mul_10):*:#TIME_TOTAL][NUM:value=(#P:mul_12):*:#P_120][NUM:min=0;max=1:*:#W][#1:n] קורא/ת בדיוק [#P] עמודים בכל 10 דקות. [IF:(#W)=0:<אם בספר יש [#TOTAL] עמודים, כמה דקות ייקח לו/לה לקרוא את כולו ברצף?>:<אם [#1:he_she] יקרא/תקרא ברצף במשך שעתיים (120 דקות), כמה עמודים [#1:he_she] יספיק/תספיק לקרוא?>]",
+      "answerTemplate": "[IF:(#W)=0:<[NUM:value=(#TIME_TOTAL):#R]>:<[NUM:value=(#P_120):#R]>]",
+      "hintTemplate": "[IF:(#W)=0:<חלק את מספר העמודים הכולל בכמות העמודים שנקראת ב-10 דקות, ואת התוצאה כפול ב-10.>:<חשב כמה פעמים נכנסות \"10 דקות\" בתוך 120 דקות (12 פעמים), ואז כפול את התוצאה במספר העמודים.>]",
+      "distractorsTemplates": [
+        "[IF:(#W)=0:<[NUM:value=(#TOTAL:div_(#P)):#R]>:<[NUM:value=(#P:mul_10):#R]>]",
+        "[IF:(#W)=0:<[NUM:value=(#TIME_TOTAL:mul_10):#R]>:<[NUM:value=(#TIME_TOTAL):#R]>]",
+        "[IF:(#W)=0:<[NUM:value=(#P_120):#R]>:<[NUM:value=(#P:mul_2):#R]>]"
+      ]
+    },
+    {
+      "id": "hard_logic_25",
+      "questionTemplate": "[NUM:min=15;max=30:*:#HALF][NUM:value=(#HALF:mul_2):*:#TOTAL_ITEMS][NUM:min=20;max=40:*:#COST][NUM:value=(#TOTAL_ITEMS:mul_(#COST)):*:#TOTAL_COST][NUM:value=(#COST:add_10):*:#S1][NUM:value=(#COST:add_20):*:#S2][NUM:value=(#HALF:mul_(#S1)):*:#REV1][NUM:value=(#HALF:mul_(#S2)):*:#REV2][NUM:value=(#REV1:add_(#REV2)):*:#REV_TOTAL][NUM:value=(#REV_TOTAL:sub_(#TOTAL_COST)):*:#PROFIT][NUM:min=0;max=1:*:#W]סוחר קנה [#TOTAL_ITEMS] מוצרים זהים. עלות כל מוצר עבורו הייתה [#COST] שקלים. הוא מכר חצי מהמוצרים במחיר של [#S1] שקלים ליחידה, ואת החצי השני במחיר של [#S2] שקלים ליחידה. [IF:(#W)=0:<מה היו ההכנסות הכוללות שלו מהמכירה בלבד (הפדיון הכולל)?>:<מה היה הרווח הנקי שלו בסך הכל (הכנסות פחות עלויות קנייה)?>]",
+      "answerTemplate": "[IF:(#W)=0:<[NUM:value=(#REV_TOTAL):#R]>:<[NUM:value=(#PROFIT):#R]>]",
+      "hintTemplate": "[IF:(#W)=0:<מצא כמה זה חצי מהמוצרים. חשב את ההכנסות מהחצי הראשון, חשב את ההכנסות מהחצי השני, וחבר אותן יחד.>:<חשב את סך כל ההכנסות משני החצאים, ואז חסר מהסכום הזה את העלות הכוללת של קניית כל המוצרים (כמות כפול מחיר קנייה).>]",
+      "distractorsTemplates": [
+        "[IF:(#W)=0:<[NUM:value=(#PROFIT):#R]>:<[NUM:value=(#REV_TOTAL):#R]>]",
+        "[IF:(#W)=0:<[NUM:value=(#TOTAL_COST):#R]>:<[NUM:value=(#REV_TOTAL:sub_(#COST)):#R]>]",
+        "[IF:(#W)=0:<[NUM:value=(#TOTAL_ITEMS:mul_(#S1:add_(#S2))):#R]>:<[NUM:value=(#PROFIT:add_50):#R]>]"
+      ]
+    },
+  {
+    "id": "hard_logic_16",
+    "questionTemplate": "[HUMAN:*:#1][HUMAN:n=!(#1:n):*:#2][HUMAN:n=!(#1:n);n=!(#2:n):*:#3][ITEM:*:#I1][NUM:min=4;max=8:*:#RA][NUM:min=5;max=9:*:#RB][NUM:min=3;max=7:*:#RC][NUM:value=(#RA:add_(#RB)):add_(#RC):*:#SUM_R][NUM:min=3;max=6:*:#H][NUM:value=(#SUM_R:mul_(#H)):*:#TOTAL][NUM:min=0;max=1:*:#W][#1:n], [#2:n] ו-[#3:n] אורזים [#I1:p]. ההספק של כל אחד בשעה אחת הוא: [#1:n] אורז/ת [#RA] פריטים, [#2:n] אורז/ת [#RB] פריטים, ו-[#3:n] אורז/ת [#RC] פריטים. [IF:(#W)=0:<אם שלושתם יעבדו יחד במשך [#H] שעות ברצף, כמה [#I1:p] הם יארזו סך הכל?>:<אם שלושתם עבדו יחד וארזו סך הכל [#TOTAL] [#I1:p], כמה שעות הם עבדו?>]",
+    "answerTemplate": "[IF:(#W)=0:<[NUM:value=(#TOTAL):#R]>:<[NUM:value=(#H):#R]>]",
+    "hintTemplate": "[IF:(#W)=0:<חבר את ההספק של שלושתם יחד כדי למצוא כמה הם אורזים בשעה אחת, ואז כפול במספר השעות.>:<מצא את ההספק המשותף של שלושתם בשעה אחת (חיבור), ואז חלק את הכמות הכוללת בהספק הזה.>]",
+    "distractorsTemplates": [
+      "[IF:(#W)=0:<[NUM:value=(#RA:add_(#RB)):mul_(#H):#R]>:<[NUM:value=(#TOTAL:div_(#RA)):#R]>]",
+      "[IF:(#W)=0:<[NUM:value=(#TOTAL:sub_(#H)):#R]>:<[NUM:value=(#H:add_2):#R]>]",
+      "[IF:(#W)=0:<[NUM:value=(#SUM_R:add_(#H)):#R]>:<[NUM:value=(#TOTAL:div_(#RB)):#R]>]"
+    ]
+  },
+  {
+    "id": "hard_logic_17",
+    "questionTemplate": "[ITEM:*:#I1][NUM:min=2;max=5:*:#HUNDREDS][NUM:value=(#HUNDREDS:mul_100):*:#TOTAL][NUM:min=20;max=30;round=5:*:#P1][NUM:min=10;max=15:*:#P2][NUM:value=(#TOTAL:mul_(#P1)):div_100:*:#S1][NUM:value=(#TOTAL:mul_(#P2)):div_100:*:#S2][NUM:value=(#S1:add_(#S2)):*:#SOLD][NUM:value=(#TOTAL:sub_(#SOLD)):*:#LEFT][NUM:min=0;max=1:*:#W]בחנות היו [#TOTAL] [#I1:p]. ביום הראשון נמכרו [#P1]% מכל הפריטים שהיו בהתחלה. ביום השני נמכרו עוד [#P2]% מסך הפריטים **ההתחלתי**. [IF:(#W)=0:<כמה [#I1:p] נמכרו בסך הכל בשני הימים יחד?>:<כמה [#I1:p] נשארו בחנות לאחר שני ימי המכירות?>]",
+    "answerTemplate": "[IF:(#W)=0:<[NUM:value=(#SOLD):#R]>:<[NUM:value=(#LEFT):#R]>]",
+    "hintTemplate": "[IF:(#W)=0:<חבר את האחוזים של שני הימים (אחוז המכירה הכולל), וחשב את האחוז הזה מתוך הכמות ההתחלתית.>:<חשב כמה פריטים נמכרו (בעזרת חיבור האחוזים), וחסר את התוצאה מהכמות ההתחלתית הכוללת.>]",
+    "distractorsTemplates": [
+      "[IF:(#W)=0:<[NUM:value=(#S1):#R]>:<[NUM:value=(#SOLD):#R]>]",
+      "[IF:(#W)=0:<[NUM:value=(#LEFT):#R]>:<[NUM:value=(#TOTAL:sub_(#S1)):#R]>]",
+      "[IF:(#W)=0:<[NUM:value=(#SOLD:add_10):#R]>:<[NUM:value=(#LEFT:sub_10):#R]>]"
+    ]
+  },
+  {
+    "id": "hard_logic_18",
+    "questionTemplate": "[NUM:min=80;max=110;round=10:*:#V2][NUM:min=50;max=70;round=10:*:#V1][NUM:value=(#V2:sub_(#V1)):*:#DIFF_V][NUM:min=2;max=5:*:#H][NUM:value=(#DIFF_V:mul_(#H)):*:#DIST][NUM:min=0;max=1:*:#W]שתי מכוניות יצאו מאותה נקודה ונסעו בדיוק באותו כיוון. המכונית הראשונה נסעה במהירות קבועה של [#V1] קמ\"ש, והשנייה נסעה במהירות קבועה של [#V2] קמ\"ש. [IF:(#W)=0:<מה יהיה המרחק בקילומטרים בין המכוניות לאחר [#H] שעות נסיעה?>:<לאחר כמה שעות נסיעה המרחק ביניהן יהיה בדיוק [#DIST] קילומטרים?>]",
+    "answerTemplate": "[IF:(#W)=0:<[NUM:value=(#DIST):#R]>:<[NUM:value=(#H):#R]>]",
+    "hintTemplate": "[IF:(#W)=0:<מצא את הפרש המהירויות ביניהן (בכמה ק\"מ השנייה מתרחקת מהראשונה בכל שעה), ואז כפול במספר השעות.>:<מצא את הפרש המהירויות ביניהן, וחלק את המרחק הנתון בהפרש הזה.>]",
+    "distractorsTemplates": [
+      "[IF:(#W)=0:<[NUM:value=(#V2:mul_(#H)):#R]>:<[NUM:value=(#DIST:div_(#V2)):#R]>]",
+      "[IF:(#W)=0:<[NUM:value=(#V1:mul_(#H)):#R]>:<[NUM:value=(#H:add_2):#R]>]",
+      "[IF:(#W)=0:<[NUM:value=(#V1:add_(#V2)):mul_(#H):#R]>:<[NUM:value=(#DIST:div_(#V1)):#R]>]"
+    ]
+  },
+  {
+    "id": "hard_logic_19",
+    "questionTemplate": "[NUM:min=8;max=15:*:#L][NUM:min=6;max=10:*:#W_VAL][NUM:value=(#L:mul_(#W_VAL)):*:#A_ROOM][NUM:value=(#L:sub_2):*:#C_L][NUM:value=(#W_VAL:sub_2):*:#C_W][NUM:value=(#C_L:mul_(#C_W)):*:#A_CARPET][NUM:value=(#A_ROOM:sub_(#A_CARPET)):*:#UNCOVERED][NUM:min=0;max=1:*:#W]אורך רצפת חדר מלבני הוא [#L] מטרים ורוחבה [#W_VAL] מטרים. הניחו במרכז החדר שטיח מלבני, כך שנשאר רווח (שוליים) של 1 מטר בדיוק בין כל צלע של השטיח לבין קירות החדר (מכל 4 הכיוונים). [IF:(#W)=0:<מהו שטח השטיח במ\"ר?>:<מהו השטח של רצפת החדר שנותר גלוי (ללא שטיח) במ\"ר?>]",
+    "answerTemplate": "[IF:(#W)=0:<[NUM:value=(#A_CARPET):#R]>:<[NUM:value=(#UNCOVERED):#R]>]",
+    "hintTemplate": "[IF:(#W)=0:<כדי למצוא את אורך השטיח חסר 2 מטרים (1 מכל צד) מאורך החדר. עשה אותו דבר לרוחב, ואז חשב שטח (אורך כפול רוחב).>:<חשב את השטח הכולל של החדר, חשב את שטח השטיח (זכור להוריד 2 מטרים מהאורך ו-2 מהרוחב), וחסר את שטח השטיח משטח החדר.>]",
+    "distractorsTemplates": [
+      "[IF:(#W)=0:<[NUM:value=(#A_ROOM):#R]>:<[NUM:value=(#A_CARPET):#R]>]",
+      "[IF:(#W)=0:<[NUM:value=(#L:sub_1):mul_(#W_VAL:sub_1):#R]>:<[NUM:value=(#A_ROOM:sub_(#L:sub_1):mul_(#W_VAL:sub_1)):#R]>]",
+      "[IF:(#W)=0:<[NUM:value=(#C_L:add_(#C_W)):mul_2:#R]>:<[NUM:value=(#A_ROOM:sub_2):#R]>]"
+    ]
+  },
+  {
+    "id": "hard_logic_20",
+    "questionTemplate": "[HUMAN:*:#1][NUM:min=10;max=30:*:#K][NUM:value=(#K:mul_12):*:#TOTAL][NUM:value=(#TOTAL:div_3):*:#FOOD][NUM:value=(#TOTAL:sub_(#FOOD)):*:#REM1][NUM:value=(#REM1:div_4):*:#CLOTHES][NUM:value=(#REM1:sub_(#CLOTHES)):*:#LEFT][NUM:min=0;max=1:*:#W]ל-[#1:n] היו [#TOTAL] שקלים. [#1:he_she] הוציא/ה בדיוק שליש (1/3) מהסכום הכולל על אוכל, ולאחר מכן הוציא/ה רבע (1/4) **ממה שנשאר** על קניית בגדים. [IF:(#W)=0:<כמה שקלים נשארו ל-[#1:n] בסוף שתי הקניות?>:<כמה שקלים הוציא/ה [#1:n] על קניית בגדים בלבד?>]",
+    "answerTemplate": "[IF:(#W)=0:<[NUM:value=(#LEFT):#R]>:<[NUM:value=(#CLOTHES):#R]>]",
+    "hintTemplate": "[IF:(#W)=0:<מצא כמה הוציא/ה על אוכל (חלק ב-3). חסר מהסכום כדי לדעת כמה נשאר. מצא רבע ממה שנשאר, וחסר שוב כדי לגלות את העודף הסופי.>:<מצא את הסכום שהוצא על אוכל, חסר אותו מהסכום הכולל כדי למצוא את השארית, ואת השארית הזו חלק ב-4.>]",
+    "distractorsTemplates": [
+      "[IF:(#W)=0:<[NUM:value=(#CLOTHES):#R]>:<[NUM:value=(#LEFT):#R]>]",
+      "[IF:(#W)=0:<[NUM:value=(#TOTAL:div_4):mul_3:#R]>:<[NUM:value=(#TOTAL:div_4):#R]>]",
+      "[IF:(#W)=0:<[NUM:value=(#REM1):#R]>:<[NUM:value=(#FOOD):#R]>]"
+    ]
+  },
+  {
+    "id": "hard_logic_21",
+    "questionTemplate": "[NUM:min=25;max=50:*:#S][NUM:min=4;max=8:*:#Y][NUM:value=(#Y:mul_3):*:#DIFF_YEARS][NUM:value=(#S:add_(#DIFF_YEARS)):*:#FUT][NUM:value=(#S:sub_(#DIFF_YEARS)):*:#PAST][NUM:min=0;max=1:*:#W]סכום הגילים של שלושה אחים כיום הוא בדיוק [#S] שנים. [IF:(#W)=0:<מה יהיה סכום הגילים של שלושתם יחד בעוד [#Y] שנים מהיום?>:<מה היה סכום הגילים של שלושתם יחד לפני [#Y] שנים (בהנחה שכולם כבר נולדו אז)?>]",
+    "answerTemplate": "[IF:(#W)=0:<[NUM:value=(#FUT):#R]>:<[NUM:value=(#PAST):#R]>]",
+    "hintTemplate": "[IF:(#W)=0:<זכור שכל אחד משלושת האחים גדל ב-[#Y] שנים. הוסף לסכום הנוכחי 3 פעמים את [#Y].>:<זכור שלפני [#Y] שנים, כל אחד משלושת האחים היה צעיר ב-[#Y] שנים. חסר מהסכום הנוכחי 3 פעמים את [#Y].>]",
+    "distractorsTemplates": [
+      "[IF:(#W)=0:<[NUM:value=(#S:add_(#Y)):#R]>:<[NUM:value=(#S:sub_(#Y)):#R]>]",
+      "[IF:(#W)=0:<[NUM:value=(#S:add_(#Y:mul_2)):#R]>:<[NUM:value=(#S:sub_(#Y:mul_2)):#R]>]",
+      "[IF:(#W)=0:<[NUM:value=(#PAST):#R]>:<[NUM:value=(#FUT):#R]>]"
+    ]
+  },
+  {
+    "id": "hard_logic_22",
+    "questionTemplate": "[HUMAN:*:#1][NUM:min=10;max=25:*:#X][NUM:min=5;max=12:*:#D][NUM:value=(#D:mul_3):*:#D3][NUM:value=(#X:add_(#D3)):*:#DAY4][NUM:value=(#X:mul_4):add_(#D:mul_6):*:#TOTAL][NUM:min=0;max=1:*:#W][#1:n] חוסך/ת כסף. ביום הראשון [#1:he_she] שמר/ה [#X] שקלים. בכל יום נוסף, [#1:he_she] מוסיף/פה לסכום השמירה היומי עוד [#D] שקלים יותר ממה ששמר/ה ביום הקודם (למשל, ביום השני שמר/ה [#X]+[#D] שקלים). [IF:(#W)=0:<כמה שקלים הוא/היא שמר/ה בקופה **רק ביום הרביעי** בלבד?>:<כמה שקלים הוא/היא שמר/ה בסך הכל במהלך כל 4 הימים הראשונים יחד?>]",
+    "answerTemplate": "[IF:(#W)=0:<[NUM:value=(#DAY4):#R]>:<[NUM:value=(#TOTAL):#R]>]",
+    "hintTemplate": "[IF:(#W)=0:<חשב שלב אחרי שלב: יום 1 הוא [#X], יום 2 הוא התוספת על יום 1, יום 3 הוא התוספת על יום 2, וכו'.>:<חשב כמה שקלים נשמרו בכל אחד מ-4 הימים בנפרד, ואז חבר את כל ארבעת הסכומים יחד.>]",
+    "distractorsTemplates": [
+      "[IF:(#W)=0:<[NUM:value=(#X:add_(#D:mul_4)):#R]>:<[NUM:value=(#DAY4):#R]>]",
+      "[IF:(#W)=0:<[NUM:value=(#X:add_(#D:mul_2)):#R]>:<[NUM:value=(#X:mul_4):add_(#D:mul_4):#R]>]",
+      "[IF:(#W)=0:<[NUM:value=(#TOTAL):#R]>:<[NUM:value=(#X:add_(#D:mul_6)):#R]>]"
+    ]
+  },
+  {
+    "id": "hard_logic_23",
+    "questionTemplate": "[ITEM:*:#I1][NUM:min=12;max=25:*:#K][NUM:value=(#K:mul_7):*:#TOTAL][NUM:value=(#K:mul_2):*:#RED][NUM:value=(#K:mul_5):*:#BLUE][NUM:value=(#BLUE:sub_(#RED)):*:#DIFF][NUM:min=0;max=1:*:#W]בקופסה גדולה יש [#TOTAL] [#I1:p]. ידוע שחלקם אדומים וחלקם כחולים, והיחס בין מספר ה-[#I1:p] האדומים לכחולים הוא 2:5 (על כל 2 אדומים יש 5 כחולים). [IF:(#W)=0:<כמה [#I1:p] כחולים יש בקופסה?>:<בכמה גדול מספר ה-[#I1:p] הכחולים ממספר ה-[#I1:p] האדומים בקופסה?>]",
+    "answerTemplate": "[IF:(#W)=0:<[NUM:value=(#BLUE):#R]>:<[NUM:value=(#DIFF):#R]>]",
+    "hintTemplate": "[IF:(#W)=0:<חבר את חלקי היחס (2+5=7). חלק את הסכום הכולל ב-7 כדי למצוא שווי של \"חלק\" אחד, ואז כפול ב-5.>:<מצא מהו שווי של \"חלק\" אחד (חלוקת הסך הכל ב-7). ההפרש ביחס הוא 3 (5-2), לכן כפול את החלק ב-3.>]",
+    "distractorsTemplates": [
+      "[IF:(#W)=0:<[NUM:value=(#RED):#R]>:<[NUM:value=(#BLUE):#R]>]",
+      "[IF:(#W)=0:<[NUM:value=(#TOTAL:div_5):#R]>:<[NUM:value=(#TOTAL:sub_(#BLUE)):#R]>]",
+      "[IF:(#W)=0:<[NUM:value=(#DIFF):#R]>:<[NUM:value=(#RED):#R]>]"
+    ]
+  },
+  {
+    "id": "hard_logic_24",
+    "questionTemplate": "[HUMAN:*:#1][NUM:min=12;max=20:*:#P][NUM:min=15;max=30:*:#K][NUM:value=(#P:mul_(#K)):*:#TOTAL][NUM:value=(#K:mul_10):*:#TIME_TOTAL][NUM:value=(#P:mul_12):*:#P_120][NUM:min=0;max=1:*:#W][#1:n] קורא/ת בדיוק [#P] עמודים בכל 10 דקות. [IF:(#W)=0:<אם בספר יש [#TOTAL] עמודים, כמה דקות ייקח לו/לה לקרוא את כולו ברצף?>:<אם [#1:he_she] יקרא/תקרא ברצף במשך שעתיים (120 דקות), כמה עמודים [#1:he_she] יספיק/תספיק לקרוא?>]",
+    "answerTemplate": "[IF:(#W)=0:<[NUM:value=(#TIME_TOTAL):#R]>:<[NUM:value=(#P_120):#R]>]",
+    "hintTemplate": "[IF:(#W)=0:<חלק את מספר העמודים הכולל בכמות העמודים שנקראת ב-10 דקות, ואת התוצאה כפול ב-10.>:<חשב כמה פעמים נכנסות \"10 דקות\" בתוך 120 דקות (12 פעמים), ואז כפול את התוצאה במספר העמודים.>]",
+    "distractorsTemplates": [
+      "[IF:(#W)=0:<[NUM:value=(#TOTAL:div_(#P)):#R]>:<[NUM:value=(#P:mul_10):#R]>]",
+      "[IF:(#W)=0:<[NUM:value=(#TIME_TOTAL:mul_10):#R]>:<[NUM:value=(#TIME_TOTAL):#R]>]",
+      "[IF:(#W)=0:<[NUM:value=(#P_120):#R]>:<[NUM:value=(#P:mul_2):#R]>]"
+    ]
+  },
+  {
+    "id": "hard_logic_25",
+    "questionTemplate": "[NUM:min=15;max=30:*:#HALF][NUM:value=(#HALF:mul_2):*:#TOTAL_ITEMS][NUM:min=20;max=40:*:#COST][NUM:value=(#TOTAL_ITEMS:mul_(#COST)):*:#TOTAL_COST][NUM:value=(#COST:add_10):*:#S1][NUM:value=(#COST:add_20):*:#S2][NUM:value=(#HALF:mul_(#S1)):*:#REV1][NUM:value=(#HALF:mul_(#S2)):*:#REV2][NUM:value=(#REV1:add_(#REV2)):*:#REV_TOTAL][NUM:value=(#REV_TOTAL:sub_(#TOTAL_COST)):*:#PROFIT][NUM:min=0;max=1:*:#W]סוחר קנה [#TOTAL_ITEMS] מוצרים זהים. עלות כל מוצר עבורו הייתה [#COST] שקלים. הוא מכר חצי מהמוצרים במחיר של [#S1] שקלים ליחידה, ואת החצי השני במחיר של [#S2] שקלים ליחידה. [IF:(#W)=0:<מה היו ההכנסות הכוללות שלו מהמכירה בלבד (הפדיון הכולל)?>:<מה היה הרווח הנקי שלו בסך הכל (הכנסות פחות עלויות קנייה)?>]",
+    "answerTemplate": "[IF:(#W)=0:<[NUM:value=(#REV_TOTAL):#R]>:<[NUM:value=(#PROFIT):#R]>]",
+    "hintTemplate": "[IF:(#W)=0:<מצא כמה זה חצי מהמוצרים. חשב את ההכנסות מהחצי הראשון, חשב את ההכנסות מהחצי השני, וחבר אותן יחד.>:<חשב את סך כל ההכנסות משני החצאים, ואז חסר מהסכום הזה את העלות הכוללת של קניית כל המוצרים (כמות כפול מחיר קנייה).>]",
+    "distractorsTemplates": [
+      "[IF:(#W)=0:<[NUM:value=(#PROFIT):#R]>:<[NUM:value=(#REV_TOTAL):#R]>]",
+      "[IF:(#W)=0:<[NUM:value=(#TOTAL_COST):#R]>:<[NUM:value=(#REV_TOTAL:sub_(#COST)):#R]>]",
+      "[IF:(#W)=0:<[NUM:value=(#TOTAL_ITEMS:mul_(#S1:add_(#S2))):#R]>:<[NUM:value=(#PROFIT:add_50):#R]>]"
+    ]
+  }
+
 ]

@@ -27,7 +27,8 @@ public class JunctionOfferDTO {
         this.timeLimitMillis = player.getTrackState().getTimeLimitMillis();
         this.questionRemainingTimeMillis = player.getCalculatedQuestionRemainingTime(race.getStatus());
         this.expression ="ברוך הבא לצומת! הינך עומד בפני שני דרכים חדשות, עליך לבחור בחוכמה את דרכך." +
-                " אוטוסטרדה - שאלה קשה בעל סיכון כבוה אך בעל תיגמול גבוה." +
-                " שביל עפר - רצף שאלות קלות בעלי סיכון נמוך עם ניקוד נמוך. בחר את דרכך!.";
+                " אוטוסטרדה - שאלה קשה בעל סיכון גבוה אך בעל תגמול זהה." +
+                " שביל עפר - רצף שאלות קלות בעלי סיכון נמוך עם ניקוד בהתאם. " +
+                "בחר את דרכך!.";
     }
 }

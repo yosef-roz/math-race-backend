@@ -16,8 +16,8 @@ public class JunctionEngine {
         double progress = (double) player.getCurrentScore() / targetScore;
         if (progress < 0.15) return false;
 
-        int questionsSinceLastJunction = player.getRegularQAttempts() - (player.getJunctionsOfferedCount() * 5);
-        if (questionsSinceLastJunction < 5) return false;
+        int questionsSinceLastJunction = player.getRegularQAttempts() - player.getLastJunctionRegularQCount();
+          if (questionsSinceLastJunction < 5) return false;
 
         int threshold = 100;
 
