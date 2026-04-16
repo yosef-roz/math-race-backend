@@ -43,4 +43,8 @@ public class DictionaryRepository extends BaseRepository {
     public List<RoleTag> loadRoleTag() {
         return MathQuestionGenerator.fillRoles();
     }
+
+    public List<VehicleTag> loadVehicleTag() {
+        return MathQuestionGenerator.fillVehicles();
+    }
 }

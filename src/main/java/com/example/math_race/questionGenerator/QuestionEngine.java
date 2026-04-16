@@ -28,6 +28,7 @@ public class QuestionEngine {
     private List<AdjectiveTag> adjectives;
     private List<UnitTag> units;
     private List<RoleTag> roles;
+    private List<VehicleTag> vehicles;
 
     @Autowired
     public QuestionEngine(DictionaryRepository dictionaryRepository){
@@ -43,6 +44,7 @@ public class QuestionEngine {
         this.adjectives = dictionaryRepository.loadAdjectiveTag();
         this.units = dictionaryRepository.loadUnitTag();
         this.roles = dictionaryRepository.loadRoleTag();
+        this.vehicles = dictionaryRepository.loadVehicleTag();
 
         System.out.println("✅ QuestionEngine: Dictionary loaded successfully to memory!");
     }
@@ -55,6 +57,7 @@ public class QuestionEngine {
         this.adjectives = MathQuestionGenerator.fillAdjectives();
         this.units = MathQuestionGenerator.fillUnits();
         this.roles = MathQuestionGenerator.fillRoles();
+        this.vehicles = MathQuestionGenerator.fillVehicles();
 
         System.out.println("✅ QuestionEngine: Dictionary loaded successfully to memory!");
     }
@@ -153,6 +156,7 @@ public class QuestionEngine {
                     case "UNIT" -> getRandomMatch(units,resolvedConstraints, UnitTag.class);
                     case "TIME" -> findTime(resolvedConstraints);
                     case "ROLE" -> getRandomMatch(roles,resolvedConstraints, RoleTag.class);
+                    case "VEHICLE" -> getRandomMatch(vehicles, resolvedConstraints, VehicleTag.class);
                     default -> null;
                 };
 

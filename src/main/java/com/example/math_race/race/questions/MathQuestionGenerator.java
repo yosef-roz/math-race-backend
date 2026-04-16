@@ -35,6 +35,7 @@ public class MathQuestionGenerator {
     public static List<AdjectiveTag> adjectives;
     public static List<UnitTag> units;
     private static final List<RoleTag> roles;
+    private static final List<VehicleTag> vehicles;
 
     static {
         humans = fillHumans();
@@ -44,6 +45,7 @@ public class MathQuestionGenerator {
         adjectives = fillAdjectives();
         units = fillUnits();
         roles = fillRoles();
+        vehicles = fillVehicles();
     }
 
 
@@ -194,6 +196,7 @@ public class MathQuestionGenerator {
                 else if ("UNIT".equals(info.getType())) chosen = findUnit(resolvedConstraints);
                 else if ("TIME".equals(info.getType())) chosen = findTime(resolvedConstraints);
                 else if ("ROLE".equals(info.getType())) chosen = findRole(resolvedConstraints);
+                else if ("VEHICLE".equals(info.getType())) chosen = findVehicle(resolvedConstraints);
 
                 if (chosen != null) {
                     memory.put(info.getId(), chosen);
@@ -456,6 +459,19 @@ public class MathQuestionGenerator {
         }
 
         // בחירה אקראית מתוך התפקידים שעברו את הסינון
+        return matches.get(java.util.concurrent.ThreadLocalRandom.current().nextInt(matches.size()));
+    }
+
+    public static TemplateTag findVehicle(Map<String, String> constraints) {
+        List<VehicleTag> matches = vehicles.stream()
+                .filter(v -> v.matches(constraints))
+                .toList();
+
+        if (matches.isEmpty()) {
+            System.out.println("Warning: No vehicle matches constraints: " + constraints);
+            return null;
+        }
+
         return matches.get(java.util.concurrent.ThreadLocalRandom.current().nextInt(matches.size()));
     }
 
@@ -1337,6 +1353,20 @@ public class MathQuestionGenerator {
         roles.add(new RoleTag("guest", "אורח", "אורחים", "אורחת", "אורחות", RoleType.TARGET, "house", "apartment"));
 
         return roles;
+    }
+
+    public static List<VehicleTag> fillVehicles() {
+        List<VehicleTag> vehicles = new ArrayList<>();
+
+        vehicles.add(new VehicleTag("car", "מכונית", "מכוניות", FEMALE, VehicleType.CAR));
+        vehicles.add(new VehicleTag("truck", "משאית", "משאיות", FEMALE, VehicleType.TRUCK));
+        vehicles.add(new VehicleTag("train", "רכבת", "רכבות", FEMALE, VehicleType.TRAIN));
+        vehicles.add(new VehicleTag("bus", "אוטובוס", "אוטובוסים", MALE, VehicleType.BUS));
+        vehicles.add(new VehicleTag("bicycle", "אופניים", "אופניים", MALE, VehicleType.BICYCLE));
+        vehicles.add(new VehicleTag("motorcycle", "אופנוע", "אופנועים", MALE, VehicleType.MOTORCYCLE));
+        vehicles.add(new VehicleTag("scooter", "קורקינט", "קורקינטים", MALE, VehicleType.SCOOTER));
+
+        return vehicles;
     }
 
 
