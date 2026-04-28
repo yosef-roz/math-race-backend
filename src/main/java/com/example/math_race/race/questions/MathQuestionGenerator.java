@@ -35,7 +35,6 @@ public class MathQuestionGenerator {
     public static List<AdjectiveTag> adjectives;
     public static List<UnitTag> units;
     private static final List<RoleTag> roles;
-    private static final List<VehicleTag> vehicles;
 
     static {
         humans = fillHumans();
@@ -45,7 +44,6 @@ public class MathQuestionGenerator {
         adjectives = fillAdjectives();
         units = fillUnits();
         roles = fillRoles();
-        vehicles = fillVehicles();
     }
 
 
@@ -196,7 +194,6 @@ public class MathQuestionGenerator {
                 else if ("UNIT".equals(info.getType())) chosen = findUnit(resolvedConstraints);
                 else if ("TIME".equals(info.getType())) chosen = findTime(resolvedConstraints);
                 else if ("ROLE".equals(info.getType())) chosen = findRole(resolvedConstraints);
-                else if ("VEHICLE".equals(info.getType())) chosen = findVehicle(resolvedConstraints);
 
                 if (chosen != null) {
                     memory.put(info.getId(), chosen);
@@ -462,18 +459,6 @@ public class MathQuestionGenerator {
         return matches.get(java.util.concurrent.ThreadLocalRandom.current().nextInt(matches.size()));
     }
 
-    public static TemplateTag findVehicle(Map<String, String> constraints) {
-        List<VehicleTag> matches = vehicles.stream()
-                .filter(v -> v.matches(constraints))
-                .toList();
-
-        if (matches.isEmpty()) {
-            System.out.println("Warning: No vehicle matches constraints: " + constraints);
-            return null;
-        }
-
-        return matches.get(java.util.concurrent.ThreadLocalRandom.current().nextInt(matches.size()));
-    }
 
     public static ArrayList<HumanTag> fillHumans() {
         ArrayList<HumanTag> humans = new ArrayList<>();
@@ -602,6 +587,15 @@ public class MathQuestionGenerator {
         items.add(new ItemTag("lock", "מנעול", "מנעולים", MALE, countOnly, ItemCategory.HARDWARE));
         items.add(new ItemTag("wrench", "מפתח ברגים", "מפתחות ברגים", MALE, countOnly, ItemCategory.HARDWARE));
         items.add(new ItemTag("paint_brush", "מברשת צבע", "מברשות צבע", FEMALE, countOnly, ItemCategory.HARDWARE));
+
+        // --- כלי רכב בתוך ITEM (ללא תג VEHICLE נפרד) ---
+        items.add(new ItemTag("car", "מכונית", "מכוניות", FEMALE, noUnit, ItemCategory.HARDWARE));
+        items.add(new ItemTag("truck", "משאית", "משאיות", FEMALE, noUnit, ItemCategory.HARDWARE));
+        items.add(new ItemTag("train", "רכבת", "רכבות", FEMALE, noUnit, ItemCategory.HARDWARE));
+        items.add(new ItemTag("bus", "אוטובוס", "אוטובוסים", MALE, noUnit, ItemCategory.HARDWARE));
+        items.add(new ItemTag("bicycle", "אופניים", "אופניים", MALE, noUnit, ItemCategory.HARDWARE));
+        items.add(new ItemTag("motorcycle", "אופנוע", "אופנועים", MALE, noUnit, ItemCategory.HARDWARE));
+        items.add(new ItemTag("scooter", "קורקינט", "קורקינטים", MALE, noUnit, ItemCategory.HARDWARE));
 
         return  items;
     }
@@ -1213,6 +1207,9 @@ public class MathQuestionGenerator {
         units.add(new UnitTag("box", "מארז", "מארזים", MALE, UnitType.COUNT, ItemCategory.SWEETS, ItemCategory.TOY, ItemCategory.STATIONERY, ItemCategory.ELECTRONICS, ItemCategory.MEDICAL, ItemCategory.ART_SUPPLIES));
         units.add(new UnitTag("pack", "חבילה", "חבילות", FEMALE, UnitType.COUNT, ItemCategory.SWEETS, ItemCategory.STATIONERY, ItemCategory.COLLECTIBLE, ItemCategory.MEDICAL, ItemCategory.ART_SUPPLIES));
         units.add(new UnitTag("tray", "מגש", "מגשים", MALE, UnitType.COUNT, ItemCategory.BAKED_GOODS)); // רק מאפים!
+        units.add(new UnitTag("pair", "זוג", "זוגות", MALE, UnitType.COUNT, ItemCategory.CLOTHING));
+        units.add(new UnitTag("clothing_box", "מארז", "מארזים", MALE, UnitType.COUNT, ItemCategory.CLOTHING));
+        units.add(new UnitTag("clothing_unit", "יחידה", "יחידות", FEMALE, UnitType.COUNT, ItemCategory.CLOTHING));
 
         // כלים לסחורה כבדה, חקלאות ועתיקות
         units.add(new UnitTag("sack", "שק", "שקים", MALE, UnitType.COUNT,
@@ -1354,21 +1351,6 @@ public class MathQuestionGenerator {
 
         return roles;
     }
-
-    public static List<VehicleTag> fillVehicles() {
-        List<VehicleTag> vehicles = new ArrayList<>();
-
-        vehicles.add(new VehicleTag("car", "מכונית", "מכוניות", FEMALE, VehicleType.CAR));
-        vehicles.add(new VehicleTag("truck", "משאית", "משאיות", FEMALE, VehicleType.TRUCK));
-        vehicles.add(new VehicleTag("train", "רכבת", "רכבות", FEMALE, VehicleType.TRAIN));
-        vehicles.add(new VehicleTag("bus", "אוטובוס", "אוטובוסים", MALE, VehicleType.BUS));
-        vehicles.add(new VehicleTag("bicycle", "אופניים", "אופניים", MALE, VehicleType.BICYCLE));
-        vehicles.add(new VehicleTag("motorcycle", "אופנוע", "אופנועים", MALE, VehicleType.MOTORCYCLE));
-        vehicles.add(new VehicleTag("scooter", "קורקינט", "קורקינטים", MALE, VehicleType.SCOOTER));
-
-        return vehicles;
-    }
-
 
     public MathQuestion generateForPlayer(RacePlayer player) {
         String level = player.getTrackState().getLevel();
