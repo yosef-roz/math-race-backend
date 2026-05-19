@@ -344,8 +344,8 @@ public class MainIdan {
         // 9. תבנית קניות משותפות (חברים קונים יחד ומקבלים עודף או מוסיפים פריט משותף)
         newTemplates.add(new String[]{
                 "[PLACE:place_type=FOOD_SERVICE|ENTERTAINMENT:*:#P1]" +
-                        "[ITEM:type=(#P1:t);unit_type=COUNT:*:#I1]" +
-                        "[ITEM:type=(#P1:t);unit_type=COUNT;id=!(#I1:id):*:#I2]" +
+                        "[ITEM:type=FOOD|SWEETS|BAKED_GOODS;unit_type=COUNT:*:#I1]" +
+                        "[ITEM:type=FOOD|SWEETS|BAKED_GOODS;unit_type=COUNT;id=!(#I1:id):*:#I2]" +
                         "[HUMAN:*:#1]" +
                         "[NUM:min=3;max=6:*:#FRIENDS]" +
                         "[NUM:min=10;max=20:*:#P_PRICE]" +
@@ -502,7 +502,7 @@ public class MainIdan {
                         "[NUM:value=(#FACTOR:mul_(#QUOTIENT)):*:#TOTAL]" +
                         "[NUM:min=0;max=1:*:#W]" +
                         "[IF:(#W)=0:<ל[#1:n] יש [#TOTAL] [#I1:p]. [#1:he_she] [VERB:id=divide:(past_+(#1:g)+_s)] אותם שווה בשווה בין [#FACTOR] חברים. כמה [#I1:p] קיבל כל חבר?>" +
-                        ":<[#1:n] רוצה לתת [#QUOTIENT] [#I1:p] לכל [#FACTOR] חברים. כמה [#I1:p] [#1:he_she] צריך סך הכל?>]",
+                        ":<[#1:n] רוצה לתת [#QUOTIENT] [#I1:p] לכל [#FACTOR] חברים. כמה [#I1:p] [#1:he_she] [IF:(#1:g)=MALE:<צריך>:<צריכה>] סך הכל?>]",
                 "[IF:(#W)=0:<[NUM:value=(#QUOTIENT):#R]>:<[NUM:value=(#TOTAL):#R]>]",
                 "[IF:(#W)=0:<[NUM:value=(#FACTOR):#R]>:<[NUM:value=(#FACTOR:add_(#QUOTIENT)):#R]>]",
                 "[IF:(#W)=0:<[NUM:value=(#TOTAL:sub_(#FACTOR)):#R]>:<[NUM:value=(#QUOTIENT:mul_2):#R]>]",
@@ -593,7 +593,7 @@ public class MainIdan {
                         "[NUM:value=(#N:mul_(#PRICE)):*:#BUDGET]" +
                         "[NUM:min=0;max=1:*:#W]" +
                         "[IF:(#W)=0:<[#1:n] [VERB:id=buy:(past_+(#1:g)+_s)] ב[#P1:s] [#N] [#I1:p]. כל [#I1:s] עולה [#PRICE] שקלים. כמה שקלים [#1:n] [VERB:id=pay:(past_+(#1:g)+_s)] סך הכל?>" +
-                        ":<ל[#1:n] יש בדיוק [#BUDGET] שקלים. [#I1:p] עולים [#PRICE] שקלים כל [#I1:one]. כמה [#I1:p] [#1:he_she] יכול לקנות?>]",
+                        ":<ל[#1:n] יש בדיוק [#BUDGET] שקלים. [#I1:p] עולים [#PRICE] שקלים כל [#I1:one]. כמה [#I1:p] [#1:he_she] [IF:(#1:g)=MALE:<יכול>:<יכולה>] לקנות?>]",
                 "[IF:(#W)=0:<[NUM:value=(#BUDGET):#R]>:<[NUM:value=(#N):#R]>]",
                 "[IF:(#W)=0:<[NUM:value=(#N:add_(#PRICE)):#R]>:<[NUM:value=(#PRICE):#R]>]",
                 "[IF:(#W)=0:<[NUM:value=(#BUDGET:sub_(#PRICE)):#R]>:<[NUM:value=(#BUDGET:div_(#N)):#R]>]",
@@ -610,13 +610,13 @@ public class MainIdan {
                         "[NUM:min=5;max=15:*:#SPENT]" +
                         "[NUM:min=0;max=1:*:#W]" +
                         "[#1:n] [VERB:id=work:(past_+(#1:g)+_s)] ו[VERB:id=receive:(past_+(#1:g)+_s)] [#EARNED] שקלים בכל יום. [#1:he_she] [VERB:id=work:(past_+(#1:g)+_s)] [#DAYS] ימים. " +
-                        "[IF:(#W)=0:<כמה שקלים [#1:n] הרוויח סך הכל?>" +
+                        "[IF:(#W)=0:<כמה שקלים [#1:n] [IF:(#1:g)=MALE:<הרוויח>:<הרוויחה>] סך הכל?>" +
                         ":<לאחר מכן [#1:he_she] [VERB:id=pay:(past_+(#1:g)+_s)] [#SPENT] שקלים. כמה שקלים נשארו ל[#1:n]?>]",
                 "[IF:(#W)=0:<[NUM:value=(#BASE):#R]>:<[NUM:value=(#BASE:sub_(#SPENT)):#R]>]",
                 "[IF:(#W)=0:<[NUM:value=(#DAYS:add_(#EARNED)):#R]>:<[NUM:value=(#SPENT):#R]>]",
                 "[IF:(#W)=0:<[NUM:value=(#EARNED):#R]>:<[NUM:value=(#BASE):#R]>]",
                 "[IF:(#W)=0:<[NUM:value=(#BASE:add_5):#R]>:<[NUM:value=(#BASE:sub_(#DAYS)):#R]>]",
-                "[IF:(#W)=0:<כפל את הסכום היומי במספר הימים.>:<כפל את הסכום היומי במספר הימים, ואז חסר את מה ששילם.>]"
+                "[IF:(#W)=0:<כפל את הסכום היומי במספר הימים.>:<כפל את הסכום היומי במספר הימים, ואז חסר את הסכום ששולם.>]"
         });
 
         // easy 10 - קיבל ונתן (חיבור / חיבור וחיסור)
@@ -637,7 +637,7 @@ public class MainIdan {
                 "[IF:(#W)=0:<[NUM:value=(#START:sub_(#GOT)):#R]>:<[NUM:value=(#START:sub_(#GAVE)):#R]>]",
                 "[IF:(#W)=0:<[NUM:value=(#GOT):#R]>:<[NUM:value=(#MID):#R]>]",
                 "[IF:(#W)=0:<[NUM:value=(#START:add_1):#R]>:<[NUM:value=(#START:add_(#GAVE)):#R]>]",
-                "[IF:(#W)=0:<חבר את מה שהתחיל עם מה שקיבל.>:<חבר את מה שהתחיל עם מה שקיבל, ואז חסר את מה שנתן.>]"
+                "[IF:(#W)=0:<חבר את מה שהתחיל עם מה שקיבל.>:<חבר את הכמות ההתחלתית עם מה שנוסף, ואז חסר את מה שניתן.>]"
         });
         // תבנית 14: תנועה ומהירות (דרך = מהירות * זמן)
         newTemplates.add(new String[]{
@@ -860,7 +860,7 @@ public class MainIdan {
 
         // 8
         newTemplates.add(new String[]{
-                "[PLACE:place_type=FOOD_SERVICE|ENTERTAINMENT:*:#P1][ITEM:type=(#P1:t);unit_type=COUNT:*:#I1][ITEM:type=(#P1:t);unit_type=COUNT;id=!(#I1:id):*:#I2][HUMAN:*:#1][NUM:min=3;max=6:*:#FRIENDS][NUM:min=10;max=20:*:#P_PRICE][NUM:min=15;max=35:*:#SHARED_PRICE][NUM:value=(#FRIENDS:mul_(#P_PRICE)):*:#TOTAL_P][NUM:value=(#TOTAL_P:add_(#SHARED_PRICE)):*:#TOTAL_COST][NUM:value=200:*:#BILL][NUM:min=0;max=1:*:#W][#1:n] [VERB:id=buy:(past_+(#1:g)+_s)] [#FRIENDS] [#I1:p] ב[#P1:s] לחברים. כל [#I1:s] עולה [#P_PRICE] שקלים. [IF:(#W)=0:<בנוסף, [#1:he_she] [VERB:id=buy:(past_+(#1:g)+_s)] גם [#I2:s] עבור כולם ב-[#SHARED_PRICE] שקלים. כמה שקלים סך הכל [#1:he_she] [VERB:id=pay:(past_+(#1:g)+_s)]?>:<בנוסף, [#1:he_she] [VERB:id=buy:(past_+(#1:g)+_s)] [#I2:s] ב-[#SHARED_PRICE] שקלים, ו[VERB:id=pay:(past_+(#1:g)+_s)] לקופאי בשטר של 200 שקלים. כמה עודף מגיע [#1:to_him_her]?>]",
+                "[PLACE:place_type=FOOD_SERVICE|ENTERTAINMENT:*:#P1][ITEM:type=FOOD|SWEETS|BAKED_GOODS;unit_type=COUNT:*:#I1][ITEM:type=FOOD|SWEETS|BAKED_GOODS;unit_type=COUNT;id=!(#I1:id):*:#I2][HUMAN:*:#1][NUM:min=3;max=6:*:#FRIENDS][NUM:min=10;max=20:*:#P_PRICE][NUM:min=15;max=35:*:#SHARED_PRICE][NUM:value=(#FRIENDS:mul_(#P_PRICE)):*:#TOTAL_P][NUM:value=(#TOTAL_P:add_(#SHARED_PRICE)):*:#TOTAL_COST][NUM:value=200:*:#BILL][NUM:min=0;max=1:*:#W][#1:n] [VERB:id=buy:(past_+(#1:g)+_s)] [#FRIENDS] [#I1:p] ב[#P1:s] לחברים. כל [#I1:s] עולה [#P_PRICE] שקלים. [IF:(#W)=0:<בנוסף, [#1:he_she] [VERB:id=buy:(past_+(#1:g)+_s)] גם [#I2:s] עבור כולם ב-[#SHARED_PRICE] שקלים. כמה שקלים סך הכל [#1:he_she] [VERB:id=pay:(past_+(#1:g)+_s)]?>:<בנוסף, [#1:he_she] [VERB:id=buy:(past_+(#1:g)+_s)] [#I2:s] ב-[#SHARED_PRICE] שקלים, ו[VERB:id=pay:(past_+(#1:g)+_s)] לקופאי בשטר של 200 שקלים. כמה עודף מגיע [#1:to_him_her]?>]",
                 "[IF:(#W)=0:<[NUM:value=(#TOTAL_COST):#R]>:<[NUM:value=(#BILL:sub_(#TOTAL_COST)):#R]>]",
                 "[IF:(#W)=0:<[NUM:value=(#TOTAL_P):#R]>:<[NUM:value=(#BILL:sub_(#TOTAL_P)):#R]>]",
                 "[IF:(#W)=0:<[NUM:value=(#TOTAL_COST:sub_10):#R]>:<[NUM:value=(#TOTAL_COST):#R]>]",
@@ -990,7 +990,7 @@ public class MainIdan {
 
         // 21
         newTemplates.add(new String[]{
-                "[ITEM:id=train:*:#VH1][NUM:min=60;max=90;round=10:*:#V1][NUM:min=60;max=90;round=10:*:#V2][NUM:min=2;max=5:*:#T][NUM:value=(#V1:mul_(#T)):*:#D1][NUM:value=(#V2:mul_(#T)):*:#D2][NUM:value=(#D1:add_(#D2)):*:#TOTAL][NUM:min=0;max=1:*:#W][IF:(#VH1:g)=MALE:<שני [#VH1:p]>:<שתי [#VH1:p]>] יצאו מאותה תחנה בדיוק באותו הזמן ונסעו בכיוונים מנוגדים. [IF:(#VH1:g)=MALE:<[#VH1:s] א' נסע>:<[#VH1:s] א' נסעה>] במהירות קבועה של [#V1] קמ\"ש, ו[IF:(#VH1:g)=MALE:<[#VH1:s] ב' נסע>:<[#VH1:s] ב' נסעה>] במהירות קבועה של [#V2] קמ\"ש. [IF:(#VH1:g)=MALE:<הם נסעו>:<הן נסעו>] ברצף במשך [#T] שעות. [IF:(#W)=0:<מהו המרחק בקילומטרים ביניהן לאחר [#T] שעות?>:<איזה מרחק (בקילומטרים) עבר רק [#VH1:s] א' [IF:(#VH1:g)=MALE:<לבדו>:<לבדה>]?>]",
+                "[ITEM:id=train:*:#VH1][NUM:min=60;max=90;round=10:*:#V1][NUM:min=60;max=90;round=10:*:#V2][NUM:min=2;max=5:*:#T][NUM:value=(#V1:mul_(#T)):*:#D1][NUM:value=(#V2:mul_(#T)):*:#D2][NUM:value=(#D1:add_(#D2)):*:#TOTAL][NUM:min=0;max=1:*:#W][IF:(#VH1:g)=MALE:<שני [#VH1:p]>:<שתי [#VH1:p]>] יצאו מאותה תחנה בדיוק באותו הזמן ונסעו בכיוונים מנוגדים. [IF:(#VH1:g)=MALE:<[#VH1:s] א' נסע>:<[#VH1:s] א' נסעה>] במהירות קבועה של [#V1] קמ\"ש, ו[IF:(#VH1:g)=MALE:<[#VH1:s] ב' נסע>:<[#VH1:s] ב' נסעה>] במהירות קבועה של [#V2] קמ\"ש. [IF:(#VH1:g)=MALE:<הם נסעו>:<הן נסעו>] ברצף במשך [#T] שעות. [IF:(#W)=0:<מהו המרחק בקילומטרים ביניהן לאחר [#T] שעות?>:<איזה מרחק (בקילומטרים) [IF:(#VH1:g)=MALE:<עבר רק [#VH1:s] א' לבדו>:<עברה רק [#VH1:s] א' לבדה>]?>]",
                 "[IF:(#W)=0:<[NUM:value=(#TOTAL):#R]>:<[NUM:value=(#D1):#R]>]",
                 "[IF:(#W)=0:<[NUM:value=(#D1):#R]>:<[NUM:value=(#TOTAL):#R]>]",
                 "[IF:(#W)=0:<[NUM:value=(#D2):#R]>:<[NUM:value=(#V1:add_(#T)):#R]>]",
@@ -1050,7 +1050,7 @@ public class MainIdan {
 
         // 27
         newTemplates.add(new String[]{
-                "[HUMAN:g=f:*:#1][ITEM:type=CLOTHING;unit_type=COUNT:*:#I1][ITEM:type=STATIONERY;unit_type=COUNT:*:#I2][NUM:min=100;max=250;round=10:*:#HALF][NUM:value=(#HALF:mul_2):*:#M][NUM:min=30;max=80;round=10:*:#X][NUM:value=(#HALF:sub_(#X)):*:#LEFT][NUM:value=(#HALF:add_(#X)):*:#SPENT][NUM:min=0;max=1:*:#W]ל-[#1:n] היו בארנק [#M] שקלים. [IF:(#1:g)=MALE:<הוא הוציא>:<היא הוציאה>] בדיוק חצי מהסכום על [#I1:s], ולאחר מכן הוציאה עוד [#X] שקלים על [#I2:s]. [IF:(#W)=0:<כמה שקלים נשארו לה בארנק בסוף?>:<כמה שקלים [IF:(#1:g)=MALE:<הוא הוציא>:<היא הוציאה>] סך הכל בשתי הקניות יחד?>]",
+                "[HUMAN:g=f:*:#1][ITEM:type=CLOTHING;unit_type=COUNT:*:#I1][ITEM:type=STATIONERY;unit_type=COUNT:*:#I2][NUM:min=100;max=250;round=10:*:#HALF][NUM:value=(#HALF:mul_2):*:#M][NUM:min=30;max=80;round=10:*:#X][NUM:value=(#HALF:sub_(#X)):*:#LEFT][NUM:value=(#HALF:add_(#X)):*:#SPENT][NUM:min=0;max=1:*:#W]ל-[#1:n] היו בארנק [#M] שקלים. [IF:(#1:g)=MALE:<הוא הוציא>:<היא הוציאה>] בדיוק חצי מהסכום על [#I1:s], ולאחר מכן [IF:(#1:g)=MALE:<הוציא>:<הוציאה>] עוד [#X] שקלים על [#I2:s]. [IF:(#W)=0:<כמה שקלים נשארו [IF:(#1:g)=MALE:<לו>:<לה>] בארנק בסוף?>:<כמה שקלים [IF:(#1:g)=MALE:<הוא הוציא>:<היא הוציאה>] סך הכל בשתי הקניות יחד?>]",
                 "[IF:(#W)=0:<[NUM:value=(#LEFT):#R]>:<[NUM:value=(#SPENT):#R]>]",
                 "[IF:(#W)=0:<[NUM:value=(#SPENT):#R]>:<[NUM:value=(#LEFT):#R]>]",
                 "[IF:(#W)=0:<[NUM:value=(#HALF):#R]>:<[NUM:value=(#M:sub_(#X)):#R]>]",
@@ -1299,7 +1299,7 @@ public class MainIdan {
 
         // 10 (hard_logic_10)
         newTemplates.add(new String[]{
-                "[HUMAN:*:#1][HUMAN:n=!(#1:n):*:#2][NUM:min=12;max=20:*:#FUT_B][NUM:value=(#FUT_B:mul_2):*:#FUT_A][NUM:min=5;max=9:*:#Y][NUM:value=(#FUT_B:sub_(#Y)):*:#B_AGE][NUM:value=(#FUT_A:sub_(#Y)):*:#A_AGE][NUM:value=(#A_AGE:add_(#B_AGE)):*:#SUM_NOW][NUM:min=0;max=1:*:#W]כיום, גילו של האח הגדול ([#1:n]) הוא [#A_AGE] שנים, וגילו של האח הקטן ([#2:n]) הוא [#B_AGE] שנים. [IF:(#W)=0:<בעוד כמה שנים מהיום, גילו של האח הגדול יהיה בדיוק פי 2 מגילו של האח הקטן?>:<בעוד [#Y] שנים מהיום, גילו של האח הגדול יהיה בדיוק פי 2 מגילו של האח הקטן (שיגיע לגיל [#FUT_B]). מהו סכום הגילים של שני האחים כיום?>]",
+                "[HUMAN:g=m:*:#1][HUMAN:g=m;n=!(#1:n):*:#2][NUM:min=12;max=20:*:#FUT_B][NUM:value=(#FUT_B:mul_2):*:#FUT_A][NUM:min=5;max=9:*:#Y][NUM:value=(#FUT_B:sub_(#Y)):*:#B_AGE][NUM:value=(#FUT_A:sub_(#Y)):*:#A_AGE][NUM:value=(#A_AGE:add_(#B_AGE)):*:#SUM_NOW][NUM:min=0;max=1:*:#W]כיום, גילו של האח הגדול ([#1:n]) הוא [#A_AGE] שנים, וגילו של האח הקטן ([#2:n]) הוא [#B_AGE] שנים. [IF:(#W)=0:<בעוד כמה שנים מהיום, גילו של האח הגדול יהיה בדיוק פי 2 מגילו של האח הקטן?>:<בעוד [#Y] שנים מהיום, גילו של האח הגדול יהיה בדיוק פי 2 מגילו של האח הקטן (שיגיע לגיל [#FUT_B]). מהו סכום הגילים של שני האחים כיום?>]",
                 "[IF:(#W)=0:<[NUM:value=(#Y):#R]>:<[NUM:value=(#SUM_NOW):#R]>]",
                 "[IF:(#W)=0:<[NUM:value=(#FUT_B):#R]>:<[NUM:value=(#FUT_A:add_(#FUT_B)):#R]>]",
                 "[IF:(#W)=0:<[NUM:value=(#A_AGE:sub_(#B_AGE)):#R]>:<[NUM:value=(#SUM_NOW:add_(#Y)):#R]>]",
@@ -1481,7 +1481,3 @@ public class MainIdan {
         }
     }
     }
-
-
-
-
