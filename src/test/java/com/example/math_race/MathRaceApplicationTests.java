@@ -20,7 +20,7 @@ class MathRaceApplicationTests {
 	@Test
 	void contextLoads() {
 
-		for (QuestionTemplate questionTemplate : questionTemplateService.getTemplatesByDifficulty("hard")){
+		for (QuestionTemplate questionTemplate : questionTemplateService.getTemplatesByDifficulty("easy")){
 			MathQuestion mathQuestion = questionEngine.processTemplate(questionTemplate);
 
 			System.out.println(mathQuestion.getId());
