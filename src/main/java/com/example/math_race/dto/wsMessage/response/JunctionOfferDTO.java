@@ -18,6 +18,7 @@ public class JunctionOfferDTO {
     private String expression;
     private String offer1;
     private String offer2;
+    private Long sentAt;
 
     public JunctionOfferDTO(RaceManager race, RacePlayer player){
         this.offer1 = PlayerTrackState.AUTOSTRADA.name();
@@ -30,5 +31,6 @@ public class JunctionOfferDTO {
                 " אוטוסטרדה - שאלה קשה בעל סיכון גבוה אך בעל תגמול זהה." +
                 " שביל עפר - רצף שאלות קלות בעלי סיכון נמוך עם ניקוד בהתאם. " +
                 "בחר את דרכך!.";
+        this.sentAt = System.currentTimeMillis();
     }
 }

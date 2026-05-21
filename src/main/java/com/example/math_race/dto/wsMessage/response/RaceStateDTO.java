@@ -25,6 +25,7 @@ public class RaceStateDTO {
     private long totalDurationMillis;
     private long remainingTimeMs;
     private String yourAccountId;
+    private long sentAt;
 
     public RaceStateDTO(RaceManager race, RaceAccount toAccount){
         this.name = race.getSettings().getRaceName();
@@ -36,6 +37,7 @@ public class RaceStateDTO {
         this.totalDurationMillis = race.getSettings().getTotalDurationTimeMs();
         this.remainingTimeMs = race.getCalculatedRemainingTime();
         this.yourAccountId = toAccount.getId();
+        this.sentAt = System.currentTimeMillis();
 
         boolean toHostAccount = race.isHost(toAccount.getId());
 

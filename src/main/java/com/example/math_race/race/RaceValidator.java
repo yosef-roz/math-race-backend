@@ -9,6 +9,7 @@ public class RaceValidator {
     public static final int MAX_SCORES = 10000;//1500
     public static final int MIN_SCORES = 50;//400
     public static final int MIN_NAME_LENGTH = 3;
+    public static final int MAX_NAME_LENGTH = 25;
 
     public void validate(RaceSettings settings) {
 
@@ -20,6 +21,8 @@ public class RaceValidator {
             settings.setDefaultName();
         }else if (settings.getRaceName().length() < MIN_NAME_LENGTH) {
             throw new LogicException(ErrorCode.RACE_NAME_TOO_SHORT);
+        }else if (settings.getRaceName().length() > MAX_NAME_LENGTH) {
+            throw new LogicException(ErrorCode.RACE_NAME_TOO_BIG);
         }
 
     }

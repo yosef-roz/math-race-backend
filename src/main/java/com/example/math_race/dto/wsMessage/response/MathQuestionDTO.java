@@ -20,6 +20,7 @@ public class MathQuestionDTO {
     private long timeLimitMillis;
     private long questionRemainingTimeMillis;
     private int score;
+    private long sentAt;
 
     public MathQuestionDTO(RaceManager race, RacePlayer player, MathQuestion mathQuestion) {
         this.playerId = player.getId();
@@ -28,5 +29,6 @@ public class MathQuestionDTO {
         this.timeLimitMillis = mathQuestion.getTimeLimitMillis();
         this.score = mathQuestion.getScore();
         this.questionRemainingTimeMillis = player.getCalculatedQuestionRemainingTime(race.getStatus());
+        this.sentAt = System.currentTimeMillis();
     }
 }

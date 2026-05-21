@@ -5,10 +5,7 @@ import com.example.math_race.dto.response.ApiResponse;
 import com.example.math_race.dto.response.CreateRaceResponse;
 import com.example.math_race.dto.response.JoinRaceResponse;
 import com.example.math_race.dto.response.RaceInfoResponse;
-import com.example.math_race.dto.wsMessage.request.JunctionChooseRequest;
-import com.example.math_race.dto.wsMessage.request.KickPlayerRequest;
-import com.example.math_race.dto.wsMessage.request.MessageToPlayerRequest;
-import com.example.math_race.dto.wsMessage.request.SubmitQuestionRequest;
+import com.example.math_race.dto.wsMessage.request.*;
 import com.example.math_race.exception.ErrorCode;
 import com.example.math_race.service.RaceService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -48,8 +45,18 @@ public class RaceController {
     }
 
     @MessageMapping("/race/{roomCode}/host/kick")
-    public void handleKickPlayer(@DestinationVariable String roomCode, @Valid @Payload KickPlayerRequest request , StompHeaderAccessor accessor) {
+    public void handleKickPlayer(@DestinationVariable String roomCode, @Valid @Payload KickPlayerRequest request, StompHeaderAccessor accessor) {
         raceService.kickPlayerFromRace(roomCode,request);
+    }
+
+    @MessageMapping("/race/{roomCode}/player/left")
+    public void handlePlayerLeft(@DestinationVariable String roomCode, StompHeaderAccessor accessor) {
+        raceService.playerLeftFromRace(roomCode,accessor);
+    }
+
+    @MessageMapping({"/race/{roomCode}/player/change-nickname", "/race/{roomCode}/host/change-nickname"})
+    public void handleChangeNickname(@DestinationVariable String roomCode, @Valid @Payload ChangeNicknameRequest request, StompHeaderAccessor accessor) {
+        raceService.changeNickname(roomCode,request,accessor);
     }
 
     @MessageMapping("/race/{roomCode}/host/message-to-player")

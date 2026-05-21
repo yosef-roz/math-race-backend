@@ -50,6 +50,8 @@ public enum ErrorCode {
     RACE_HISTORY_ACCESS_DENIED(1419, "You are not authorized to view the history of this race!"),
     RACE_HISTORY_NOT_FOUND(1420, "The requested race history does not exist or has been deleted."),
     PLAYER_KICKED(1420,"The race host has removed you from the race."),
+    PLAYER_LEFT(1421,"The player left the race."),
+    RACE_NAME_TOO_BIG(1422, "The race name is too long!"),
 
     // Connection & Session Errors (1500 Series)
     INTENTIONAL_DISCONNECT(1500, "The connection was closed intentionally."),

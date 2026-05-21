@@ -12,9 +12,11 @@ import lombok.NoArgsConstructor;
 public class StatusChangedDTO {
     private RaceStatus status;
     private long remainingTimeMs;
+    private long sentAt;
 
     public StatusChangedDTO(RaceManager race) {
         this.status = race.getStatus();
         this.remainingTimeMs = race.getCalculatedRemainingTime();
+        this.sentAt = System.currentTimeMillis();
     }
 }

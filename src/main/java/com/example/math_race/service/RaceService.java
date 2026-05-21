@@ -1,9 +1,8 @@
 package com.example.math_race.service;
 
-import com.example.math_race.dto.wsMessage.request.JunctionChooseRequest;
-import com.example.math_race.dto.wsMessage.request.KickPlayerRequest;
-import com.example.math_race.dto.wsMessage.request.MessageToPlayerRequest;
-import com.example.math_race.dto.wsMessage.request.SubmitQuestionRequest;
+import com.example.math_race.config.websocket.Interceptors.UserPrincipal;
+import com.example.math_race.dto.wsMessage.request.*;
+import com.example.math_race.dto.wsMessage.response.AccountConnectionDTO;
 import com.example.math_race.dto.wsMessage.response.MessageDTO;
 import com.example.math_race.dto.wsMessage.response.PlayerJoinedDTO;
 import com.example.math_race.dto.wsMessage.response.RaceStateDTO;
@@ -14,11 +13,12 @@ import com.example.math_race.exception.ErrorCode;
 import com.example.math_race.exception.LogicException;
 import com.example.math_race.race.*;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.messaging.handler.annotation.Payload;
 import org.springframework.messaging.simp.stomp.StompHeaderAccessor;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.StringUtils;
 
+import javax.validation.Valid;
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.stream.Collectors;
@@ -50,7 +50,8 @@ public class RaceService {
             throw new LogicException(ErrorCode.USER_ALREADY_IN_RACE);
         }
 
-        String nickname = request.getNickname() != null && !request.getNickname().isEmpty() ?
+        String nickname = request.getNickname() != null && !request.getNickname().isEmpty() &&
+                request.getNickname().trim().length() >= 3 && request.getNickname().trim().length() <= 20 ?
                 request.getNickname() : user.getUsername();
 
 
@@ -221,11 +222,41 @@ public class RaceService {
             RacePlayer player = race.getPlayers().remove(kickPlayer.getPlayerId());
             if (player != null){
                 raceEngineService.removeTimerForPlayer(player);
+                accountIdToOpenRoomCode.remove(player.getId());
                 webSocketService.sendSuccessToTopic(webSocketService.getRaceUpdatesTopic(race.getRoomCode()),
                         "PLAYER_KICKED",new PlayerRemoveDTO(player));
 
                 webSocketService.removeSession(player.getId(),player.getSessionActive(),ErrorCode.PLAYER_KICKED);
-                // לצרף קוד שגיאה בבעיטה
+            }
+        }
+    }
+
+    public void playerLeftFromRace(String roomCode, StompHeaderAccessor accessor){
+        RaceManager race = findOpenRaceByRoomCode(roomCode);
+        if (!race.getStatus().isClosed()){
+            RacePlayer player = race.getPlayers().remove(accessor.getUser().getName());
+
+            if (player != null){
+                raceEngineService.removeTimerForPlayer(player);
+                accountIdToOpenRoomCode.remove(player.getId());
+                webSocketService.sendSuccessToTopic(webSocketService.getRaceUpdatesTopic(race.getRoomCode()),
+                        "PLAYER_LEFT",new PlayerRemoveDTO(player));
+
+                webSocketService.removeSession(player.getId(),player.getSessionActive(),ErrorCode.PLAYER_LEFT);
+            }
+        }
+    }
+
+    public void changeNickname(String roomCode, ChangeNicknameRequest request, StompHeaderAccessor accessor){
+        RaceManager race = findOpenRaceByRoomCode(roomCode);
+        if (!race.getStatus().isClosed()){
+            RaceAccount account = race.getAccount(accessor.getUser().getName());
+
+            if (account != null){
+                account.setNickname(request.getNickname());
+                webSocketService.sendSuccessToTopic(webSocketService.getRaceUpdatesTopic(race.getRoomCode()),
+                        "CHANGE_NICKNAME",  new AccountConnectionDTO(account));
+
             }
         }
     }
@@ -243,7 +274,6 @@ public class RaceService {
                     message,
                     race.getHost().getId(), race.getHost().getSessionActive());
         }
-
     }
 
     public void pauseRace(String roomCode){

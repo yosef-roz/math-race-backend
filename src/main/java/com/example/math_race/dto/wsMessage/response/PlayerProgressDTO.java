@@ -31,7 +31,12 @@ public class PlayerProgressDTO {
         this.currentScore = forHostOrIsAccount || showScore ? player.getCurrentScore() : null;
         this.isOnline = player.isConnected();
         this.trackState =  forHostOrIsAccount ? player.getTrackState() : null;
-        this.currentQuestion = forHostOrIsAccount && !race.getStatus().isClosed() && player.getCurrentQuestion() != null ? new MathQuestionDTO(race,player,player.getCurrentQuestion()) : null;
-        this.currentJunction = forHostOrIsAccount ? player.getTrackState().equals(WAITING_FOR_CHOICE) ? new JunctionOfferDTO(race,player) : null : null;
+        this.currentQuestion = (forHostOrIsAccount && !race.getStatus().isClosed() && player.getCurrentQuestion() != null)
+                ? new MathQuestionDTO(race, player, player.getCurrentQuestion())
+                : null;
+
+        this.currentJunction = (forHostOrIsAccount && !race.getStatus().isClosed() && player.getTrackState() == WAITING_FOR_CHOICE)
+                ? new JunctionOfferDTO(race, player)
+                : null;
     }
 }
