@@ -1,14 +1,16 @@
 package com.example.math_race.questionGenerator.tags.types;
 
+import com.example.math_race.entities.dictionary.AdjectiveEntity;
 import com.example.math_race.questionGenerator.tags.core.MatchableTag;
-import com.example.math_race.questionGenerator.tags.core.TemplateTag;
 import com.example.math_race.questionGenerator.tags.enums.AdjectiveType;
 import com.example.math_race.questionGenerator.tags.enums.Gender;
+import com.example.math_race.questionGenerator.tags.enums.Plurality;
 
 import java.util.HashMap;
 import java.util.Map;
 
 import static com.example.math_race.questionGenerator.tags.enums.Gender.MALE;
+import static com.example.math_race.questionGenerator.tags.enums.Plurality.SINGULAR;
 
 
 public class AdjectiveTag implements MatchableTag {
@@ -21,31 +23,73 @@ public class AdjectiveTag implements MatchableTag {
         this.type = type;
     }
 
+    public AdjectiveTag(AdjectiveEntity entity) {
+        id = entity.getAdjectiveId();
+        type = entity.getType();
+        forms = entity.getFormsAsMap();
+    }
+
     @Override
     public String getProperty(String key) {
         if (key == null || key.isEmpty()) {
-            return getWord(MALE,"s");
+            return getWord(MALE, SINGULAR);
         }
 
-        if (key.equals("id")) {
-            return id;
-        }
-        if (key.equals("type") || key.equals("t")) {
-            return type.toString();
+        if (key.equals("id")) return id;
+        if (key.equals("type") || key.equals("t")) return type.toString();
+
+        String value = forms.get(key);
+        if (value != null) {
+            return value;
         }
 
-        return forms.getOrDefault(key.trim().toUpperCase(), id);
+        String upperKey = key.toUpperCase();
+        String newKey = switch (upperKey) {
+            case "M_S" -> "MALE_SINGULAR";
+            case "M_P" -> "MALE_PLURAL";
+            case "F_S" -> "FEMALE_SINGULAR";
+            case "F_P" -> "FEMALE_PLURAL";
+            default -> upperKey;
+        };
+
+        return forms.getOrDefault(newKey, id);
     }
 
-    public void addForm(Gender gender, String number, String word) {
-        String key = gender.name() + "_" + number.toUpperCase();
+//    @Override
+//    public String getProperty(String key) {
+//        if (key == null || key.isEmpty()) {
+//            return getWord(MALE,"s");
+//        }
+//
+//        if (key.equals("id")) {
+//            return id;
+//        }
+//        if (key.equals("type") || key.equals("t")) {
+//            return type.toString();
+//        }
+//
+//        return forms.getOrDefault(key.trim().toUpperCase(), id);
+//    }
+
+//    public void addForm(Gender gender, String number, String word) {
+//        String key = gender.name() + "_" + number.toUpperCase();
+//        forms.put(key, word);
+//    }
+
+    public void addForm(Gender gender, Plurality plurality, String word) {
+        String key = gender.name() + "_" + plurality.name();
         forms.put(key, word);
     }
 
-    public String getWord(Gender gender, String number) {
-        String key = gender.name() + "_" + number.toUpperCase();
+    public String getWord(Gender gender, Plurality plurality) {
+        String key = gender.name() + "_" + plurality.name();
         return forms.getOrDefault(key, id);
     }
+
+//    public String getWord(Gender gender, String number) {
+//        String key = gender.name() + "_" + number.toUpperCase();
+//        return forms.getOrDefault(key, id);
+//    }
 
     public boolean matches(Map<String, String> constraints) {
         if (constraints.containsKey("type") && !constraints.get("type").equals("?")) {

@@ -1,0 +1,146 @@
+[
+  {
+    "id": "unit_pair_clothing",
+    "singular": "זוג",
+    "plural": "זוגות",
+    "gender": "MALE",
+    "type": "COUNT",
+    "validItemCategories": ["CLOTHING"]
+  },
+  {
+    "id": "unit_item_clothing",
+    "singular": "יחידה",
+    "plural": "יחידות",
+    "gender": "FEMALE",
+    "type": "COUNT",
+    "validItemCategories": ["CLOTHING"]
+  },
+  {
+    "id": "unit_pack_clothing",
+    "singular": "מארז",
+    "plural": "מארזים",
+    "gender": "MALE",
+    "type": "COUNT",
+    "validItemCategories": ["CLOTHING"]
+  },
+  {
+    "id": "kg",
+    "singular": "קילוגרם",
+    "plural": "קילוגרמים",
+    "gender": "MALE",
+    "type": "WEIGHT",
+    "validItemCategories": ["PRODUCE", "GENERAL_FOOD", "ART_SUPPLIES"]
+  },
+  {
+    "id": "meter",
+    "singular": "מטר",
+    "plural": "מטרים",
+    "gender": "MALE",
+    "type": "LENGTH",
+    "validItemCategories": ["HARDWARE"]
+  },
+  {
+    "id": "roll",
+    "singular": "גליל",
+    "plural": "גלילים",
+    "gender": "MALE",
+    "type": "LENGTH",
+    "validItemCategories": ["HARDWARE"]
+  },
+  {
+    "id": "liter",
+    "singular": "ליטר",
+    "plural": "ליטרים",
+    "gender": "MALE",
+    "type": "VOLUME",
+    "validItemCategories": ["DRINKS"]
+  },
+  {
+    "id": "bottle",
+    "singular": "בקבוק",
+    "plural": "בקבוקים",
+    "gender": "MALE",
+    "type": "VOLUME",
+    "validItemCategories": ["DRINKS"]
+  },
+  {
+    "id": "box",
+    "singular": "מארז",
+    "plural": "מארזים",
+    "gender": "MALE",
+    "type": "COUNT",
+    "validItemCategories": ["SWEETS", "TOY", "STATIONERY", "ELECTRONICS", "MEDICAL", "ART_SUPPLIES"]
+  },
+  {
+    "id": "pack",
+    "singular": "חבילה",
+    "plural": "חבילות",
+    "gender": "FEMALE",
+    "type": "COUNT",
+    "validItemCategories": ["SWEETS", "STATIONERY", "COLLECTIBLE", "MEDICAL", "ART_SUPPLIES"]
+  },
+  {
+    "id": "tray",
+    "singular": "מגש",
+    "plural": "מגשים",
+    "gender": "MALE",
+    "type": "COUNT",
+    "validItemCategories": ["BAKED_GOODS"]
+  },
+  {
+    "id": "pair",
+    "singular": "זוג",
+    "plural": "זוגות",
+    "gender": "MALE",
+    "type": "COUNT",
+    "validItemCategories": ["CLOTHING"]
+  },
+  {
+    "id": "clothing_box",
+    "singular": "מארז",
+    "plural": "מארזים",
+    "gender": "MALE",
+    "type": "COUNT",
+    "validItemCategories": ["CLOTHING"]
+  },
+  {
+    "id": "clothing_unit",
+    "singular": "יחידה",
+    "plural": "יחידות",
+    "gender": "FEMALE",
+    "type": "COUNT",
+    "validItemCategories": ["CLOTHING"]
+  },
+  {
+    "id": "sack",
+    "singular": "שק",
+    "plural": "שקים",
+    "gender": "MALE",
+    "type": "COUNT",
+    "validItemCategories": ["COLLECTIBLE", "PRODUCE", "GENERAL_FOOD"]
+  },
+  {
+    "id": "crate",
+    "singular": "ארגז",
+    "plural": "ארגזים",
+    "gender": "MALE",
+    "type": "COUNT",
+    "validItemCategories": ["ANTIQUE", "PRODUCE", "DRINKS", "TOY", "HARDWARE"]
+  },
+  {
+    "id": "chest",
+    "singular": "תיבה",
+    "plural": "תיבות",
+    "gender": "FEMALE",
+    "type": "COUNT",
+    "validItemCategories": ["COLLECTIBLE"]
+  },
+  {
+    "id": "none_unit",
+    "singular": "",
+    "plural": "",
+    "gender": "MALE",
+    "type": "NONE",
+    "validItemCategories": ["ELECTRONICS", "CLOTHING", "TOY", "PRODUCE", "BAKED_GOODS", "SWEETS", "STATIONERY", "COLLECTIBLE", "ANTIQUE", "MEDICAL", "ART_SUPPLIES", "HARDWARE"]
+  }
+]

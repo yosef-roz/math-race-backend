@@ -1,7 +1,8 @@
 package com.example.math_race.controller;
 
-import com.example.math_race.dto.request.RequestMetadata;
-import com.example.math_race.dto.response.*;
+import com.example.math_race.dto.http.ApiResponse;
+import com.example.math_race.dto.http.request.RequestMetadata;
+import com.example.math_race.dto.http.response.*;
 
 import com.example.math_race.exception.ErrorCode;
 import com.example.math_race.service.UserProfileService;

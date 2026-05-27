@@ -1,6 +1,6 @@
 package com.example.math_race.config.resolvers;
 
-import com.example.math_race.dto.request.RequestMetadata;
+import com.example.math_race.dto.http.request.RequestMetadata;
 import org.springframework.core.MethodParameter;
 import org.springframework.web.bind.support.WebDataBinderFactory;
 import org.springframework.web.context.request.NativeWebRequest;

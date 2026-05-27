@@ -1,8 +1,8 @@
 package com.example.math_race.repositories;
 
-import com.example.math_race.dto.response.RaceHistoryDetailsResponse;
-import com.example.math_race.dto.response.RaceHistorySummaryResponse;
-import com.example.math_race.dto.response.UserOverallStatisticsResponse;
+import com.example.math_race.dto.http.response.RaceHistoryDetailsResponse;
+import com.example.math_race.dto.http.response.RaceHistorySummaryResponse;
+import com.example.math_race.dto.http.response.UserOverallStatisticsResponse;
 import com.example.math_race.entities.RaceHistoryEntity;
 import com.example.math_race.entities.RaceParticipantHistoryEntity;
 import com.example.math_race.entities.UserEntity;

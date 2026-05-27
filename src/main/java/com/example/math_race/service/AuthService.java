@@ -1,8 +1,8 @@
 package com.example.math_race.service;
 
-import com.example.math_race.dto.request.*;
-import com.example.math_race.dto.response.CreateGuestTokenResponse;
-import com.example.math_race.dto.response.LoginResponse;
+import com.example.math_race.dto.http.request.*;
+import com.example.math_race.dto.http.response.CreateGuestTokenResponse;
+import com.example.math_race.dto.http.response.LoginResponse;
 import com.example.math_race.entities.TokenEntity;
 import com.example.math_race.entities.UserEntity;
 import com.example.math_race.exception.ErrorCode;
@@ -11,6 +11,7 @@ import com.example.math_race.repositories.AuthRepository;
 import com.example.math_race.repositories.TokenRepository;
 import com.github.benmanes.caffeine.cache.Cache;
 import com.github.benmanes.caffeine.cache.Caffeine;
+import org.mindrot.jbcrypt.BCrypt;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Propagation;
@@ -50,7 +51,7 @@ public class AuthService {
     public LoginResponse loginUser(LoginRequest request, RequestMetadata metadata) {
         UserEntity user = userRepository.findByEmail(request.getEmail());
 
-        if (user == null || !user.getPassword().equals(request.getPassword())) {
+        if (user == null || !checkPassword(request.getPassword(), user.getPassword())) {
             throw new LogicException(ErrorCode.AUTH_FAILED);
         }
 
@@ -93,7 +94,7 @@ public class AuthService {
             throw new LogicException(ErrorCode.USERNAME_ALREADY_EXISTS);
         }
 
-        user = new UserEntity(request.getUsername(), request.getPassword(), request.getEmail());
+        user = new UserEntity(request.getUsername(), hashPassword(request.getPassword()), request.getEmail());
         userRepository.save(user);
 
         TokenEntity token = tokenService.createTokenEntity(user, VERIFICATION,
@@ -155,11 +156,11 @@ public class AuthService {
             throw new LogicException(ErrorCode.ACCOUNT_NOT_FOUND);
         }
 
-        if (user.getPassword().equals(request.getNewPassword())) {
+        if (checkPassword(request.getNewPassword(), user.getPassword())) {
             throw new LogicException(ErrorCode.PASSWORD_SAME_AS_OLD);
         }
 
-        user.setPassword(request.getNewPassword());
+        user.setPassword(hashPassword(request.getNewPassword()));
         userRepository.save(user);
 
         tokenService.updateTokenSessionExpiresDate(token);
@@ -182,7 +183,7 @@ public class AuthService {
         token.setRevoked(true);
         tokenRepository.save(token);
 
-        user.setPassword(request.getNewPassword());
+        user.setPassword(hashPassword(request.getNewPassword()));
         userRepository.save(user);
 
         tokenRepository.invalidateTokensByUserAndType(user, SESSION);
@@ -240,5 +241,16 @@ public class AuthService {
     public String getGuestIdByToken(String token) {
         if (token == null) return null;
         return guestSessions.getIfPresent(token);
+    }
+
+    public String hashPassword(String rawPassword) {
+        return BCrypt.hashpw(rawPassword, BCrypt.gensalt(12));
+    }
+
+    public boolean checkPassword(String rawPassword, String hashedDbPassword) {
+        if (hashedDbPassword == null || !hashedDbPassword.startsWith("$2a$")) {
+            return false;
+        }
+        return BCrypt.checkpw(rawPassword, hashedDbPassword);
     }
 }

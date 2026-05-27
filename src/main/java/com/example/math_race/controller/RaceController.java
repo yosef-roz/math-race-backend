@@ -1,10 +1,13 @@
 package com.example.math_race.controller;
 
-import com.example.math_race.dto.request.*;
-import com.example.math_race.dto.response.ApiResponse;
-import com.example.math_race.dto.response.CreateRaceResponse;
-import com.example.math_race.dto.response.JoinRaceResponse;
-import com.example.math_race.dto.response.PublicRaceInfoResponse;
+import com.example.math_race.dto.http.request.CreateRaceRequest;
+import com.example.math_race.dto.http.request.JoinRaceRequest;
+import com.example.math_race.dto.http.request.PublicRacesListRequest;
+import com.example.math_race.dto.http.request.RequestMetadata;
+import com.example.math_race.dto.http.ApiResponse;
+import com.example.math_race.dto.http.response.CreateRaceResponse;
+import com.example.math_race.dto.http.response.JoinRaceResponse;
+import com.example.math_race.dto.http.response.RaceInfoResponse;
 import com.example.math_race.dto.wsMessage.request.*;
 import com.example.math_race.exception.ErrorCode;
 import com.example.math_race.service.RaceService;
@@ -95,6 +98,11 @@ public class RaceController {
         raceService.sendRaceState(roomCode, accessor);
     }
 
+    @MessageMapping("/race.me")
+    public void handle(StompHeaderAccessor accessor){
+        raceService.checkJoinedRace(accessor);
+    }
+
     // http://localhost:8085/api/race/create
     @PostMapping("/create")
     public ApiResponse<CreateRaceResponse> createRace(@Valid @RequestBody CreateRaceRequest request, RequestMetadata metadata) {
@@ -103,9 +111,9 @@ public class RaceController {
     }
 
     @GetMapping("/public-list")
-    public ApiResponse<List<PublicRaceInfoResponse>> getActivePublicRaces(@Valid @ModelAttribute PublicRacesListRequest request, RequestMetadata metadata){
-        List<PublicRaceInfoResponse> publicRaceInfoResponse = raceService.getActivePublicRaces(request);
-        return ApiResponse.success(publicRaceInfoResponse);
+    public ApiResponse<List<RaceInfoResponse>> getActivePublicRaces(@Valid @ModelAttribute PublicRacesListRequest request, RequestMetadata metadata){
+        List<RaceInfoResponse> raceInfoResponse = raceService.getActivePublicRaces(request);
+        return ApiResponse.success(raceInfoResponse);
     }
 
    @PostMapping("/{roomCode}/join")

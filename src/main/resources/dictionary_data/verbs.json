@@ -1,0 +1,449 @@
+[
+  {
+    "id": "buy",
+    "forms": {
+      "past_MALE_s": "קנה",
+      "past_FEMALE_s": "קנתה",
+      "past_MALE_p": "קנו",
+      "past_FEMALE_p": "קנו",
+      "inf_MALE_ANY": "לקנות"
+    }
+  },
+  {
+    "id": "eat",
+    "forms": {
+      "past_MALE_s": "אכל",
+      "past_FEMALE_s": "אכלה",
+      "past_MALE_p": "אכלו",
+      "past_FEMALE_p": "אכלו",
+      "inf_MALE_ANY": "לאכול"
+    }
+  },
+  {
+    "id": "drink",
+    "forms": {
+      "past_MALE_s": "שתה",
+      "past_FEMALE_s": "שתתה",
+      "past_MALE_p": "שתו",
+      "past_FEMALE_p": "שתו",
+      "inf_MALE_ANY": "לשתות"
+    }
+  },
+  {
+    "id": "wear",
+    "forms": {
+      "past_MALE_s": "לבש",
+      "past_FEMALE_s": "לבשה",
+      "past_MALE_p": "לבשו",
+      "past_FEMALE_p": "לבשו",
+      "inf_MALE_ANY": "ללבוש"
+    }
+  },
+  {
+    "id": "fix",
+    "forms": {
+      "past_MALE_s": "תיקן",
+      "past_FEMALE_s": "תיקנה",
+      "past_MALE_p": "תיקנו",
+      "past_FEMALE_p": "תיקנו",
+      "inf_MALE_ANY": "לתקן"
+    }
+  },
+  {
+    "id": "give",
+    "forms": {
+      "past_MALE_s": "נתן",
+      "past_FEMALE_s": "נתנה",
+      "past_MALE_p": "נתנו",
+      "past_FEMALE_p": "נתנו",
+      "inf_MALE_ANY": "לתת"
+    }
+  },
+  {
+    "id": "receive",
+    "forms": {
+      "past_MALE_s": "קיבל",
+      "past_FEMALE_s": "קיבלה",
+      "past_MALE_p": "קיבלו",
+      "past_FEMALE_p": "קיבלו",
+      "inf_MALE_ANY": "לקבל"
+    }
+  },
+  {
+    "id": "find",
+    "forms": {
+      "past_MALE_s": "מצא",
+      "past_FEMALE_s": "מצאה",
+      "past_MALE_p": "מצאו",
+      "past_FEMALE_p": "מצאו",
+      "inf_MALE_ANY": "למצוא"
+    }
+  },
+  {
+    "id": "lose",
+    "forms": {
+      "past_MALE_s": "איבד",
+      "past_FEMALE_s": "איבדה",
+      "past_MALE_p": "איבדו",
+      "past_FEMALE_p": "איבדו",
+      "inf_MALE_ANY": "לאבד"
+    }
+  },
+  {
+    "id": "collect",
+    "forms": {
+      "past_MALE_s": "אסף",
+      "past_FEMALE_s": "אספה",
+      "past_MALE_p": "אספו",
+      "past_FEMALE_p": "אספו",
+      "inf_MALE_ANY": "לאסוף"
+    }
+  },
+  {
+    "id": "divide",
+    "forms": {
+      "past_MALE_s": "חילק",
+      "past_FEMALE_s": "חילקה",
+      "past_MALE_p": "חילקו",
+      "past_FEMALE_p": "חילקו",
+      "inf_MALE_ANY": "לחלק"
+    }
+  },
+  {
+    "id": "enter",
+    "forms": {
+      "past_MALE_s": "נכנס",
+      "past_FEMALE_s": "נכנסה",
+      "past_MALE_p": "נכנסו",
+      "past_FEMALE_p": "נכנסו",
+      "inf_MALE_ANY": "להיכנס"
+    }
+  },
+  {
+    "id": "sell",
+    "forms": {
+      "past_MALE_s": "מכר",
+      "past_FEMALE_s": "מכרה",
+      "past_MALE_p": "מכרו",
+      "past_FEMALE_p": "מכרו",
+      "inf_MALE_ANY": "למכור"
+    }
+  },
+  {
+    "id": "take",
+    "forms": {
+      "past_MALE_s": "לקח",
+      "past_FEMALE_s": "לקחה",
+      "past_MALE_p": "לקחו",
+      "past_FEMALE_p": "לקחו",
+      "inf_MALE_ANY": "לקחת"
+    }
+  },
+  {
+    "id": "put",
+    "forms": {
+      "past_MALE_s": "שם",
+      "past_FEMALE_s": "שמה",
+      "past_MALE_p": "שמו",
+      "past_FEMALE_p": "שמו",
+      "inf_MALE_ANY": "לשים"
+    }
+  },
+  {
+    "id": "arrange",
+    "forms": {
+      "past_MALE_s": "סידר",
+      "past_FEMALE_s": "סידרה",
+      "past_MALE_p": "סידרו",
+      "past_FEMALE_p": "סידרו",
+      "inf_MALE_ANY": "לסדר",
+      "present_MALE_s": "מסדר",
+      "present_FEMALE_s": "מסדרת",
+      "present_MALE_p": "מסדרים",
+      "present_FEMALE_p": "מסדרות"
+    }
+  },
+  {
+    "id": "pay",
+    "forms": {
+      "past_MALE_s": "שילם",
+      "past_FEMALE_s": "שילמה",
+      "past_MALE_p": "שילמו",
+      "past_FEMALE_p": "שילמו",
+      "inf_MALE_ANY": "לשלם",
+      "future_MALE_s": "ישלם",
+      "future_FEMALE_s": "תשלם",
+      "future_MALE_p": "ישלמו",
+      "future_FEMALE_p": "ישלמו"
+    }
+  },
+  {
+    "id": "save",
+    "forms": {
+      "past_MALE_s": "חסך",
+      "past_FEMALE_s": "חסכה",
+      "past_MALE_p": "חסכו",
+      "past_FEMALE_p": "חסכו",
+      "inf_MALE_ANY": "לחסוך",
+      "present_MALE_s": "חוסך",
+      "present_FEMALE_s": "חוסכת",
+      "present_MALE_p": "חוסכים",
+      "present_FEMALE_p": "חוסכות"
+    }
+  },
+  {
+    "id": "finish",
+    "forms": {
+      "past_MALE_s": "סיים",
+      "past_FEMALE_s": "סיימה",
+      "past_MALE_p": "סיימו",
+      "past_FEMALE_p": "סיימו",
+      "inf_MALE_ANY": "לסיים"
+    }
+  },
+  {
+    "id": "offer",
+    "forms": {
+      "past_MALE_s": "הציע",
+      "past_FEMALE_s": "הציעה",
+      "past_MALE_p": "הציעו",
+      "past_FEMALE_p": "הציעו",
+      "inf_MALE_ANY": "להציע"
+    }
+  },
+  {
+    "id": "want",
+    "forms": {
+      "past_MALE_s": "רצה",
+      "past_FEMALE_s": "רצתה",
+      "past_MALE_p": "רצו",
+      "past_FEMALE_p": "רצו",
+      "inf_MALE_ANY": "לרצות",
+      "present_MALE_s": "רוצה",
+      "present_FEMALE_s": "רוצה",
+      "present_MALE_p": "רוצים",
+      "present_FEMALE_p": "רוצות"
+    }
+  },
+  {
+    "id": "need",
+    "forms": {
+      "past_MALE_s": "היה צריך",
+      "past_FEMALE_s": "הייתה צריכה",
+      "past_MALE_p": "היו צריכים",
+      "past_FEMALE_p": "היו צריכות",
+      "inf_MALE_ANY": "להצטרך"
+    }
+  },
+  {
+    "id": "be",
+    "forms": {
+      "past_MALE_s": "היה",
+      "past_FEMALE_s": "הייתה",
+      "past_MALE_p": "היו",
+      "past_FEMALE_p": "היו",
+      "inf_MALE_ANY": "להיות"
+    }
+  },
+  {
+    "id": "can",
+    "forms": {
+      "past_MALE_s": "יכל",
+      "past_FEMALE_s": "יכלה",
+      "past_MALE_p": "יכלו",
+      "past_FEMALE_p": "יכלו",
+      "inf_MALE_ANY": "להצליח",
+      "present_MALE_s": "יכול",
+      "present_FEMALE_s": "יכולה",
+      "present_MALE_p": "יכולים",
+      "present_FEMALE_p": "יכולות"
+    }
+  },
+  {
+    "id": "sit",
+    "forms": {
+      "past_MALE_s": "ישב",
+      "past_FEMALE_s": "ישבה",
+      "past_MALE_p": "ישבו",
+      "past_FEMALE_p": "ישבו",
+      "inf_MALE_ANY": "לשבת"
+    }
+  },
+  {
+    "id": "work",
+    "forms": {
+      "past_MALE_s": "עבד",
+      "past_FEMALE_s": "עבדה",
+      "past_MALE_p": "עבדו",
+      "past_FEMALE_p": "עבדו",
+      "inf_MALE_ANY": "לעבוד"
+    }
+  },
+  {
+    "id": "add",
+    "forms": {
+      "past_MALE_s": "הוסיף",
+      "past_FEMALE_s": "הוסיפה",
+      "past_MALE_p": "הוסיפו",
+      "past_FEMALE_p": "הוסיפו",
+      "inf_MALE_ANY": "להוסיף",
+      "present_MALE_s": "מוסיף",
+      "present_FEMALE_s": "מוסיפה",
+      "present_MALE_p": "מוסיפים",
+      "present_FEMALE_p": "מוסיפות",
+      "future_MALE_s": "יוסיף",
+      "future_FEMALE_s": "תוסיף",
+      "future_MALE_p": "יוסיפו",
+      "future_FEMALE_p": "יוסיפו"
+    }
+  },
+  {
+    "id": "read",
+    "forms": {
+      "past_MALE_s": "קרא",
+      "past_FEMALE_s": "קראה",
+      "past_MALE_p": "קראו",
+      "past_FEMALE_p": "קראו",
+      "present_MALE_s": "קורא",
+      "present_FEMALE_s": "קוראת",
+      "present_MALE_p": "קוראים",
+      "present_FEMALE_p": "קוראות",
+      "inf_MALE_ANY": "לקרוא"
+    }
+  },
+  {
+    "id": "cut",
+    "forms": {
+      "past_MALE_s": "חתך",
+      "past_FEMALE_s": "חתכה",
+      "past_MALE_p": "חתכו",
+      "past_FEMALE_p": "חתכו",
+      "inf_MALE_ANY": "לחתוך"
+    }
+  },
+  {
+    "id": "walk",
+    "forms": {
+      "past_MALE_s": "הלך",
+      "past_FEMALE_s": "הלכה",
+      "past_MALE_p": "הלכו",
+      "past_FEMALE_p": "הלכו",
+      "present_MALE_s": "הולך",
+      "present_FEMALE_s": "הולכת",
+      "present_MALE_p": "הולכים",
+      "present_FEMALE_p": "הולכות",
+      "inf_MALE_ANY": "ללכת"
+    }
+  },
+  {
+    "id": "lose_game",
+    "forms": {
+      "present_MALE_s": "מפסיד",
+      "present_FEMALE_s": "מפסידה",
+      "past_MALE_s": "הפסיד",
+      "past_FEMALE_s": "הפסידה",
+      "past_MALE_p": "הפסידו",
+      "past_FEMALE_p": "הפסידו",
+      "inf_MALE_ANY": "להפסיד"
+    }
+  },
+  {
+    "id": "run",
+    "forms": {
+      "present_MALE_s": "רץ",
+      "present_FEMALE_s": "רצה",
+      "past_MALE_s": "רץ",
+      "past_FEMALE_s": "רצה"
+    }
+  },
+  {
+    "id": "prepare",
+    "forms": {
+      "past_MALE_s": "הכין",
+      "past_FEMALE_s": "הכינה",
+      "past_MALE_p": "הכינו",
+      "past_FEMALE_p": "הכינו",
+      "present_MALE_s": "מכין",
+      "present_FEMALE_s": "מכינה",
+      "present_MALE_p": "מכינים",
+      "present_FEMALE_p": "מכינות",
+      "inf_MALE_ANY": "להכין"
+    }
+  },
+  {
+    "id": "choose",
+    "forms": {
+      "past_MALE_s": "בחר",
+      "past_FEMALE_s": "בחרה",
+      "past_MALE_p": "בחרו",
+      "past_FEMALE_p": "בחרו",
+      "present_MALE_s": "בוחר",
+      "present_FEMALE_s": "בוחרת",
+      "present_MALE_p": "בוחרים",
+      "present_FEMALE_p": "בוחרות",
+      "inf_MALE_ANY": "לבחור"
+    }
+  },
+  {
+    "id": "multiply",
+    "forms": {
+      "past_MALE_s": "כפל",
+      "past_FEMALE_s": "כפלה",
+      "past_MALE_p": "כפלו",
+      "past_FEMALE_p": "כפלו",
+      "present_MALE_s": "כופל",
+      "present_FEMALE_s": "כופלת",
+      "present_MALE_p": "כופלים",
+      "present_FEMALE_p": "כופלות",
+      "inf_MALE_ANY": "לכפול"
+    }
+  },
+  {
+    "id": "organize",
+    "forms": {
+      "past_MALE_s": "סידר",
+      "past_FEMALE_s": "סידרה",
+      "past_MALE_p": "סידרו",
+      "past_FEMALE_p": "סידרו",
+      "inf_MALE_ANY": "לסדר"
+    }
+  },
+  {
+    "id": "start",
+    "forms": {
+      "past_MALE_s": "התחיל",
+      "past_FEMALE_s": "התחילה",
+      "past_MALE_p": "התחילו",
+      "past_FEMALE_p": "התחילו",
+      "inf_MALE_ANY": "להתחיל"
+    }
+  },
+  {
+    "id": "play",
+    "forms": {
+      "present_MALE_s": "משחק",
+      "present_FEMALE_s": "משחקת",
+      "present_MALE_p": "משחקים",
+      "present_FEMALE_p": "משחקות",
+      "past_MALE_s": "שיחק",
+      "past_FEMALE_s": "שיחקה",
+      "past_MALE_p": "שיחקו",
+      "past_FEMALE_p": "שיחקו",
+      "inf_MALE_ANY": "לשחק"
+    }
+  },
+  {
+    "id": "win",
+    "forms": {
+      "present_MALE_s": "מנצח",
+      "present_FEMALE_s": "מנצחת",
+      "present_MALE_p": "מנצחים",
+      "present_FEMALE_p": "מנצחות",
+      "past_MALE_s": "ניצח",
+      "past_FEMALE_s": "ניצחה",
+      "past_MALE_p": "ניצחו",
+      "past_FEMALE_p": "ניצחו",
+      "inf_MALE_ANY": "לנצח"
+    }
+  }
+]

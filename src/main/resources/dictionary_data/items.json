@@ -1,0 +1,426 @@
+[
+  {
+    "id": "banknote",
+    "singular": "שטר",
+    "plural": "שטרות",
+    "gender": "MALE",
+    "allowedUnits": ["COUNT"],
+    "categories": ["MONEY"]
+  },
+  {
+    "id": "coin",
+    "singular": "מטבע",
+    "plural": "מטבעות",
+    "gender": "MALE",
+    "allowedUnits": ["COUNT"],
+    "categories": ["MONEY"]
+  },
+  {
+    "id": "ticket",
+    "singular": "כרטיס",
+    "plural": "כרטיסים",
+    "gender": "MALE",
+    "allowedUnits": ["COUNT"],
+    "categories": ["ENTERTAINMENT"]
+  },
+  {
+    "id": "game_card",
+    "singular": "כרטיס משחק",
+    "plural": "כרטיסי משחק",
+    "gender": "MALE",
+    "allowedUnits": ["COUNT"],
+    "categories": ["ENTERTAINMENT"]
+  },
+  {
+    "id": "hat",
+    "singular": "כובע",
+    "plural": "כובעים",
+    "gender": "MALE",
+    "allowedUnits": ["COUNT"],
+    "categories": ["CLOTHING"]
+  },
+  {
+    "id": "jacket",
+    "singular": "ז'קט",
+    "plural": "ז'קטים",
+    "gender": "MALE",
+    "allowedUnits": ["COUNT"],
+    "categories": ["CLOTHING"]
+  },
+  {
+    "id": "cookie",
+    "singular": "עוגייה",
+    "plural": "עוגיות",
+    "gender": "FEMALE",
+    "allowedUnits": ["COUNT"],
+    "categories": ["FOOD"]
+  },
+  {
+    "id": "apple_count",
+    "singular": "תפוח",
+    "plural": "תפוחים",
+    "gender": "MALE",
+    "allowedUnits": ["COUNT"],
+    "categories": ["FOOD"]
+  },
+  {
+    "id": "apple",
+    "singular": "תפוח",
+    "plural": "תפוחים",
+    "gender": "MALE",
+    "allowedUnits": ["WEIGHT", "COUNT"],
+    "categories": ["PRODUCE"]
+  },
+  {
+    "id": "tomato",
+    "singular": "עגבנייה",
+    "plural": "עגבניות",
+    "gender": "FEMALE",
+    "allowedUnits": ["WEIGHT", "COUNT"],
+    "categories": ["PRODUCE"]
+  },
+  {
+    "id": "bread_loaf",
+    "singular": "כיכר לחם",
+    "plural": "כיכרות לחם",
+    "gender": "MALE",
+    "allowedUnits": ["COUNT"],
+    "categories": ["BAKED_GOODS"]
+  },
+  {
+    "id": "croissant",
+    "singular": "קרואסון",
+    "plural": "קרואסונים",
+    "gender": "MALE",
+    "allowedUnits": ["COUNT"],
+    "categories": ["BAKED_GOODS"]
+  },
+  {
+    "id": "water",
+    "singular": "מים",
+    "plural": "מים",
+    "gender": "MALE",
+    "allowedUnits": ["VOLUME", "COUNT"],
+    "categories": ["DRINKS"]
+  },
+  {
+    "id": "candy",
+    "singular": "סוכרייה",
+    "plural": "סוכריות",
+    "gender": "FEMALE",
+    "allowedUnits": ["WEIGHT", "COUNT"],
+    "categories": ["SWEETS"]
+  },
+  {
+    "id": "popcorn_bag",
+    "singular": "שקית פופקורן",
+    "plural": "שקיות פופקורן",
+    "gender": "MALE",
+    "allowedUnits": ["WEIGHT", "COUNT"],
+    "categories": ["SWEETS"]
+  },
+  {
+    "id": "flour_bag",
+    "singular": "שק קמח",
+    "plural": "שקי קמח",
+    "gender": "MALE",
+    "allowedUnits": ["WEIGHT"],
+    "categories": ["GENERAL_FOOD"]
+  },
+  {
+    "id": "paintbrush",
+    "singular": "מכחול",
+    "plural": "מכחולים",
+    "gender": "MALE",
+    "allowedUnits": ["COUNT"],
+    "categories": ["ART_SUPPLIES"]
+  },
+  {
+    "id": "canvas",
+    "singular": "קנבס",
+    "plural": "קנבסים",
+    "gender": "MALE",
+    "allowedUnits": ["COUNT"],
+    "categories": ["ART_SUPPLIES"]
+  },
+  {
+    "id": "paint_tube",
+    "singular": "שפופרת צבע",
+    "plural": "שפופרות צבע",
+    "gender": "FEMALE",
+    "allowedUnits": ["COUNT"],
+    "categories": ["ART_SUPPLIES"]
+  },
+  {
+    "id": "clay",
+    "singular": "חימר",
+    "plural": "גושי חימר",
+    "gender": "MALE",
+    "allowedUnits": ["WEIGHT", "COUNT"],
+    "categories": ["ART_SUPPLIES"]
+  },
+  {
+    "id": "pencil",
+    "singular": "עיפרון",
+    "plural": "עפרונות",
+    "gender": "MALE",
+    "allowedUnits": ["COUNT"],
+    "categories": ["STATIONERY"]
+  },
+  {
+    "id": "notebook",
+    "singular": "מחברת",
+    "plural": "מחברות",
+    "gender": "FEMALE",
+    "allowedUnits": ["COUNT"],
+    "categories": ["STATIONERY"]
+  },
+  {
+    "id": "eraser",
+    "singular": "מחק",
+    "plural": "מחקים",
+    "gender": "MALE",
+    "allowedUnits": ["COUNT"],
+    "categories": ["STATIONERY"]
+  },
+  {
+    "id": "ruler",
+    "singular": "סרגל",
+    "plural": "סרגלים",
+    "gender": "MALE",
+    "allowedUnits": ["COUNT"],
+    "categories": ["STATIONERY"]
+  },
+  {
+    "id": "gold_coin",
+    "singular": "מטבע זהב",
+    "plural": "מטבעות זהב",
+    "gender": "MALE",
+    "allowedUnits": ["WEIGHT", "COUNT"],
+    "categories": ["ANTIQUE", "COLLECTIBLE"]
+  },
+  {
+    "id": "clay_jug",
+    "singular": "כד חרס",
+    "plural": "כדי חרס",
+    "gender": "MALE",
+    "allowedUnits": ["COUNT"],
+    "categories": ["ANTIQUE"]
+  },
+  {
+    "id": "pokemon_card",
+    "singular": "קלף פוקימון",
+    "plural": "קלפי פוקימון",
+    "gender": "MALE",
+    "allowedUnits": ["COUNT"],
+    "categories": ["COLLECTIBLE"]
+  },
+  {
+    "id": "pop_figure",
+    "singular": "בובת פופ",
+    "plural": "בובות פופ",
+    "gender": "FEMALE",
+    "allowedUnits": ["COUNT"],
+    "categories": ["COLLECTIBLE"]
+  },
+  {
+    "id": "medicine",
+    "singular": "תרופה",
+    "plural": "תרופות",
+    "gender": "FEMALE",
+    "allowedUnits": ["COUNT"],
+    "categories": ["MEDICAL"]
+  },
+  {
+    "id": "bandage",
+    "singular": "פלסטר",
+    "plural": "פלסטרים",
+    "gender": "MALE",
+    "allowedUnits": ["COUNT"],
+    "categories": ["MEDICAL"]
+  },
+  {
+    "id": "doll",
+    "singular": "בובה",
+    "plural": "בובות",
+    "gender": "FEMALE",
+    "allowedUnits": ["COUNT"],
+    "categories": ["TOY"]
+  },
+  {
+    "id": "puzzle",
+    "singular": "פאזל",
+    "plural": "פאזלים",
+    "gender": "MALE",
+    "allowedUnits": ["COUNT"],
+    "categories": ["TOY"]
+  },
+  {
+    "id": "shirt",
+    "singular": "חולצה",
+    "plural": "חולצות",
+    "gender": "FEMALE",
+    "allowedUnits": ["NONE"],
+    "categories": ["CLOTHING"]
+  },
+  {
+    "id": "pants",
+    "singular": "מכנס",
+    "plural": "מכנסיים",
+    "gender": "MALE",
+    "allowedUnits": ["NONE"],
+    "categories": ["CLOTHING"]
+  },
+  {
+    "id": "laptop",
+    "singular": "מחשב נייד",
+    "plural": "מחשבים ניידים",
+    "gender": "MALE",
+    "allowedUnits": ["COUNT"],
+    "categories": ["ELECTRONICS"]
+  },
+  {
+    "id": "earphone",
+    "singular": "אוזנייה",
+    "plural": "אוזניות",
+    "gender": "FEMALE",
+    "allowedUnits": ["COUNT"],
+    "categories": ["ELECTRONICS"]
+  },
+  {
+    "id": "power_cable",
+    "singular": "כבל חשמל",
+    "plural": "כבלי חשמל",
+    "gender": "MALE",
+    "allowedUnits": ["LENGTH"],
+    "categories": ["HARDWARE", "ELECTRONICS"]
+  },
+  {
+    "id": "rope",
+    "singular": "חבל",
+    "plural": "חבלים",
+    "gender": "MALE",
+    "allowedUnits": ["LENGTH"],
+    "categories": ["HARDWARE"]
+  },
+  {
+    "id": "pipe",
+    "singular": "צינור",
+    "plural": "צינורות",
+    "gender": "MALE",
+    "allowedUnits": ["LENGTH"],
+    "categories": ["HARDWARE"]
+  },
+  {
+    "id": "hammer",
+    "singular": "פטיש",
+    "plural": "פטישים",
+    "gender": "MALE",
+    "allowedUnits": ["COUNT"],
+    "categories": ["HARDWARE"]
+  },
+  {
+    "id": "screwdriver",
+    "singular": "מברג",
+    "plural": "מברגים",
+    "gender": "MALE",
+    "allowedUnits": ["COUNT"],
+    "categories": ["HARDWARE"]
+  },
+  {
+    "id": "nail",
+    "singular": "מסמר",
+    "plural": "מסמרים",
+    "gender": "MALE",
+    "allowedUnits": ["COUNT"],
+    "categories": ["HARDWARE"]
+  },
+  {
+    "id": "screw",
+    "singular": "בורג",
+    "plural": "ברגים",
+    "gender": "MALE",
+    "allowedUnits": ["COUNT"],
+    "categories": ["HARDWARE"]
+  },
+  {
+    "id": "lock",
+    "singular": "מנעול",
+    "plural": "מנעולים",
+    "gender": "MALE",
+    "allowedUnits": ["COUNT"],
+    "categories": ["HARDWARE"]
+  },
+  {
+    "id": "wrench",
+    "singular": "מפתח ברגים",
+    "plural": "מפתחות ברגים",
+    "gender": "MALE",
+    "allowedUnits": ["COUNT"],
+    "categories": ["HARDWARE"]
+  },
+  {
+    "id": "paint_brush",
+    "singular": "מברשת צבע",
+    "plural": "מברשות צבע",
+    "gender": "FEMALE",
+    "allowedUnits": ["COUNT"],
+    "categories": ["HARDWARE"]
+  },
+  {
+    "id": "car",
+    "singular": "מכונית",
+    "plural": "מכוניות",
+    "gender": "FEMALE",
+    "allowedUnits": ["NONE"],
+    "categories": ["HARDWARE"]
+  },
+  {
+    "id": "truck",
+    "singular": "משאית",
+    "plural": "משאיות",
+    "gender": "FEMALE",
+    "allowedUnits": ["NONE"],
+    "categories": ["HARDWARE"]
+  },
+  {
+    "id": "train",
+    "singular": "רכבת",
+    "plural": "רכבות",
+    "gender": "FEMALE",
+    "allowedUnits": ["NONE"],
+    "categories": ["HARDWARE"]
+  },
+  {
+    "id": "bus",
+    "singular": "אוטובוס",
+    "plural": "אוטובוסים",
+    "gender": "MALE",
+    "allowedUnits": ["NONE"],
+    "categories": ["HARDWARE"]
+  },
+  {
+    "id": "bicycle",
+    "singular": "אופניים",
+    "plural": "אופניים",
+    "gender": "MALE",
+    "allowedUnits": ["NONE"],
+    "categories": ["HARDWARE"]
+  },
+  {
+    "id": "motorcycle",
+    "singular": "אופנוע",
+    "plural": "אופנועים",
+    "gender": "MALE",
+    "allowedUnits": ["NONE"],
+    "categories": ["HARDWARE"]
+  },
+  {
+    "id": "scooter",
+    "singular": "קורקינט",
+    "plural": "קורקינטים",
+    "gender": "MALE",
+    "allowedUnits": ["NONE"],
+    "categories": ["HARDWARE"]
+  }
+]

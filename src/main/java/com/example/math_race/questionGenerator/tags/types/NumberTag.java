@@ -47,14 +47,18 @@ public class NumberTag implements TemplateTag {
             return String.valueOf(value);
         }
 
-        if (key.equals("min")) {
-            return String.valueOf(min);
-        }
-        if (key.equals("max")) {
-            return String.valueOf(max);
-        }
-        if (key.equals("abs")) {
-            return String.valueOf(Math.abs(value));
+        key = key.trim().toLowerCase();
+
+        switch (key) {
+            case "min" -> {
+                return String.valueOf(min);
+            }
+            case "max" -> {
+                return String.valueOf(max);
+            }
+            case "abs" -> {
+                return String.valueOf(Math.abs(value));
+            }
         }
 
         try {
@@ -79,10 +83,9 @@ public class NumberTag implements TemplateTag {
                 if (divisor != 0) return String.valueOf(value % divisor);
             }
         } catch (NumberFormatException e) {
-            System.out.println("Warning: Invalid math operation format: " + key);
+            System.out.println("\u001B[31m" + "Warning: Invalid math operation format: " + key + "\u001B[0m");
         }
 
-        // ברירת מחדל
         return String.valueOf(value);
     }
 }

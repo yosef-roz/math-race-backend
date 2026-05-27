@@ -81,7 +81,7 @@ public class TagInfo {
     public static List<String> smartSplit(String s, char delimiter) {
         List<String> result = new ArrayList<>();
         StringBuilder current = new StringBuilder();
-        int depth = 0; // מונה את עומק הסוגריים
+        int depth = 0;
 
         for (char c : s.toCharArray()) {
             if (c == '(') depth++;

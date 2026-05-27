@@ -50,7 +50,6 @@ public class QuestionEngine {
         ensureTemplateCoverageUnits();
         this.roles = dictionaryRepository.loadRoleTag();
 
-        System.out.println("✅ QuestionEngine: Dictionary loaded successfully to memory!");
     }
 
     public void fill() {
@@ -370,7 +369,7 @@ public class QuestionEngine {
                 .toList();
 
         if (matches.isEmpty()) {
-            System.out.println("Warning: No " + clazz.getSimpleName() + " matches constraints: " + constraints);
+            System.out.println("\u001B[31m" + "Warning: No " + clazz.getSimpleName() + " matches constraints: " + constraints + "\u001B[0m");
             return null;
         }
 

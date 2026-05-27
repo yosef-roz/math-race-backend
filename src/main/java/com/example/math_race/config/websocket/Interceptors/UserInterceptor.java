@@ -138,7 +138,11 @@ public class UserInterceptor implements ChannelInterceptor {
             RaceAccount account = race.getAccount(principal.getName());
             String incomingToken = accessor.getFirstNativeHeader("Join-Token");
 
+            String recoveryHeader = accessor.getFirstNativeHeader("Is-Recovery");
+            boolean isRecoveryAttempt = "true".equals(recoveryHeader);
+
             if (!account.isConnected() || account.getSessionActive().equals(accessor.getSessionId()) ||
+                    isRecoveryAttempt ||
                     (account.containsJoinToken() && account.getJoinToken().equals(incomingToken))) {
 
                 boolean isNewConnection = !account.isConnected() || !accessor.getSessionId().equals(account.getSessionActive());
@@ -225,7 +229,6 @@ public class UserInterceptor implements ChannelInterceptor {
         }
         return message;
     }
-
 
     @EventListener
     public void handleWebSocketConnectListener(SessionConnectedEvent event) {

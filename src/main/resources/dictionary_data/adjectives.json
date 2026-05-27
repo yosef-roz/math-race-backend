@@ -1,0 +1,102 @@
+[
+  {
+    "id": "red",
+    "type": "COLOR",
+    "forms": {
+      "MALE_SINGULAR": "אדום",
+      "FEMALE_SINGULAR": "אדומה",
+      "MALE_PLURAL": "אדומים",
+      "FEMALE_PLURAL": "אדומות"
+    }
+  },
+  {
+    "id": "blue",
+    "type": "COLOR",
+    "forms": {
+      "MALE_SINGULAR": "כחול",
+      "FEMALE_SINGULAR": "כחולה",
+      "MALE_PLURAL": "כחולים",
+      "FEMALE_PLURAL": "כחולות"
+    }
+  },
+  {
+    "id": "big",
+    "type": "SIZE",
+    "forms": {
+      "MALE_SINGULAR": "גדול",
+      "FEMALE_SINGULAR": "גדולה",
+      "MALE_PLURAL": "גדולים",
+      "FEMALE_PLURAL": "גדולות"
+    }
+  },
+  {
+    "id": "small",
+    "type": "SIZE",
+    "forms": {
+      "MALE_SINGULAR": "קטן",
+      "FEMALE_SINGULAR": "קטנה",
+      "MALE_PLURAL": "קטנים",
+      "FEMALE_PLURAL": "קטנות"
+    }
+  },
+  {
+    "id": "new",
+    "type": "CONDITION",
+    "forms": {
+      "MALE_SINGULAR": "חדש",
+      "FEMALE_SINGULAR": "חדשה",
+      "MALE_PLURAL": "חדשים",
+      "FEMALE_PLURAL": "חדשות"
+    }
+  },
+  {
+    "id": "old",
+    "type": "CONDITION",
+    "forms": {
+      "MALE_SINGULAR": "ישן",
+      "FEMALE_SINGULAR": "ישנה",
+      "MALE_PLURAL": "ישנים",
+      "FEMALE_PLURAL": "ישנות"
+    }
+  },
+  {
+    "id": "broken",
+    "type": "CONDITION",
+    "forms": {
+      "MALE_SINGULAR": "שבור",
+      "FEMALE_SINGULAR": "שבורה",
+      "MALE_PLURAL": "שבורים",
+      "FEMALE_PLURAL": "שבורות"
+    }
+  },
+  {
+    "id": "fresh",
+    "type": "CONDITION",
+    "forms": {
+      "MALE_SINGULAR": "טרי",
+      "FEMALE_SINGULAR": "טרייה",
+      "MALE_PLURAL": "טריים",
+      "FEMALE_PLURAL": "טריות"
+    }
+  },
+  {
+    "id": "tasty",
+    "type": "FEELING",
+    "forms": {
+      "MALE_SINGULAR": "טעים",
+      "FEMALE_SINGULAR": "טעימה",
+      "MALE_PLURAL": "טעימים",
+      "FEMALE_PLURAL": "טעימות"
+    }
+  },
+  {
+    "id": "identical",
+    "type": "CONDITION",
+    "forms": {
+      "MALE_SINGULAR": "זהה נוסף",
+      "FEMALE_SINGULAR": "זהה נוספת",
+      "MALE_PLURAL": "זהים נוספים",
+      "FEMALE_PLURAL": "זהות נוספות"
+    }
+  }
+]

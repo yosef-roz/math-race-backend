@@ -1,7 +1,7 @@
 package com.example.math_race.questionGenerator.tags.types;
 
+import com.example.math_race.entities.dictionary.ItemEntity;
 import com.example.math_race.questionGenerator.tags.core.MatchableTag;
-import com.example.math_race.questionGenerator.tags.core.TemplateTag;
 import com.example.math_race.questionGenerator.tags.enums.Gender;
 import com.example.math_race.questionGenerator.tags.enums.ItemCategory;
 import com.example.math_race.questionGenerator.tags.enums.UnitType;
@@ -9,10 +9,7 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-import java.util.Arrays;
-import java.util.HashSet;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 
 @Data
 @NoArgsConstructor
@@ -34,160 +31,108 @@ public class ItemTag implements MatchableTag {
         this.categories = new HashSet<>(Arrays.asList(categories));
     }
 
-    @Override
-    public String getProperty(String key) {
-        if ("s".equals(key)) return singular;
-        if ("p".equals(key)) return plural;
-        if ("g".equals(key)) return gender.name();
-        if ("id".equals(key)) return id;
-
-        if ("t".equalsIgnoreCase(key)) {
-            return categories.stream()
-                    .map(Enum::name)
-                    .collect(java.util.stream.Collectors.joining("|"));
-        }
-
-        if ("one".equals(key)) {
-            return gender == Gender.MALE ? "אחד" : "אחת";
-        }
-
-        if ("allowed_unit".equals(key)) {
-            if (allowedUnits.isEmpty()) return "NONE"; // אם אי אפשר למדוד אותו
-            return allowedUnits.stream()
-                    .map(Enum::name)
-                    .collect(java.util.stream.Collectors.joining("|"));
-        }
-
-        return singular;
+    public ItemTag(ItemEntity entity) {
+        this.id = entity.getItemId();
+        this.singular = entity.getSingular();
+        this.plural = entity.getPlural();
+        this.gender = entity.getGender();
+        this.categories = entity.getCategories();
+        this.allowedUnits = entity.getAllowedUnits();
     }
 
+    @Override
+    public String getProperty(String key) {
+        if (key == null || key.isEmpty()) return singular;
+
+        String normalizedKey = key.trim().toLowerCase();
+
+        return switch (normalizedKey) {
+            case "p", "plural" -> plural;
+            case "g", "gender" -> gender.name();
+            case "id" -> id;
+            case "t","type","c","categories" -> categories.stream()
+                    .map(Enum::name)
+                    .collect(java.util.stream.Collectors.joining("|"));
+            case "one" -> gender == Gender.MALE ? "אחד" : "אחת";
+            case "u","unit","unit_type","allowed_unit" -> {
+                if (allowedUnits.isEmpty()) yield "NONE";
+                yield allowedUnits.stream()
+                        .map(Enum::name)
+                        .collect(java.util.stream.Collectors.joining("|"));
+            }
+            default -> singular;
+        };
+    }
+
+    @Override
     public boolean matches(Map<String, String> constraints) {
+        String reqType = null;
+        String reqUnit = null;
+        String reqId = null;
 
-        if (constraints.containsKey("type") && !constraints.get("type").equals("?")) {
-            String rawExpr = constraints.get("type").trim().toUpperCase();
-            boolean isNegated = rawExpr.startsWith("!");
+        for (Map.Entry<String, String> entry : constraints.entrySet()) {
+            if (entry.getKey() == null || entry.getValue() == null) continue;
 
-            if (isNegated) {
-                rawExpr = rawExpr.substring(1);
-            }
+            String key = entry.getKey().trim().toLowerCase();
+            String value = entry.getValue().trim();
 
-            String[] orGroups = rawExpr.split("\\|");
-            boolean expressionMatch = false;
+            if (value.equals("?")) continue;
 
-            for (String group : orGroups) {
-
-                String[] andRequirements = group.split("&");
-                boolean allInGroupMatch = true;
-
-                for (String req : andRequirements) {
-                    try {
-                        ItemCategory cat = ItemCategory.valueOf(req.trim());
-                        if (!this.categories.contains(cat)) {
-                            allInGroupMatch = false;
-                            break;
-                        }
-                    } catch (IllegalArgumentException e) {
-                        allInGroupMatch = false;
-                        break;
-                    }
-                }
-
-                if (allInGroupMatch) {
-                    expressionMatch = true;
-                    break;
-                }
-            }
-
-            if (isNegated) {
-                if (expressionMatch) return false;
-            } else {
-                if (!expressionMatch) return false;
+            switch (key) {
+                case "t", "type", "c", "categories" -> reqType = value;
+                case "u", "unit", "unit_type", "allowed_unit" -> reqUnit = value;
+                case "id" -> reqId = value;
             }
         }
 
-        if (constraints.containsKey("unit_type") && !constraints.get("unit_type").equals("?")) {
-            String rawExpr = constraints.get("unit_type").trim().toUpperCase();
-            boolean isNegated = rawExpr.startsWith("!");
-
-            if (isNegated) {
-                rawExpr = rawExpr.substring(1);
-            }
-
-            String[] orGroups = rawExpr.split("\\|");
-            boolean expressionResult = false;
-
-            for (String group : orGroups) {
-                String[] andRequirements = group.split("&");
-                boolean allInGroupMatch = true;
-
-                for (String req : andRequirements) {
-                    try {
-                        UnitType ut = UnitType.valueOf(req.trim());
-                        if (!this.allowedUnits.contains(ut)) {
-                            allInGroupMatch = false;
-                            break;
-                        }
-                    } catch (IllegalArgumentException e) {
-                        allInGroupMatch = false;
-                        break;
-                    }
-                }
-
-                if (allInGroupMatch) {
-                    expressionResult = true;
-                    break;
-                }
-            }
-
-            if (isNegated == expressionResult) return false;
+        if (reqType != null) {
+            if (!matchComplexExpression(reqType, this.categories, ItemCategory.class)) return false;
         }
 
-
-        if (constraints.containsKey("s") && !constraints.get("s").equals("?")) {
-            String reqS = constraints.get("s").trim();
-            if (reqS.startsWith("!")) {
-                if (this.singular.equalsIgnoreCase(reqS.substring(1))) return false;
-            } else {
-                if (!this.singular.equalsIgnoreCase(reqS)) return false;
-            }
+        if (reqUnit != null) {
+            if (!matchComplexExpression(reqUnit, this.allowedUnits, UnitType.class)) return false;
         }
 
-        if (constraints.containsKey("p") && !constraints.get("p").equals("?")) {
-            String reqP = constraints.get("p").trim();
-            if (reqP.startsWith("!")) {
-                if (this.plural.equalsIgnoreCase(reqP.substring(1))) return false;
-            } else {
-                if (!this.plural.equalsIgnoreCase(reqP)) return false;
-            }
-        }
-
-        if (constraints.containsKey("g") && !constraints.get("g").equals("?")) {
-            String reqGender = constraints.get("g").trim().toUpperCase();
-            boolean isNot = reqGender.startsWith("!");
-            String genderVal = isNot ? reqGender.substring(1) : reqGender;
-
-            boolean isMaleMatch = (genderVal.equals("M") || genderVal.equals("MALE")) && this.gender == Gender.MALE;
-            boolean isFemaleMatch = (genderVal.equals("F") || genderVal.equals("FEMALE")) && this.gender == Gender.FEMALE;
-
-            if (isNot) {
-                if (isMaleMatch || isFemaleMatch) return false;
-            } else {
-                if (!isMaleMatch && !isFemaleMatch) return false;
-            }
-        }
-
-        if (constraints.containsKey("id") && !constraints.get("id").equals("?")) {
-            String reqId = constraints.get("id").trim();
-
-            if (reqId.startsWith("!")) {
-                String excludedId = reqId.substring(1);
-
-                if (this.id.equalsIgnoreCase(excludedId)) return false;
-            } else {
-                if (!this.id.equalsIgnoreCase(reqId)) return false;
-            }
+        if (reqId != null) {
+            boolean isNegated = reqId.startsWith("!");
+            String val = isNegated ? reqId.substring(1).trim() : reqId;
+            return isNegated != this.id.equalsIgnoreCase(val);
         }
 
         return true;
+    }
+
+    private <T extends Enum<T>> boolean matchComplexExpression(String rawExpr, Set<T> actualValues, Class<T> enumClass) {
+        rawExpr = rawExpr.toUpperCase();
+        boolean isNegated = rawExpr.startsWith("!");
+        if (isNegated) rawExpr = rawExpr.substring(1).trim();
+
+        String[] orGroups = rawExpr.split("\\|");
+        boolean expressionMatch = false;
+
+        for (String group : orGroups) {
+            String[] andRequirements = group.split("&");
+            boolean allInGroupMatch = true;
+
+            for (String req : andRequirements) {
+                try {
+                    T enumValue = Enum.valueOf(enumClass, req.trim());
+                    if (!actualValues.contains(enumValue)) {
+                        allInGroupMatch = false;
+                        break;
+                    }
+                } catch (IllegalArgumentException e) {
+                    allInGroupMatch = false;
+                    break;
+                }
+            }
+
+            if (allInGroupMatch) {
+                expressionMatch = true;
+                break;
+            }
+        }
+
+        return isNegated != expressionMatch;
     }
 }

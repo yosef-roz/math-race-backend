@@ -1,10 +1,10 @@
 package com.example.math_race.service;
 
-import com.example.math_race.dto.request.RequestMetadata;
-import com.example.math_race.dto.response.ProfileResponse;
-import com.example.math_race.dto.response.RaceHistoryDetailsResponse;
-import com.example.math_race.dto.response.RaceHistorySummaryResponse;
-import com.example.math_race.dto.response.UserOverallStatisticsResponse;
+import com.example.math_race.dto.http.request.RequestMetadata;
+import com.example.math_race.dto.http.response.ProfileResponse;
+import com.example.math_race.dto.http.response.RaceHistoryDetailsResponse;
+import com.example.math_race.dto.http.response.RaceHistorySummaryResponse;
+import com.example.math_race.dto.http.response.UserOverallStatisticsResponse;
 import com.example.math_race.entities.UserEntity;
 import com.example.math_race.repositories.UserProfileRepository;
 import org.springframework.beans.factory.annotation.Autowired;

@@ -1,9 +1,9 @@
 package com.example.math_race.controller;
 
-import com.example.math_race.dto.request.*;
-import com.example.math_race.dto.response.ApiResponse;
-import com.example.math_race.dto.response.CreateGuestTokenResponse;
-import com.example.math_race.dto.response.LoginResponse;
+import com.example.math_race.dto.http.request.*;
+import com.example.math_race.dto.http.ApiResponse;
+import com.example.math_race.dto.http.response.CreateGuestTokenResponse;
+import com.example.math_race.dto.http.response.LoginResponse;
 import com.example.math_race.service.AuthService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;

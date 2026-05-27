@@ -1114,80 +1114,80 @@ public class MathQuestionGenerator {
     public static List<AdjectiveTag> fillAdjectives() {
         List<AdjectiveTag>  adjectives = new ArrayList<>();
         // --- צבעים ---
-        AdjectiveTag red = new AdjectiveTag("red", AdjectiveType.COLOR);
-        red.addForm(MALE, "s", "אדום");
-        red.addForm(FEMALE, "s", "אדומה");
-        red.addForm(MALE, "p", "אדומים");
-        red.addForm(FEMALE, "p", "אדומות");
-        adjectives.add(red);
-
-        AdjectiveTag blue = new AdjectiveTag("blue", AdjectiveType.COLOR);
-        blue.addForm(MALE, "s", "כחול");
-        blue.addForm(FEMALE, "s", "כחולה");
-        blue.addForm(MALE, "p", "כחולים");
-        blue.addForm(FEMALE, "p", "כחולות");
-        adjectives.add(blue);
-
-        // --- גדלים ---
-        AdjectiveTag big = new AdjectiveTag("big", AdjectiveType.SIZE);
-        big.addForm(MALE, "s", "גדול");
-        big.addForm(FEMALE, "s", "גדולה");
-        big.addForm(MALE, "p", "גדולים");
-        big.addForm(FEMALE, "p", "גדולות");
-        adjectives.add(big);
-
-        AdjectiveTag small = new AdjectiveTag("small", AdjectiveType.SIZE);
-        small.addForm(MALE, "s", "קטן");
-        small.addForm(FEMALE, "s", "קטנה");
-        small.addForm(MALE, "p", "קטנים");
-        small.addForm(FEMALE, "p", "קטנות");
-        adjectives.add(small);
-
-        // --- מצבים (CONDITION) ---
-        AdjectiveTag newAdj = new AdjectiveTag("new", AdjectiveType.CONDITION);
-        newAdj.addForm(MALE, "s", "חדש");
-        newAdj.addForm(FEMALE, "s", "חדשה");
-        newAdj.addForm(MALE, "p", "חדשים");
-        newAdj.addForm(FEMALE, "p", "חדשות");
-        adjectives.add(newAdj);
-
-        AdjectiveTag oldAdj = new AdjectiveTag("old", AdjectiveType.CONDITION);
-        oldAdj.addForm(MALE, "s", "ישן");
-        oldAdj.addForm(FEMALE, "s", "ישנה");
-        oldAdj.addForm(MALE, "p", "ישנים");
-        oldAdj.addForm(FEMALE, "p", "ישנות");
-        adjectives.add(oldAdj);
-
-        // הוספה: שבור (מתאים לחומרי בניין, צעצועים, אלקטרוניקה)
-        AdjectiveTag broken = new AdjectiveTag("broken", AdjectiveType.CONDITION);
-        broken.addForm(MALE, "s", "שבור");
-        broken.addForm(FEMALE, "s", "שבורה");
-        broken.addForm(MALE, "p", "שבורים");
-        broken.addForm(FEMALE, "p", "שבורות");
-        adjectives.add(broken);
-
-        // הוספה: טרי (מתאים לפירות, ירקות ומאפים)
-        AdjectiveTag fresh = new AdjectiveTag("fresh", AdjectiveType.CONDITION);
-        fresh.addForm(MALE, "s", "טרי");
-        fresh.addForm(FEMALE, "s", "טרייה");
-        fresh.addForm(MALE, "p", "טריים");
-        fresh.addForm(FEMALE, "p", "טריות");
-        adjectives.add(fresh);
-
-        // --- תחושות/טעם (FEELING) ---
-        AdjectiveTag tasty = new AdjectiveTag("tasty", AdjectiveType.FEELING);
-        tasty.addForm(MALE, "s", "טעים");
-        tasty.addForm(FEMALE, "s", "טעימה");
-        tasty.addForm(MALE, "p", "טעימים");
-        tasty.addForm(FEMALE, "p", "טעימות");
-        adjectives.add(tasty);
-
-        AdjectiveTag identical = new AdjectiveTag("identical", AdjectiveType.CONDITION);
-        identical.addForm(Gender.MALE, "s", "זהה נוסף");
-        identical.addForm(Gender.FEMALE, "s", "זהה נוספת");
-        identical.addForm(Gender.MALE, "p", "זהים נוספים");
-        identical.addForm(Gender.FEMALE, "p", "זהות נוספות");
-        adjectives.add(identical);
+//        AdjectiveTag red = new AdjectiveTag("red", AdjectiveType.COLOR);
+//        red.addForm(MALE, "s", "אדום");
+//        red.addForm(FEMALE, "s", "אדומה");
+//        red.addForm(MALE, "p", "אדומים");
+//        red.addForm(FEMALE, "p", "אדומות");
+//        adjectives.add(red);
+//
+//        AdjectiveTag blue = new AdjectiveTag("blue", AdjectiveType.COLOR);
+//        blue.addForm(MALE, "s", "כחול");
+//        blue.addForm(FEMALE, "s", "כחולה");
+//        blue.addForm(MALE, "p", "כחולים");
+//        blue.addForm(FEMALE, "p", "כחולות");
+//        adjectives.add(blue);
+//
+//        // --- גדלים ---
+//        AdjectiveTag big = new AdjectiveTag("big", AdjectiveType.SIZE);
+//        big.addForm(MALE, "s", "גדול");
+//        big.addForm(FEMALE, "s", "גדולה");
+//        big.addForm(MALE, "p", "גדולים");
+//        big.addForm(FEMALE, "p", "גדולות");
+//        adjectives.add(big);
+//
+//        AdjectiveTag small = new AdjectiveTag("small", AdjectiveType.SIZE);
+//        small.addForm(MALE, "s", "קטן");
+//        small.addForm(FEMALE, "s", "קטנה");
+//        small.addForm(MALE, "p", "קטנים");
+//        small.addForm(FEMALE, "p", "קטנות");
+//        adjectives.add(small);
+//
+//        // --- מצבים (CONDITION) ---
+//        AdjectiveTag newAdj = new AdjectiveTag("new", AdjectiveType.CONDITION);
+//        newAdj.addForm(MALE, "s", "חדש");
+//        newAdj.addForm(FEMALE, "s", "חדשה");
+//        newAdj.addForm(MALE, "p", "חדשים");
+//        newAdj.addForm(FEMALE, "p", "חדשות");
+//        adjectives.add(newAdj);
+//
+//        AdjectiveTag oldAdj = new AdjectiveTag("old", AdjectiveType.CONDITION);
+//        oldAdj.addForm(MALE, "s", "ישן");
+//        oldAdj.addForm(FEMALE, "s", "ישנה");
+//        oldAdj.addForm(MALE, "p", "ישנים");
+//        oldAdj.addForm(FEMALE, "p", "ישנות");
+//        adjectives.add(oldAdj);
+//
+//        // הוספה: שבור (מתאים לחומרי בניין, צעצועים, אלקטרוניקה)
+//        AdjectiveTag broken = new AdjectiveTag("broken", AdjectiveType.CONDITION);
+//        broken.addForm(MALE, "s", "שבור");
+//        broken.addForm(FEMALE, "s", "שבורה");
+//        broken.addForm(MALE, "p", "שבורים");
+//        broken.addForm(FEMALE, "p", "שבורות");
+//        adjectives.add(broken);
+//
+//        // הוספה: טרי (מתאים לפירות, ירקות ומאפים)
+//        AdjectiveTag fresh = new AdjectiveTag("fresh", AdjectiveType.CONDITION);
+//        fresh.addForm(MALE, "s", "טרי");
+//        fresh.addForm(FEMALE, "s", "טרייה");
+//        fresh.addForm(MALE, "p", "טריים");
+//        fresh.addForm(FEMALE, "p", "טריות");
+//        adjectives.add(fresh);
+//
+//        // --- תחושות/טעם (FEELING) ---
+//        AdjectiveTag tasty = new AdjectiveTag("tasty", AdjectiveType.FEELING);
+//        tasty.addForm(MALE, "s", "טעים");
+//        tasty.addForm(FEMALE, "s", "טעימה");
+//        tasty.addForm(MALE, "p", "טעימים");
+//        tasty.addForm(FEMALE, "p", "טעימות");
+//        adjectives.add(tasty);
+//
+//        AdjectiveTag identical = new AdjectiveTag("identical", AdjectiveType.CONDITION);
+//        identical.addForm(Gender.MALE, "s", "זהה נוסף");
+//        identical.addForm(Gender.FEMALE, "s", "זהה נוספת");
+//        identical.addForm(Gender.MALE, "p", "זהים נוספים");
+//        identical.addForm(Gender.FEMALE, "p", "זהות נוספות");
+//        adjectives.add(identical);
 
         return  adjectives;
     }

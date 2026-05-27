@@ -1,6 +1,6 @@
 package com.example.math_race.exception;
 
-import com.example.math_race.dto.response.ApiResponse;
+import com.example.math_race.dto.http.ApiResponse;
 import com.example.math_race.service.WebSocketService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;

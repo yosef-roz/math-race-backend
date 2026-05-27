@@ -1,0 +1,358 @@
+[
+  {
+    "id": "seller",
+    "singularMale": "מוכר",
+    "pluralMale": "מוכרים",
+    "singularFemale": "מוכרת",
+    "pluralFemale": "מוכרות",
+    "roleType": "OPERATOR",
+    "validPlaceIds": [
+      "grocery", "supermarket", "bakery", "kiosk", "toy_store", "craft_store",
+      "stationery_store", "mall", "clothing_store", "electronics_store",
+      "pharmacy", "hardware_store", "pizzeria"
+    ]
+  },
+  {
+    "id": "cashier",
+    "singularMale": "קופאי",
+    "pluralMale": "קופאים",
+    "singularFemale": "קופאית",
+    "pluralFemale": "קופאיות",
+    "roleType": "OPERATOR",
+    "validPlaceIds": [
+      "supermarket", "grocery"
+    ]
+  },
+  {
+    "id": "baker",
+    "singularMale": "אופה",
+    "pluralMale": "אופים",
+    "singularFemale": "אופה",
+    "pluralFemale": "אופות",
+    "roleType": "OPERATOR",
+    "validPlaceIds": [
+      "bakery"
+    ]
+  },
+  {
+    "id": "merchant",
+    "singularMale": "סוחר",
+    "pluralMale": "סוחרים",
+    "singularFemale": "סוחרת",
+    "pluralFemale": "סוחרות",
+    "roleType": "OPERATOR",
+    "validPlaceIds": [
+      "market", "antique_store"
+    ]
+  },
+  {
+    "id": "pharmacist",
+    "singularMale": "רוקח",
+    "pluralMale": "רוקחים",
+    "singularFemale": "רוקחת",
+    "pluralFemale": "רוקחות",
+    "roleType": "OPERATOR",
+    "validPlaceIds": [
+      "pharmacy"
+    ]
+  },
+  {
+    "id": "teacher",
+    "singularMale": "מורה",
+    "pluralMale": "מורים",
+    "singularFemale": "מורה",
+    "pluralFemale": "מורות",
+    "roleType": "OPERATOR",
+    "validPlaceIds": [
+      "school", "classroom"
+    ]
+  },
+  {
+    "id": "librarian",
+    "singularMale": "ספרן",
+    "pluralMale": "ספרנים",
+    "singularFemale": "ספרנית",
+    "pluralFemale": "ספרניות",
+    "roleType": "OPERATOR",
+    "validPlaceIds": [
+      "library"
+    ]
+  },
+  {
+    "id": "professor",
+    "singularMale": "מרצה",
+    "pluralMale": "מרצים",
+    "singularFemale": "מרצה",
+    "pluralFemale": "מרצות",
+    "roleType": "OPERATOR",
+    "validPlaceIds": [
+      "university"
+    ]
+  },
+  {
+    "id": "guide",
+    "singularMale": "מדריך",
+    "pluralMale": "מדריכים",
+    "singularFemale": "מדריכה",
+    "pluralFemale": "מדריכות",
+    "roleType": "OPERATOR",
+    "validPlaceIds": [
+      "museum", "zoo", "park", "forest"
+    ]
+  },
+  {
+    "id": "usher",
+    "singularMale": "סדרן",
+    "pluralMale": "סדרנים",
+    "singularFemale": "סדרנית",
+    "pluralFemale": "סדרניות",
+    "roleType": "OPERATOR",
+    "validPlaceIds": [
+      "cinema", "amusement_park"
+    ]
+  },
+  {
+    "id": "lifeguard",
+    "singularMale": "מציל",
+    "pluralMale": "מצילים",
+    "singularFemale": "מצילה",
+    "pluralFemale": "מצילות",
+    "roleType": "OPERATOR",
+    "validPlaceIds": [
+      "pool", "beach"
+    ]
+  },
+  {
+    "id": "waiter",
+    "singularMale": "מלצר",
+    "pluralMale": "מלצרים",
+    "singularFemale": "מלצרית",
+    "pluralFemale": "מלצריות",
+    "roleType": "OPERATOR",
+    "validPlaceIds": [
+      "restaurant", "cafe", "pizzeria"
+    ]
+  },
+  {
+    "id": "driver",
+    "singularMale": "נהג",
+    "pluralMale": "נהגים",
+    "singularFemale": "נהגת",
+    "pluralFemale": "נהגות",
+    "roleType": "OPERATOR",
+    "validPlaceIds": [
+      "bus_station", "train_station"
+    ]
+  },
+  {
+    "id": "flight_attendant",
+    "singularMale": "דייל",
+    "pluralMale": "דיילים",
+    "singularFemale": "דיילת",
+    "pluralFemale": "דיילות",
+    "roleType": "OPERATOR",
+    "validPlaceIds": [
+      "airport"
+    ]
+  },
+  {
+    "id": "doctor",
+    "singularMale": "רופא",
+    "pluralMale": "רופאים",
+    "singularFemale": "רופאה",
+    "pluralFemale": "רופאות",
+    "roleType": "OPERATOR",
+    "validPlaceIds": [
+      "hospital", "clinic"
+    ]
+  },
+  {
+    "id": "nurse",
+    "singularMale": "אח",
+    "pluralMale": "אחים",
+    "singularFemale": "אחות",
+    "pluralFemale": "אחיות",
+    "roleType": "OPERATOR",
+    "validPlaceIds": [
+      "hospital", "clinic"
+    ]
+  },
+  {
+    "id": "host",
+    "singularMale": "מארח",
+    "pluralMale": "מארחים",
+    "singularFemale": "מארחת",
+    "pluralFemale": "מארחות",
+    "roleType": "OPERATOR",
+    "validPlaceIds": [
+      "house", "apartment"
+    ]
+  },
+  {
+    "id": "customer",
+    "singularMale": "לקוח",
+    "pluralMale": "לקוחות",
+    "singularFemale": "לקוחה",
+    "pluralFemale": "לקוחות",
+    "roleType": "TARGET",
+    "validPlaceIds": [
+      "grocery", "supermarket", "bakery", "kiosk", "toy_store", "craft_store",
+      "stationery_store", "mall", "clothing_store", "electronics_store",
+      "pharmacy", "hardware_store", "pizzeria"
+    ]
+  },
+  {
+    "id": "buyer",
+    "singularMale": "קונה",
+    "pluralMale": "קונים",
+    "singularFemale": "קונה",
+    "pluralFemale": "קונות",
+    "roleType": "TARGET",
+    "validPlaceIds": [
+      "market", "antique_store"
+    ]
+  },
+  {
+    "id": "student",
+    "singularMale": "תלמיד",
+    "pluralMale": "תלמידים",
+    "singularFemale": "תלמידה",
+    "pluralFemale": "תלמידות",
+    "roleType": "TARGET",
+    "validPlaceIds": [
+      "school", "classroom", "stationery_store", "craft_store"
+    ]
+  },
+  {
+    "id": "university_student",
+    "singularMale": "סטודנט",
+    "pluralMale": "סטודנטים",
+    "singularFemale": "סטודנטית",
+    "pluralFemale": "סטודנטיות",
+    "roleType": "TARGET",
+    "validPlaceIds": [
+      "university"
+    ]
+  },
+  {
+    "id": "reader",
+    "singularMale": "קורא",
+    "pluralMale": "קוראים",
+    "singularFemale": "קוראת",
+    "pluralFemale": "קוראות",
+    "roleType": "TARGET",
+    "validPlaceIds": [
+      "library"
+    ]
+  },
+  {
+    "id": "visitor",
+    "singularMale": "מבקר",
+    "pluralMale": "מבקרים",
+    "singularFemale": "מבקרת",
+    "pluralFemale": "מבקרות",
+    "roleType": "TARGET",
+    "validPlaceIds": [
+      "mall", "market", "museum", "zoo", "amusement_park", "park"
+    ]
+  },
+  {
+    "id": "viewer",
+    "singularMale": "צופה",
+    "pluralMale": "צופים",
+    "singularFemale": "צופה",
+    "pluralFemale": "צופות",
+    "roleType": "TARGET",
+    "validPlaceIds": [
+      "cinema"
+    ]
+  },
+  {
+    "id": "collector",
+    "singularMale": "אספן",
+    "pluralMale": "אספנים",
+    "singularFemale": "אספנית",
+    "pluralFemale": "אספניות",
+    "roleType": "TARGET",
+    "validPlaceIds": [
+      "antique_store", "market", "toy_store"
+    ]
+  },
+  {
+    "id": "traveler",
+    "singularMale": "מטייל",
+    "pluralMale": "מטיילים",
+    "singularFemale": "מטיילת",
+    "pluralFemale": "מטיילות",
+    "roleType": "TARGET",
+    "validPlaceIds": [
+      "forest", "park", "street", "square"
+    ]
+  },
+  {
+    "id": "bather",
+    "singularMale": "מתרחץ",
+    "pluralMale": "מתרחצים",
+    "singularFemale": "מתרחצת",
+    "pluralFemale": "מתרחצות",
+    "roleType": "TARGET",
+    "validPlaceIds": [
+      "pool", "beach"
+    ]
+  },
+  {
+    "id": "diner",
+    "singularMale": "סועד",
+    "pluralMale": "סועדים",
+    "singularFemale": "סועדת",
+    "pluralFemale": "סועדות",
+    "roleType": "TARGET",
+    "validPlaceIds": [
+      "restaurant", "pizzeria", "cafe"
+    ]
+  },
+  {
+    "id": "patient",
+    "singularMale": "מטופל",
+    "pluralMale": "מטופלים",
+    "singularFemale": "מטופלת",
+    "pluralFemale": "מטופלות",
+    "roleType": "TARGET",
+    "validPlaceIds": [
+      "hospital", "clinic", "pharmacy"
+    ]
+  },
+  {
+    "id": "passenger",
+    "singularMale": "נוסע",
+    "pluralMale": "נוסעים",
+    "singularFemale": "נוסעת",
+    "pluralFemale": "נוסעות",
+    "roleType": "TARGET",
+    "validPlaceIds": [
+      "train_station", "bus_station", "airport"
+    ]
+  },
+  {
+    "id": "pedestrian",
+    "singularMale": "הולך רגל",
+    "pluralMale": "הולכי רגל",
+    "singularFemale": "הולכת רגל",
+    "pluralFemale": "הולכות רגל",
+    "roleType": "TARGET",
+    "validPlaceIds": [
+      "street", "square"
+    ]
+  },
+  {
+    "id": "guest",
+    "singularMale": "אורח",
+    "pluralMale": "אורחים",
+    "singularFemale": "אורחת",
+    "pluralFemale": "אורחות",
+    "roleType": "TARGET",
+    "validPlaceIds": [
+      "house", "apartment"
+    ]
+  }
+]

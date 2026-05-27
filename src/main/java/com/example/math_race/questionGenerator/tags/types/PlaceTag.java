@@ -1,5 +1,6 @@
 package com.example.math_race.questionGenerator.tags.types;
 
+import com.example.math_race.entities.dictionary.PlaceEntity;
 import com.example.math_race.questionGenerator.tags.core.MatchableTag;
 import com.example.math_race.questionGenerator.tags.core.TemplateTag;
 import com.example.math_race.questionGenerator.tags.enums.Gender;
@@ -30,6 +31,15 @@ public class PlaceTag implements MatchableTag {
         this.gender = gender;
         this.placeType = placeType;
         this.categories = new HashSet<>(Arrays.asList(categories));
+    }
+
+    public PlaceTag(PlaceEntity entity) {
+        this.id = entity.getPlaceId();
+        this.singular = entity.getSingular();
+        this.plural = entity.getPlural();
+        this.gender = entity.getGender();
+        this.placeType = entity.getPlaceType();
+        this.categories = entity.getCategories();
     }
 
     @Override

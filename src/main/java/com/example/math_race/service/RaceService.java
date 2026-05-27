@@ -1,9 +1,15 @@
 package com.example.math_race.service;
 
+import com.example.math_race.dto.http.request.CreateRaceRequest;
+import com.example.math_race.dto.http.request.JoinRaceRequest;
+import com.example.math_race.dto.http.request.PublicRacesListRequest;
+import com.example.math_race.dto.http.request.RequestMetadata;
+import com.example.math_race.dto.http.response.CreateRaceResponse;
+import com.example.math_race.dto.http.response.JoinRaceResponse;
+import com.example.math_race.dto.http.response.PlayerRemoveDTO;
+import com.example.math_race.dto.http.response.RaceInfoResponse;
 import com.example.math_race.dto.wsMessage.request.*;
 import com.example.math_race.dto.wsMessage.response.*;
-import com.example.math_race.dto.request.*;
-import com.example.math_race.dto.response.*;
 import com.example.math_race.entities.UserEntity;
 import com.example.math_race.exception.ErrorCode;
 import com.example.math_race.exception.LogicException;
@@ -77,14 +83,14 @@ public class RaceService {
 
     public void fullRace(boolean toDo, RaceManager race){
         if (toDo){
-            for (int i = 0; i < 19; i++) {
+            for (int i = 0; i < 10; i++) {
                 race.joinRace(new RacePlayer("stam" + UUID.randomUUID().toString().substring(0, 8), "", "", createNickname()));
             }
         }
 
     }
 
-    public List<PublicRaceInfoResponse> getActivePublicRaces(PublicRacesListRequest request) {
+    public List<RaceInfoResponse> getActivePublicRaces(PublicRacesListRequest request) {
         long skipCount = (long) request.getPage() * request.getSize();
 
         return allRaces.values().stream()
@@ -92,7 +98,7 @@ public class RaceService {
                 .sorted(Comparator.comparingLong(RaceManager::getCreatedAtMs).reversed())
                 .skip(skipCount)
                 .limit(request.getSize())
-                .map(PublicRaceInfoResponse::new)
+                .map(RaceInfoResponse::new)
                 .collect(Collectors.toList());
     }
 
@@ -165,17 +171,28 @@ public class RaceService {
             webSocketService.sendErrorToQueueSession(QUEUE_RACE_HOST,ErrorCode.RACE_ALREADY_INITIALIZED,accessor);
         }
 
-        if (raceManager.getPlayers().size() < 0){
+        if (raceManager.getPlayers().size() < 2){
             webSocketService.sendErrorToQueueSession(QUEUE_RACE_HOST,ErrorCode.NOT_ENOUGH_PLAYERS_TO_START,accessor);
         }
 
         raceEngineService.startRace(raceManager);
     }
 
+    public void checkJoinedRace(StompHeaderAccessor accessor){
+        RaceManager race = findOpenRaceByAccountId(accessor.getUser().getName());
+
+        if (race != null) {
+            webSocketService.sendSuccessToQueueSession(QUEUE_NOTIFICATIONS, "JOINED_RACE_FOUND",
+                    new RaceInfoResponse(race), accessor);
+        }else {
+            webSocketService.sendSuccessToQueueSession(QUEUE_NOTIFICATIONS, "NO_JOINED_RACE_FOUND",
+                    null,accessor);
+        }
+    }
+
     public void sendRaceState(String roomCode, StompHeaderAccessor accessor){
         RaceManager raceManager = findRaceByRoomCode(roomCode);
         boolean isHost = raceManager.isHost(accessor.getUser().getName());
-
 
         webSocketService.sendSuccessToQueueSession(isHost ? QUEUE_RACE_HOST : QUEUE_RACE_FEEDBACK, "RACE_FULL_STATE",
                 new RaceStateDTO(raceManager, raceManager.getAccount(accessor.getUser().getName())),accessor);

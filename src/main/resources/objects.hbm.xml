@@ -149,4 +149,161 @@
         <property name="deleted" type="boolean" column="deleted" not-null="true"/>
         <property name="deletionDate" type="java.util.Date" column="deletion_date"/>
     </class>
+
+    <class name="com.example.math_race.entities.dictionary.AdjectiveEntity" table="adjectives" lazy="false">
+        <id name="id" type="org.hibernate.type.UUIDBinaryType">
+            <column name="id" length="16" />
+            <generator class="org.hibernate.id.UUIDGenerator"/>
+        </id>
+
+        <property name="adjectiveId" type="string" column="adjective_id" not-null="true" index="idx_adjective_id"/>
+
+        <property name="type" column="adjective_type" not-null="true">
+            <type name="org.hibernate.type.EnumType">
+                <param name="enumClass">com.example.math_race.questionGenerator.tags.enums.AdjectiveType</param>
+                <param name="useNamed">true</param>
+            </type>
+        </property>
+
+        <set name="dbForms" table="adjective_forms" lazy="false" cascade="all">
+            <key not-null="true">
+                <column name="adjective_uuid" length="16" />
+            </key>
+
+            <composite-element class="com.example.math_race.entities.dictionary.AdjectiveFormEntry">
+                <property name="gender" column="form_gender" length="20" not-null="true">
+                    <type name="org.hibernate.type.EnumType">
+                        <param name="enumClass">com.example.math_race.questionGenerator.tags.enums.Gender</param>
+                        <param name="useNamed">true</param>
+                    </type>
+                </property>
+
+                <property name="plurality" column="form_plurality" length="20" not-null="true">
+                    <type name="org.hibernate.type.EnumType">
+                        <param name="enumClass">com.example.math_race.questionGenerator.tags.enums.Plurality</param>
+                        <param name="useNamed">true</param>
+                    </type>
+                </property>
+
+                <property name="value" type="string" column="form_value" length="100" not-null="true"/>
+            </composite-element>
+        </set>
+
+        <property name="creationDate" type="java.util.Date" column="creation_date" not-null="true"/>
+        <property name="updatedDate" type="java.util.Date" column="updated_date"/>
+        <property name="deleted" type="boolean" column="deleted" not-null="true"/>
+        <property name="deletionDate" type="java.util.Date" column="deletion_date"/>
+    </class>
+
+    <class name="com.example.math_race.entities.dictionary.HumanEntity" table="humans" lazy="false">
+        <id name="id" type="org.hibernate.type.UUIDBinaryType">
+            <column name="id" length="16" />
+            <generator class="org.hibernate.id.UUIDGenerator"/>
+        </id>
+
+        <property name="name" type="string" column="name" not-null="true"/>
+
+        <property name="gender" column="gender" not-null="true">
+            <type name="org.hibernate.type.EnumType">
+                <param name="enumClass">com.example.math_race.questionGenerator.tags.enums.Gender</param>
+                <param name="useNamed">true</param>
+            </type>
+        </property>
+
+        <property name="creationDate" type="java.util.Date" column="creation_date" not-null="true"/>
+        <property name="updatedDate" type="java.util.Date" column="updated_date"/>
+        <property name="deleted" type="boolean" column="deleted" not-null="true"/>
+        <property name="deletionDate" type="java.util.Date" column="deletion_date"/>
+    </class>
+
+    <class name="com.example.math_race.entities.dictionary.ItemEntity" table="items" lazy="false">
+        <id name="id" type="org.hibernate.type.UUIDBinaryType">
+            <column name="id" length="16" />
+            <generator class="org.hibernate.id.UUIDGenerator"/>
+        </id>
+
+        <property name="itemId" type="string" column="item_id" not-null="true" index="idx_item_id"/>
+
+        <property name="singular" type="string" column="singular" not-null="true"/>
+        <property name="plural" type="string" column="plural" not-null="true"/>
+
+        <property name="gender" column="gender" not-null="true">
+            <type name="org.hibernate.type.EnumType">
+                <param name="enumClass">com.example.math_race.questionGenerator.tags.enums.Gender</param>
+                <param name="useNamed">true</param>
+            </type>
+        </property>
+
+        <set name="categories" table="item_categories" lazy="false">
+            <key not-null="true">
+                <column name="item_uuid" length="16" />
+            </key>
+            <element column="category">
+                <type name="org.hibernate.type.EnumType">
+                    <param name="enumClass">com.example.math_race.questionGenerator.tags.enums.ItemCategory</param>
+                    <param name="useNamed">true</param>
+                </type>
+            </element>
+        </set>
+
+        <set name="allowedUnits" table="item_allowed_units" lazy="false">
+            <key not-null="true">
+                <column name="item_uuid" length="16" />
+            </key>
+            <element column="unit_type">
+                <type name="org.hibernate.type.EnumType">
+                    <param name="enumClass">com.example.math_race.questionGenerator.tags.enums.UnitType</param>
+                    <param name="useNamed">true</param>
+                </type>
+            </element>
+        </set>
+
+        <property name="creationDate" type="java.util.Date" column="creation_date" not-null="true"/>
+        <property name="updatedDate" type="java.util.Date" column="updated_date"/>
+        <property name="deleted" type="boolean" column="deleted" not-null="true"/>
+        <property name="deletionDate" type="java.util.Date" column="deletion_date"/>
+    </class>
+
+    <class name="com.example.math_race.entities.dictionary.PlaceEntity" table="places" lazy="false">
+        <id name="id" type="org.hibernate.type.UUIDBinaryType">
+            <column name="id" length="16" />
+            <generator class="org.hibernate.id.UUIDGenerator"/>
+        </id>
+
+        <property name="placeId" type="string" column="place_id" not-null="true" index="idx_place_id"/>
+
+        <property name="singular" type="string" column="singular" not-null="true"/>
+        <property name="plural" type="string" column="plural" not-null="true"/>
+
+        <property name="gender" column="gender" not-null="true">
+            <type name="org.hibernate.type.EnumType">
+                <param name="enumClass">com.example.math_race.questionGenerator.tags.enums.Gender</param>
+                <param name="useNamed">true</param>
+            </type>
+        </property>
+
+        <property name="placeType" column="place_type" not-null="true">
+            <type name="org.hibernate.type.EnumType">
+                <param name="enumClass">com.example.math_race.questionGenerator.tags.enums.PlaceType</param>
+                <param name="useNamed">true</param>
+            </type>
+        </property>
+
+        <set name="categories" table="place_categories" lazy="false">
+            <key not-null="true">
+                <column name="place_uuid" length="16" />
+            </key>
+            <element column="category">
+                <type name="org.hibernate.type.EnumType">
+                    <param name="enumClass">com.example.math_race.questionGenerator.tags.enums.ItemCategory</param>
+                    <param name="useNamed">true</param>
+                </type>
+            </element>
+        </set>
+
+        <property name="creationDate" type="java.util.Date" column="creation_date" not-null="true"/>
+        <property name="updatedDate" type="java.util.Date" column="updated_date"/>
+        <property name="deleted" type="boolean" column="deleted" not-null="true"/>
+        <property name="deletionDate" type="java.util.Date" column="deletion_date"/>
+    </class>
 </hibernate-mapping>
