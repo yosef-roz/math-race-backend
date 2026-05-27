@@ -183,8 +183,8 @@ public class RaceService {
 
         if (race != null) {
             webSocketService.sendSuccessToQueueSession(QUEUE_NOTIFICATIONS, "JOINED_RACE_FOUND",
-                    new RaceInfoResponse(race), accessor);
-        }else {
+                    new RaceInfoResponse(race,race.getAccount(accessor.getUser().getName())), accessor);
+        } else {
             webSocketService.sendSuccessToQueueSession(QUEUE_NOTIFICATIONS, "NO_JOINED_RACE_FOUND",
                     null,accessor);
         }
