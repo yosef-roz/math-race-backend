@@ -11,6 +11,7 @@ import java.util.Map;
 
 import static com.example.math_race.questionGenerator.tags.enums.Gender.MALE;
 import static com.example.math_race.questionGenerator.tags.enums.Plurality.SINGULAR;
+import static com.example.math_race.questionGenerator.tags.types.TagUtils.matchComplexExpression;
 
 
 public class AdjectiveTag implements MatchableTag {
@@ -31,50 +32,34 @@ public class AdjectiveTag implements MatchableTag {
 
     @Override
     public String getProperty(String key) {
-        if (key == null || key.isEmpty()) {
-            return getWord(MALE, SINGULAR);
-        }
+        if (key == null || key.isEmpty()) return getWord(MALE, SINGULAR);
+        if (key.equals("*")) return "";
 
-        if (key.equals("id")) return id;
-        if (key.equals("type") || key.equals("t")) return type.toString();
+        String upperKey = key.toUpperCase();
 
-        String value = forms.get(key);
+        if (upperKey.equals("ID")) return id;
+        if (upperKey.equals("TYPE") || upperKey.equals("T")) return type.toString();
+
+        String value = forms.get(upperKey);
         if (value != null) {
             return value;
         }
 
-        String upperKey = key.toUpperCase();
         String newKey = switch (upperKey) {
-            case "M_S" -> "MALE_SINGULAR";
-            case "M_P" -> "MALE_PLURAL";
-            case "F_S" -> "FEMALE_SINGULAR";
-            case "F_P" -> "FEMALE_PLURAL";
+            case "M_S","MALE_S","M_SINGULAR" -> "MALE_SINGULAR";
+            case "M_P","MALE_P","M_PLURAL" -> "MALE_PLURAL";
+            case "F_S","FEMALE_S","F_SINGULAR" -> "FEMALE_SINGULAR";
+            case "F_P","FEMALE_P","F_PLURAL" -> "FEMALE_PLURAL";
             default -> upperKey;
         };
 
-        return forms.getOrDefault(newKey, id);
+        if (forms.containsKey(newKey)) {
+            return forms.get(newKey);
+        } else {
+            System.out.println("\u001B[31m" + "Warning: Unrecognized property key in AdjectiveTag.getProperty: '" + key + "'\u001B[0m");
+            return id;
+        }
     }
-
-//    @Override
-//    public String getProperty(String key) {
-//        if (key == null || key.isEmpty()) {
-//            return getWord(MALE,"s");
-//        }
-//
-//        if (key.equals("id")) {
-//            return id;
-//        }
-//        if (key.equals("type") || key.equals("t")) {
-//            return type.toString();
-//        }
-//
-//        return forms.getOrDefault(key.trim().toUpperCase(), id);
-//    }
-
-//    public void addForm(Gender gender, String number, String word) {
-//        String key = gender.name() + "_" + number.toUpperCase();
-//        forms.put(key, word);
-//    }
 
     public void addForm(Gender gender, Plurality plurality, String word) {
         String key = gender.name() + "_" + plurality.name();
@@ -86,30 +71,34 @@ public class AdjectiveTag implements MatchableTag {
         return forms.getOrDefault(key, id);
     }
 
-//    public String getWord(Gender gender, String number) {
-//        String key = gender.name() + "_" + number.toUpperCase();
-//        return forms.getOrDefault(key, id);
-//    }
-
+    @Override
     public boolean matches(Map<String, String> constraints) {
-        if (constraints.containsKey("type") && !constraints.get("type").equals("?")) {
-            String reqType = constraints.get("type").trim().toUpperCase();
+        String reqId = null;
+        String reqType = null;
 
-            try {
-                AdjectiveType requestedType = AdjectiveType.valueOf(reqType);
-                if (this.type != requestedType) return false;
-            } catch (IllegalArgumentException e) {
-                return false;
+        for (Map.Entry<String, String> entry : constraints.entrySet()) {
+            if (entry.getKey() == null || entry.getValue() == null) continue;
+
+            String key = entry.getKey().trim().toLowerCase();
+            String value = entry.getValue().trim();
+
+            if (value.equals("?")) continue;
+
+            switch (key) {
+                case "id" -> reqId = value;
+                case "t", "type" -> reqType = value;
+                default -> System.out.println("\u001B[31m" + "Warning: Unrecognized constraint key in AdjectiveTag.matches: " + key + "\u001B[0m");
             }
         }
 
-        if (constraints.containsKey("id") && !constraints.get("id").equals("?")) {
-            String reqId = constraints.get("id").trim();
-            if (reqId.startsWith("!")) {
-                if (this.id.equalsIgnoreCase(reqId.substring(1))) return false;
-            } else {
-                if (!this.id.equalsIgnoreCase(reqId)) return false;
-            }
+        if (reqId != null) {
+            boolean isNegated = reqId.startsWith("!");
+            String val = isNegated ? reqId.substring(1).trim() : reqId;
+            if (isNegated == this.id.equalsIgnoreCase(val)) return false;
+        }
+
+        if (reqType != null) {
+            return matchComplexExpression(reqType, java.util.Collections.singleton(this.type), AdjectiveType.class);
         }
 
         return true;

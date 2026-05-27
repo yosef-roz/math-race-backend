@@ -1,10 +1,7 @@
 package com.example.math_race.repositories;
 
 import com.example.math_race.entities.BaseEntity;
-import com.example.math_race.entities.dictionary.AdjectiveEntity;
-import com.example.math_race.entities.dictionary.HumanEntity;
-import com.example.math_race.entities.dictionary.ItemEntity;
-import com.example.math_race.entities.dictionary.PlaceEntity;
+import com.example.math_race.entities.dictionary.*;
 import com.example.math_race.models.dictionary.DictionaryJsonSeeder;
 import com.example.math_race.questionGenerator.tags.types.*;
 import com.example.math_race.race.questions.MathQuestionGenerator;
@@ -65,11 +62,19 @@ public class DictionaryRepository extends BaseRepository {
     }
 
     public List<UnitTag> loadUnitTag() {
-        return MathQuestionGenerator.fillUnits();
+        return loadTagsOrSeed(
+                UnitEntity.class,
+                seeder::getUnitEntitiesFromJson,
+                UnitTag::new
+        );
     }
 
     public List<RoleTag> loadRoleTag() {
-        return MathQuestionGenerator.fillRoles();
+        return loadTagsOrSeed(
+                RoleEntity.class,
+                seeder::getRoleEntitiesFromJson,
+                RoleTag::new
+        );
     }
 
     private <E extends BaseEntity, T> List<T> loadTagsOrSeed(Class<E> entityClass, Supplier<List<E>> seedSupplier, Function<E, T> tagMapper) {

@@ -1,13 +1,16 @@
 package com.example.math_race.questionGenerator.tags.types;
 
+import com.example.math_race.entities.dictionary.RoleEntity;
 import com.example.math_race.questionGenerator.tags.core.MatchableTag;
-import com.example.math_race.questionGenerator.tags.core.TemplateTag;
 import com.example.math_race.questionGenerator.tags.enums.RoleType;
 
 import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
+
+import static com.example.math_race.questionGenerator.tags.types.TagUtils.matchComplexExpression;
+import static com.example.math_race.questionGenerator.tags.types.TagUtils.matchComplexStringExpression;
 
 public class RoleTag implements MatchableTag {
     private String id;
@@ -30,93 +33,75 @@ public class RoleTag implements MatchableTag {
         this.validPlaceIds = new HashSet<>(Arrays.asList(allowedPlaceIds));
     }
 
-    @Override
-    public String getProperty(String key) {
-        if ("id".equals(key)) return id;
-
-        // הוספת roleType לפי המפתח
-        if ("rt".equalsIgnoreCase(key) || "role_type".equalsIgnoreCase(key)) {
-            return roleType.name();
-        }
-
-        // הוספת validPlaceIds מופרדים ב-|
-        if ("vp".equalsIgnoreCase(key) || "valid_places".equalsIgnoreCase(key)) {
-            return String.join("|", validPlaceIds);
-        }
-
-        if ("sm".equals(key) || "m_s".equals(key) || "sMALE".equals(key)) return singularMale;
-        if ("pm".equals(key) || "m_p".equals(key) || "pMALE".equals(key)) return pluralMale;
-        if ("sf".equals(key) || "f_s".equals(key) || "sFEMALE".equals(key)) return singularFemale;
-        if ("pf".equals(key) || "f_p".equals(key) || "pFEMALE".equals(key)) return pluralFemale;
-
-        return singularMale;
+    public RoleTag(RoleEntity entity){
+        this.id = entity.getRoleId();
+        this.singularMale = entity.getSingularMale();
+        this.pluralMale = entity.getPluralMale();
+        this.singularFemale = entity.getSingularFemale();
+        this.pluralFemale = entity.getPluralFemale();
+        this.roleType = entity.getRoleType();
+        this.validPlaceIds = entity.getValidPlaceIds();
     }
 
+
+    @Override
+    public String getProperty(String key) {
+        if (key == null || key.isEmpty()) return singularMale;
+        if (key.equals("*")) return "";
+
+        String normalizedKey = key.trim().toLowerCase();
+
+        return switch (normalizedKey) {
+            case "id" -> id;
+            case "rt", "r_t","role_type" -> roleType.name();
+            case "vp", "valid_places" -> String.join("|", validPlaceIds);
+            case "m_s", "male_s", "m_singular" -> singularMale;
+            case "m_p", "male_p", "m_plural" -> pluralMale;
+            case "f_s", "female_s", "f_singular" -> singularFemale;
+            case "f_p", "female_p", "f_plural" -> pluralFemale;
+            default -> {
+                System.out.println("\u001B[31m" + "Warning: Unrecognized property key in RoleTag.getProperty: '" + key + "'\u001B[0m");
+                yield singularMale;
+            }
+        };
+    }
+
+    @Override
     public boolean matches(Map<String, String> constraints) {
+        String reqId = null;
+        String reqRoleType = null;
+        String reqPlaceId = null;
 
-        if (constraints.containsKey("id") && !constraints.get("id").equals("?")) {
-            String req = constraints.get("id").trim();
-            boolean isNot = req.startsWith("!");
-            if (isNot) req = req.substring(1);
+        for (Map.Entry<String, String> entry : constraints.entrySet()) {
+            if (entry.getKey() == null || entry.getValue() == null) continue;
 
-            String[] allowedIds = req.split("\\|");
-            boolean foundMatch = false;
-            for (String allowed : allowedIds) {
-                if (this.id.equalsIgnoreCase(allowed.trim())) {
-                    foundMatch = true;
-                    break;
-                }
+            String key = entry.getKey().trim().toLowerCase();
+            String value = entry.getValue().trim();
+
+            if (value.equals("?")) continue;
+
+            switch (key) {
+                case "id" -> reqId = value;
+                case "rt", "r_t", "role_type" -> reqRoleType = value;
+                case "vp", "v_p", "valid_places", "place_id" -> reqPlaceId = value;
+                default -> System.out.println("\u001B[31m" + "Warning: Unrecognized constraint key in RoleTag.matches: '" + key + "'\u001B[0m");
             }
-
-            if (isNot == foundMatch) return false;
         }
 
-        if (constraints.containsKey("role_type") && !constraints.get("role_type").equals("?")) {
-            String req = constraints.get("role_type").trim().toUpperCase();
-            boolean isNot = req.startsWith("!");
-            if (isNot) req = req.substring(1);
-
-            String[] allowedTypes = req.split("\\|");
-            boolean foundMatch = false;
-            for (String t : allowedTypes) {
-                if (this.roleType.name().equals(t.trim())) {
-                    foundMatch = true;
-                    break;
-                }
+        if (reqId != null) {
+            if (!matchComplexStringExpression(reqId.toUpperCase(), java.util.Collections.singleton(this.id.toUpperCase()))) {
+                return false;
             }
-
-            if (isNot == foundMatch) return false;
         }
 
-        if (constraints.containsKey("place_id") && !constraints.get("place_id").equals("?")) {
-            String rawExpr = constraints.get("place_id").trim();
-            boolean isNegated = rawExpr.startsWith("!");
-
-            if (isNegated) {
-                rawExpr = rawExpr.substring(1);
+        if (reqRoleType != null) {
+            if (!matchComplexExpression(reqRoleType, java.util.Collections.singleton(this.roleType), RoleType.class)) {
+                return false;
             }
+        }
 
-            String[] orGroups = rawExpr.split("\\|");
-            boolean expressionResult = false;
-
-            for (String group : orGroups) {
-                String[] andRequirements = group.split("&");
-                boolean allInGroupMatch = true;
-
-                for (String req : andRequirements) {
-                    if (!this.validPlaceIds.contains(req.trim())) {
-                        allInGroupMatch = false;
-                        break;
-                    }
-                }
-
-                if (allInGroupMatch) {
-                    expressionResult = true;
-                    break;
-                }
-            }
-
-            if (isNegated == expressionResult) return false;
+        if (reqPlaceId != null) {
+            return matchComplexStringExpression(reqPlaceId, this.validPlaceIds);
         }
 
         return true;

@@ -289,11 +289,86 @@
             </type>
         </property>
 
-        <set name="categories" table="place_categories" lazy="false">
+        <set name="availableItemCategories" table="place_available_categories" lazy="false">
             <key not-null="true">
                 <column name="place_uuid" length="16" />
             </key>
-            <element column="category">
+            <element column="item_category">
+                <type name="org.hibernate.type.EnumType">
+                    <param name="enumClass">com.example.math_race.questionGenerator.tags.enums.ItemCategory</param>
+                    <param name="useNamed">true</param>
+                </type>
+            </element>
+        </set>
+
+        <property name="creationDate" type="java.util.Date" column="creation_date" not-null="true"/>
+        <property name="updatedDate" type="java.util.Date" column="updated_date"/>
+        <property name="deleted" type="boolean" column="deleted" not-null="true"/>
+        <property name="deletionDate" type="java.util.Date" column="deletion_date"/>
+    </class>
+
+    <class name="com.example.math_race.entities.dictionary.RoleEntity" table="roles" lazy="false">
+        <id name="id" type="org.hibernate.type.UUIDBinaryType">
+            <column name="id" length="16" />
+            <generator class="org.hibernate.id.UUIDGenerator"/>
+        </id>
+
+        <property name="roleId" type="string" column="role_id" not-null="true" index="idx_role_id"/>
+
+        <property name="singularMale" type="string" column="singular_male" not-null="true"/>
+        <property name="pluralMale" type="string" column="plural_male" not-null="true"/>
+        <property name="singularFemale" type="string" column="singular_female" not-null="true"/>
+        <property name="pluralFemale" type="string" column="plural_female" not-null="true"/>
+
+        <property name="roleType" column="role_type" not-null="true">
+            <type name="org.hibernate.type.EnumType">
+                <param name="enumClass">com.example.math_race.questionGenerator.tags.enums.RoleType</param>
+                <param name="useNamed">true</param>
+            </type>
+        </property>
+
+        <set name="validPlaceIds" table="role_valid_places" lazy="false">
+            <key not-null="true">
+                <column name="role_uuid" length="16" />
+            </key>
+            <element column="place_id" type="string"/> </set>
+
+        <property name="creationDate" type="java.util.Date" column="creation_date" not-null="true"/>
+        <property name="updatedDate" type="java.util.Date" column="updated_date"/>
+        <property name="deleted" type="boolean" column="deleted" not-null="true"/>
+        <property name="deletionDate" type="java.util.Date" column="deletion_date"/>
+    </class>
+
+    <class name="com.example.math_race.entities.dictionary.UnitEntity" table="units" lazy="false">
+        <id name="id" type="org.hibernate.type.UUIDBinaryType">
+            <column name="id" length="16" />
+            <generator class="org.hibernate.id.UUIDGenerator"/>
+        </id>
+
+        <property name="unitId" type="string" column="unit_id" not-null="true" index="idx_unit_id"/>
+
+        <property name="singular" type="string" column="singular" not-null="true"/>
+        <property name="plural" type="string" column="plural" not-null="true"/>
+
+        <property name="gender" column="gender" not-null="true">
+            <type name="org.hibernate.type.EnumType">
+                <param name="enumClass">com.example.math_race.questionGenerator.tags.enums.Gender</param>
+                <param name="useNamed">true</param>
+            </type>
+        </property>
+
+        <property name="type" column="unit_type" not-null="true">
+            <type name="org.hibernate.type.EnumType">
+                <param name="enumClass">com.example.math_race.questionGenerator.tags.enums.UnitType</param>
+                <param name="useNamed">true</param>
+            </type>
+        </property>
+
+        <set name="validItemCategories" table="unit_valid_categories" lazy="false">
+            <key not-null="true">
+                <column name="unit_uuid" length="16" />
+            </key>
+            <element column="item_category">
                 <type name="org.hibernate.type.EnumType">
                     <param name="enumClass">com.example.math_race.questionGenerator.tags.enums.ItemCategory</param>
                     <param name="useNamed">true</param>

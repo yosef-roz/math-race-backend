@@ -5,7 +5,7 @@
     "plural": "סופרמרקטים",
     "gender": "MALE",
     "placeType": "STORE",
-    "categories": ["PRODUCE", "BAKED_GOODS", "DRINKS", "SWEETS", "GENERAL_FOOD"]
+    "availableItemCategories": ["PRODUCE", "BAKED_GOODS", "DRINKS", "SWEETS", "GENERAL_FOOD"]
   },
   {
     "id": "grocery",
@@ -13,7 +13,7 @@
     "plural": "מכולות",
     "gender": "FEMALE",
     "placeType": "STORE",
-    "categories": ["PRODUCE", "BAKED_GOODS", "DRINKS", "SWEETS", "GENERAL_FOOD"]
+    "availableItemCategories": ["PRODUCE", "BAKED_GOODS", "DRINKS", "SWEETS", "GENERAL_FOOD"]
   },
   {
     "id": "bakery",
@@ -21,7 +21,7 @@
     "plural": "מאפיות",
     "gender": "FEMALE",
     "placeType": "STORE",
-    "categories": ["BAKED_GOODS", "DRINKS"]
+    "availableItemCategories": ["BAKED_GOODS", "DRINKS"]
   },
   {
     "id": "kiosk",
@@ -29,7 +29,7 @@
     "plural": "קיוסקים",
     "gender": "MALE",
     "placeType": "STORE",
-    "categories": ["SWEETS", "DRINKS"]
+    "availableItemCategories": ["SWEETS", "DRINKS"]
   },
   {
     "id": "market",
@@ -37,7 +37,7 @@
     "plural": "שווקים",
     "gender": "MALE",
     "placeType": "STORE",
-    "categories": ["PRODUCE", "BAKED_GOODS", "SWEETS", "COLLECTIBLE", "CLOTHING", "HARDWARE"]
+    "availableItemCategories": ["PRODUCE", "BAKED_GOODS", "SWEETS", "COLLECTIBLE", "CLOTHING", "HARDWARE"]
   },
   {
     "id": "craft_store",
@@ -45,7 +45,7 @@
     "plural": "חנויות יצירה",
     "gender": "FEMALE",
     "placeType": "STORE",
-    "categories": ["ART_SUPPLIES"]
+    "availableItemCategories": ["ART_SUPPLIES"]
   },
   {
     "id": "stationery_store",
@@ -53,7 +53,7 @@
     "plural": "חנויות כלי כתיבה",
     "gender": "FEMALE",
     "placeType": "STORE",
-    "categories": ["STATIONERY", "ART_SUPPLIES"]
+    "availableItemCategories": ["STATIONERY", "ART_SUPPLIES"]
   },
   {
     "id": "toy_store",
@@ -61,7 +61,7 @@
     "plural": "חנויות צעצועים",
     "gender": "FEMALE",
     "placeType": "STORE",
-    "categories": ["TOY"]
+    "availableItemCategories": ["TOY"]
   },
   {
     "id": "antique_store",
@@ -69,7 +69,7 @@
     "plural": "חנויות עתיקות",
     "gender": "FEMALE",
     "placeType": "STORE",
-    "categories": ["ANTIQUE"]
+    "availableItemCategories": ["ANTIQUE"]
   },
   {
     "id": "clothing_store",
@@ -77,7 +77,7 @@
     "plural": "חנויות בגדים",
     "gender": "FEMALE",
     "placeType": "STORE",
-    "categories": ["CLOTHING"]
+    "availableItemCategories": ["CLOTHING"]
   },
   {
     "id": "electronics_store",
@@ -85,7 +85,7 @@
     "plural": "חנויות אלקטרוניקה",
     "gender": "FEMALE",
     "placeType": "STORE",
-    "categories": ["ELECTRONICS"]
+    "availableItemCategories": ["ELECTRONICS"]
   },
   {
     "id": "hardware_store",
@@ -93,7 +93,7 @@
     "plural": "טמבוריות",
     "gender": "FEMALE",
     "placeType": "STORE",
-    "categories": ["HARDWARE"]
+    "availableItemCategories": ["HARDWARE"]
   },
   {
     "id": "pharmacy",
@@ -101,7 +101,7 @@
     "plural": "בתי מרקחת",
     "gender": "MALE",
     "placeType": "HEALTH",
-    "categories": ["MEDICAL"]
+    "availableItemCategories": ["MEDICAL"]
   },
   {
     "id": "hospital",
@@ -109,7 +109,7 @@
     "plural": "בתי חולים",
     "gender": "MALE",
     "placeType": "HEALTH",
-    "categories": ["MEDICAL", "DRINKS", "BAKED_GOODS"]
+    "availableItemCategories": ["MEDICAL", "DRINKS", "BAKED_GOODS"]
   },
   {
     "id": "school",
@@ -117,7 +117,7 @@
     "plural": "בתי ספר",
     "gender": "MALE",
     "placeType": "EDUCATION",
-    "categories": ["STATIONERY", "ART_SUPPLIES"]
+    "availableItemCategories": ["STATIONERY", "ART_SUPPLIES"]
   },
   {
     "id": "library",
@@ -125,7 +125,7 @@
     "plural": "ספריות",
     "gender": "FEMALE",
     "placeType": "EDUCATION",
-    "categories": ["STATIONERY"]
+    "availableItemCategories": ["STATIONERY"]
   },
   {
     "id": "cinema",
@@ -133,7 +133,7 @@
     "plural": "בתי קולנוע",
     "gender": "MALE",
     "placeType": "ENTERTAINMENT",
-    "categories": ["SWEETS", "DRINKS"]
+    "availableItemCategories": ["SWEETS", "DRINKS"]
   },
   {
     "id": "airport",
@@ -141,7 +141,7 @@
     "plural": "שדות תעופה",
     "gender": "MALE",
     "placeType": "TRANSPORTATION",
-    "categories": ["SWEETS", "DRINKS", "ELECTRONICS", "CLOTHING"]
+    "availableItemCategories": ["SWEETS", "DRINKS", "ELECTRONICS", "CLOTHING"]
   },
   {
     "id": "house",
@@ -149,7 +149,7 @@
     "plural": "בתים",
     "gender": "MALE",
     "placeType": "HOME",
-    "categories": ["GENERAL_FOOD", "CLOTHING", "ELECTRONICS", "TOY"]
+    "availableItemCategories": ["GENERAL_FOOD", "CLOTHING", "ELECTRONICS", "TOY"]
   },
   {
     "id": "apartment",
@@ -157,7 +157,7 @@
     "plural": "דירות",
     "gender": "FEMALE",
     "placeType": "HOME",
-    "categories": ["GENERAL_FOOD", "CLOTHING", "ELECTRONICS", "TOY"]
+    "availableItemCategories": ["GENERAL_FOOD", "CLOTHING", "ELECTRONICS", "TOY"]
   },
   {
     "id": "street",
@@ -165,7 +165,7 @@
     "plural": "רחובות",
     "gender": "MALE",
     "placeType": "PUBLIC",
-    "categories": ["CLOTHING", "STATIONERY"]
+    "availableItemCategories": ["CLOTHING", "STATIONERY"]
   },
   {
     "id": "square",
@@ -173,7 +173,7 @@
     "plural": "כיכרות",
     "gender": "FEMALE",
     "placeType": "PUBLIC",
-    "categories": ["CLOTHING", "STATIONERY"]
+    "availableItemCategories": ["CLOTHING", "STATIONERY"]
   },
   {
     "id": "park",
@@ -181,7 +181,7 @@
     "plural": "פארקים",
     "gender": "MALE",
     "placeType": "OUTDOORS",
-    "categories": ["TOY", "SWEETS", "CLOTHING"]
+    "availableItemCategories": ["TOY", "SWEETS", "CLOTHING"]
   },
   {
     "id": "forest",
@@ -189,7 +189,7 @@
     "plural": "יערות",
     "gender": "MALE",
     "placeType": "OUTDOORS",
-    "categories": ["HARDWARE", "CLOTHING"]
+    "availableItemCategories": ["HARDWARE", "CLOTHING"]
   },
   {
     "id": "beach",
@@ -197,7 +197,7 @@
     "plural": "חופי ים",
     "gender": "MALE",
     "placeType": "OUTDOORS",
-    "categories": ["TOY", "CLOTHING", "DRINKS"]
+    "availableItemCategories": ["TOY", "CLOTHING", "DRINKS"]
   },
   {
     "id": "restaurant",
@@ -205,7 +205,7 @@
     "plural": "מסעדות",
     "gender": "FEMALE",
     "placeType": "FOOD_SERVICE",
-    "categories": ["PRODUCE", "DRINKS", "SWEETS", "BAKED_GOODS"]
+    "availableItemCategories": ["PRODUCE", "DRINKS", "SWEETS", "BAKED_GOODS"]
   },
   {
     "id": "cafe",
@@ -213,7 +213,7 @@
     "plural": "בתי קפה",
     "gender": "MALE",
     "placeType": "FOOD_SERVICE",
-    "categories": ["BAKED_GOODS", "DRINKS", "SWEETS"]
+    "availableItemCategories": ["BAKED_GOODS", "DRINKS", "SWEETS"]
   },
   {
     "id": "pizzeria",
@@ -221,7 +221,7 @@
     "plural": "פיצריות",
     "gender": "FEMALE",
     "placeType": "FOOD_SERVICE",
-    "categories": ["DRINKS"]
+    "availableItemCategories": ["DRINKS"]
   },
   {
     "id": "mall",
@@ -229,7 +229,7 @@
     "plural": "קניונים",
     "gender": "MALE",
     "placeType": "STORE",
-    "categories": ["CLOTHING", "ELECTRONICS", "TOY", "SWEETS", "DRINKS"]
+    "availableItemCategories": ["CLOTHING", "ELECTRONICS", "TOY", "SWEETS", "DRINKS"]
   },
   {
     "id": "university",
@@ -237,7 +237,7 @@
     "plural": "אוניברסיטאות",
     "gender": "FEMALE",
     "placeType": "EDUCATION",
-    "categories": ["STATIONERY", "ELECTRONICS"]
+    "availableItemCategories": ["STATIONERY", "ELECTRONICS"]
   },
   {
     "id": "classroom",
@@ -245,7 +245,7 @@
     "plural": "כיתות",
     "gender": "FEMALE",
     "placeType": "EDUCATION",
-    "categories": ["STATIONERY", "ART_SUPPLIES"]
+    "availableItemCategories": ["STATIONERY", "ART_SUPPLIES"]
   },
   {
     "id": "museum",
@@ -253,7 +253,7 @@
     "plural": "מוזיאונים",
     "gender": "MALE",
     "placeType": "ENTERTAINMENT",
-    "categories": ["ANTIQUE", "STATIONERY"]
+    "availableItemCategories": ["ANTIQUE", "STATIONERY"]
   },
   {
     "id": "zoo",
@@ -261,7 +261,7 @@
     "plural": "גני חיות",
     "gender": "MALE",
     "placeType": "ENTERTAINMENT",
-    "categories": ["SWEETS", "DRINKS"]
+    "availableItemCategories": ["SWEETS", "DRINKS"]
   },
   {
     "id": "amusement_park",
@@ -269,7 +269,7 @@
     "plural": "פארקי שעשועים",
     "gender": "MALE",
     "placeType": "ENTERTAINMENT",
-    "categories": ["SWEETS", "DRINKS", "TOY"]
+    "availableItemCategories": ["SWEETS", "DRINKS", "TOY"]
   },
   {
     "id": "pool",
@@ -277,7 +277,7 @@
     "plural": "בריכות",
     "gender": "FEMALE",
     "placeType": "ENTERTAINMENT",
-    "categories": ["SWEETS", "DRINKS", "CLOTHING"]
+    "availableItemCategories": ["SWEETS", "DRINKS", "CLOTHING"]
   },
   {
     "id": "bus_station",
@@ -285,7 +285,7 @@
     "plural": "תחנות אוטובוס",
     "gender": "FEMALE",
     "placeType": "TRANSPORTATION",
-    "categories": ["DRINKS", "SWEETS"]
+    "availableItemCategories": ["DRINKS", "SWEETS"]
   },
   {
     "id": "train_station",
@@ -293,7 +293,7 @@
     "plural": "תחנות רכבת",
     "gender": "FEMALE",
     "placeType": "TRANSPORTATION",
-    "categories": ["DRINKS", "SWEETS", "BAKED_GOODS"]
+    "availableItemCategories": ["DRINKS", "SWEETS", "BAKED_GOODS"]
   },
   {
     "id": "clinic",
@@ -301,6 +301,6 @@
     "plural": "מרפאות",
     "gender": "FEMALE",
     "placeType": "HEALTH",
-    "categories": ["MEDICAL"]
+    "availableItemCategories": ["MEDICAL"]
   }
 ]

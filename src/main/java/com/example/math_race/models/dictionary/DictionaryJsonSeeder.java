@@ -1,9 +1,6 @@
 package com.example.math_race.models.dictionary;
 
-import com.example.math_race.entities.dictionary.AdjectiveEntity;
-import com.example.math_race.entities.dictionary.HumanEntity;
-import com.example.math_race.entities.dictionary.ItemEntity;
-import com.example.math_race.entities.dictionary.PlaceEntity;
+import com.example.math_race.entities.dictionary.*;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.springframework.stereotype.Component;
@@ -20,6 +17,8 @@ public class DictionaryJsonSeeder {
     private static final String HUMANS_JSON_PATH = "/dictionary_data/humans.json";
     private static final String ITEMS_JSON_PATH = "/dictionary_data/items.json";
     private static final String PLACE_JSON_PATH = "/dictionary_data/places.json";
+    private static final String ROLE_JSON_PATH = "/dictionary_data/roles.json";
+    private static final String UNIT_JSON_PATH = "/dictionary_data/units.json";
 
     private final ObjectMapper mapper = new ObjectMapper();
 
@@ -37,6 +36,14 @@ public class DictionaryJsonSeeder {
 
     public List<PlaceEntity> getPlaceEntitiesFromJson() {
         return loadEntitiesFromJson(PLACE_JSON_PATH, new TypeReference<List<PlaceJsonModel>>() {}, PlaceEntity::new);
+    }
+
+    public List<RoleEntity> getRoleEntitiesFromJson() {
+        return loadEntitiesFromJson(ROLE_JSON_PATH, new TypeReference<List<RoleJsonModel>>() {}, RoleEntity::new);
+    }
+
+    public List<UnitEntity> getUnitEntitiesFromJson() {
+        return loadEntitiesFromJson(UNIT_JSON_PATH, new TypeReference<List<UnitJsonModel>>() {}, UnitEntity::new);
     }
 
     private <M, E> List<E> loadEntitiesFromJson(String jsonPath, TypeReference<List<M>> typeReference, Function<M, E> mapperFunction) {

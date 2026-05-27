@@ -11,6 +11,8 @@ import lombok.NoArgsConstructor;
 
 import java.util.*;
 
+import static com.example.math_race.questionGenerator.tags.types.TagUtils.matchComplexExpression;
+
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
@@ -43,24 +45,29 @@ public class ItemTag implements MatchableTag {
     @Override
     public String getProperty(String key) {
         if (key == null || key.isEmpty()) return singular;
+        if (key.equals("*")) return "";
 
         String normalizedKey = key.trim().toLowerCase();
 
         return switch (normalizedKey) {
+            case "s","singular" -> singular;
             case "p", "plural" -> plural;
             case "g", "gender" -> gender.name();
             case "id" -> id;
-            case "t","type","c","categories" -> categories.stream()
+            case "t", "type", "c", "categories" -> categories.stream()
                     .map(Enum::name)
                     .collect(java.util.stream.Collectors.joining("|"));
             case "one" -> gender == Gender.MALE ? "אחד" : "אחת";
-            case "u","unit","unit_type","allowed_unit" -> {
+            case "u", "unit", "unit_type", "allowed_unit" -> {
                 if (allowedUnits.isEmpty()) yield "NONE";
                 yield allowedUnits.stream()
                         .map(Enum::name)
                         .collect(java.util.stream.Collectors.joining("|"));
             }
-            default -> singular;
+            default -> {
+                System.out.println("\u001B[31m" + "Warning: Unrecognized property key in ItemTag.getProperty: '" + key + "'\u001B[0m");
+                yield singular;
+            }
         };
     }
 
@@ -82,6 +89,7 @@ public class ItemTag implements MatchableTag {
                 case "t", "type", "c", "categories" -> reqType = value;
                 case "u", "unit", "unit_type", "allowed_unit" -> reqUnit = value;
                 case "id" -> reqId = value;
+                default -> System.out.println("\u001B[31m" + "Warning: Unrecognized constraint key in ItemTag.matches: '" + key + "'\u001B[0m");
             }
         }
 
@@ -100,39 +108,5 @@ public class ItemTag implements MatchableTag {
         }
 
         return true;
-    }
-
-    private <T extends Enum<T>> boolean matchComplexExpression(String rawExpr, Set<T> actualValues, Class<T> enumClass) {
-        rawExpr = rawExpr.toUpperCase();
-        boolean isNegated = rawExpr.startsWith("!");
-        if (isNegated) rawExpr = rawExpr.substring(1).trim();
-
-        String[] orGroups = rawExpr.split("\\|");
-        boolean expressionMatch = false;
-
-        for (String group : orGroups) {
-            String[] andRequirements = group.split("&");
-            boolean allInGroupMatch = true;
-
-            for (String req : andRequirements) {
-                try {
-                    T enumValue = Enum.valueOf(enumClass, req.trim());
-                    if (!actualValues.contains(enumValue)) {
-                        allInGroupMatch = false;
-                        break;
-                    }
-                } catch (IllegalArgumentException e) {
-                    allInGroupMatch = false;
-                    break;
-                }
-            }
-
-            if (allInGroupMatch) {
-                expressionMatch = true;
-                break;
-            }
-        }
-
-        return isNegated != expressionMatch;
     }
 }

@@ -1,10 +1,10 @@
 package com.example.math_race.entities.dictionary;
 
 import com.example.math_race.entities.BaseEntity;
-import com.example.math_race.models.dictionary.PlaceJsonModel;
+import com.example.math_race.models.dictionary.UnitJsonModel;
 import com.example.math_race.questionGenerator.tags.enums.Gender;
 import com.example.math_race.questionGenerator.tags.enums.ItemCategory;
-import com.example.math_race.questionGenerator.tags.enums.PlaceType;
+import com.example.math_race.questionGenerator.tags.enums.UnitType;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
@@ -16,22 +16,21 @@ import java.util.Set;
 @EqualsAndHashCode(callSuper = true)
 @NoArgsConstructor
 @AllArgsConstructor
-public class PlaceEntity extends BaseEntity {
+public class UnitEntity extends BaseEntity {
 
-    private String placeId;
+    private String unitId;
     private String singular;
     private String plural;
     private Gender gender;
-    private PlaceType placeType;
-    private Set<ItemCategory> availableItemCategories;
+    private UnitType type;
+    private Set<ItemCategory> validItemCategories;
 
-    public PlaceEntity(PlaceJsonModel model){
-        this.placeId = model.id();
+    public UnitEntity(UnitJsonModel model) {
+        this.unitId = model.id();
         this.singular = model.singular();
         this.plural = model.plural();
         this.gender = model.gender();
-        this.placeType = model.placeType();
-        this.availableItemCategories = model.availableItemCategories();
+        this.type = model.type();
+        this.validItemCategories = model.validItemCategories();
     }
-
 }

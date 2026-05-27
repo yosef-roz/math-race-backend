@@ -38,50 +38,51 @@ public class TimeTag implements TemplateTag {
 
     @Override
     public String getProperty(String key) {
-        if (key == null || key.trim().isEmpty()) {
-            return formatTime(totalMinutes);
-        }
+        if (key == null || key.trim().isEmpty()) return formatTime(totalMinutes);
+        if (key.equals("*")) return "";
 
-        switch (key) {
-            case "min" -> {
-                return formatTime(minMinutes);
-            }
-            case "max" -> {
-                return formatTime(maxMinutes);
-            }
-            case "round" -> {
-                return round + "";
-            }
+        String normalizedKey = key.trim().toLowerCase();
+
+        switch (normalizedKey) {
+            case "min" -> { return formatTime(minMinutes); }
+            case "max" -> { return formatTime(maxMinutes); }
+            case "r","round" -> { return String.valueOf(round); }
+            case "v", "val", "value", "t", "time" -> { return formatTime(totalMinutes); }
         }
 
         int currentResult = totalMinutes;
 
         try {
-
-            if (key.startsWith("add_m_")) {
-                int add = Integer.parseInt(key.substring(6));
+            if (normalizedKey.startsWith("add_m_")) {
+                int add = Integer.parseInt(normalizedKey.substring(6));
                 currentResult = (currentResult + add) % 1440;
+                return formatTime(currentResult);
 
-            } else if (key.startsWith("sub_m_")) {
-                int sub = Integer.parseInt(key.substring(6));
+            } else if (normalizedKey.startsWith("sub_m_")) {
+                int sub = Integer.parseInt(normalizedKey.substring(6));
                 currentResult = (currentResult - sub) % 1440;
                 if (currentResult < 0) currentResult += 1440;
+                return formatTime(currentResult);
 
-            } else if (key.startsWith("add_h_")) {
-                int add = Integer.parseInt(key.substring(6));
+            } else if (normalizedKey.startsWith("add_h_")) {
+                int add = Integer.parseInt(normalizedKey.substring(6));
                 currentResult = (currentResult + add * 60) % 1440;
+                return formatTime(currentResult);
 
-            } else if (key.startsWith("sub_h_")) {
-                int sub = Integer.parseInt(key.substring(6));
+            } else if (normalizedKey.startsWith("sub_h_")) {
+                int sub = Integer.parseInt(normalizedKey.substring(6));
                 currentResult = (currentResult - sub * 60) % 1440;
                 if (currentResult < 0) currentResult += 1440;
+                return formatTime(currentResult);
             }
 
         } catch (NumberFormatException e) {
-            System.out.println("Warning: Invalid number in time operation: " + key);
+            System.out.println("\u001B[31m" + "Warning: Invalid number in time operation in TimeTag: '" + key + "'\u001B[0m");
+            return formatTime(totalMinutes);
         }
 
-        return formatTime(currentResult);
+        System.out.println("\u001B[31m" + "Warning: Unrecognized property key in TimeTag.getProperty: '" + key + "'\u001B[0m");
+        return formatTime(totalMinutes);
     }
 
     private int generateRandomTime(boolean round, int forbiddenValue) {

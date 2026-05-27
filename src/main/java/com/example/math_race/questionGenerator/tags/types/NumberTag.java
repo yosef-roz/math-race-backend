@@ -43,49 +43,55 @@ public class NumberTag implements TemplateTag {
 
     @Override
     public String getProperty(String key) {
-        if (key == null || key.trim().isEmpty()) {
-            return String.valueOf(value);
-        }
+        if (key == null || key.trim().isEmpty()) return String.valueOf(value);
+        if (key.equals("*")) return "";
 
-        key = key.trim().toLowerCase();
+        String normalizedKey = key.trim().toLowerCase();
 
-        switch (key) {
-            case "min" -> {
-                return String.valueOf(min);
-            }
-            case "max" -> {
-                return String.valueOf(max);
-            }
-            case "abs" -> {
-                return String.valueOf(Math.abs(value));
-            }
+        switch (normalizedKey) {
+            case "min" -> { return String.valueOf(min); }
+            case "max" -> { return String.valueOf(max); }
+            case "abs" -> { return String.valueOf(Math.abs(value)); }
+            case "value", "v" -> { return String.valueOf(value); }
         }
 
         try {
-            if (key.startsWith("mul_")) {
-                int factor = Integer.parseInt(key.substring(4));
+            if (normalizedKey.startsWith("mul_")) {
+                int factor = Integer.parseInt(normalizedKey.substring(4));
                 return String.valueOf(value * factor);
             }
-            if (key.startsWith("add_")) {
-                int bonus = Integer.parseInt(key.substring(4));
+            if (normalizedKey.startsWith("add_")) {
+                int bonus = Integer.parseInt(normalizedKey.substring(4));
                 return String.valueOf(value + bonus);
             }
-            if (key.startsWith("sub_")) {
-                int bonus = Integer.parseInt(key.substring(4));
+            if (normalizedKey.startsWith("sub_")) {
+                int bonus = Integer.parseInt(normalizedKey.substring(4));
                 return String.valueOf(value - bonus);
             }
-            if (key.startsWith("div_")) {
-                int divisor = Integer.parseInt(key.substring(4));
-                if (divisor != 0) return String.valueOf(value / divisor);
+            if (normalizedKey.startsWith("div_")) {
+                int divisor = Integer.parseInt(normalizedKey.substring(4));
+                if (divisor != 0) {
+                    return String.valueOf(value / divisor);
+                } else {
+                    System.out.println("\u001B[31m" + "Warning: Division by zero requested in NumberTag: '" + key + "'\u001B[0m");
+                    return String.valueOf(value);
+                }
             }
-            if (key.startsWith("mod_")) {
-                int divisor = Integer.parseInt(key.substring(4));
-                if (divisor != 0) return String.valueOf(value % divisor);
+            if (normalizedKey.startsWith("mod_")) {
+                int divisor = Integer.parseInt(normalizedKey.substring(4));
+                if (divisor != 0) {
+                    return String.valueOf(value % divisor);
+                } else {
+                    System.out.println("\u001B[31m" + "Warning: Modulo by zero requested in NumberTag: '" + key + "'\u001B[0m");
+                    return String.valueOf(value);
+                }
             }
         } catch (NumberFormatException e) {
-            System.out.println("\u001B[31m" + "Warning: Invalid math operation format: " + key + "\u001B[0m");
+            System.out.println("\u001B[31m" + "Warning: Invalid number in operation in NumberTag.getProperty: '" + key + "'\u001B[0m");
+            return String.valueOf(value);
         }
 
+        System.out.println("\u001B[31m" + "Warning: Unrecognized property key in NumberTag.getProperty: '" + key + "'\u001B[0m");
         return String.valueOf(value);
     }
 }

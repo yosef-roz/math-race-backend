@@ -175,7 +175,8 @@ public class QuestionEngine {
                     memory.put(tagId, chosen);
                     String resolvedProp = resolveValue("("+ tagId + ":" + info.getProperty() + ")", memory);
 
-                    result = result.replace(tag, !info.getProperty().equals("*") ? resolvedProp : "");
+                    //result = result.replace(tag, !info.getProperty().equals("*") ? resolvedProp : "");
+                    result = result.replace(tag, resolvedProp);
 
                     if (isTemp) memory.remove(tagId);
                 }

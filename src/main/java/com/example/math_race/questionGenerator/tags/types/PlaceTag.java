@@ -2,7 +2,6 @@ package com.example.math_race.questionGenerator.tags.types;
 
 import com.example.math_race.entities.dictionary.PlaceEntity;
 import com.example.math_race.questionGenerator.tags.core.MatchableTag;
-import com.example.math_race.questionGenerator.tags.core.TemplateTag;
 import com.example.math_race.questionGenerator.tags.enums.Gender;
 import com.example.math_race.questionGenerator.tags.enums.ItemCategory;
 import com.example.math_race.questionGenerator.tags.enums.PlaceType;
@@ -11,6 +10,8 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.util.*;
+
+import static com.example.math_race.questionGenerator.tags.types.TagUtils.matchComplexExpression;
 
 @Data
 @AllArgsConstructor
@@ -21,16 +22,16 @@ public class PlaceTag implements MatchableTag {
     private String plural;
     private Gender gender;
     private PlaceType placeType;
-    private Set<ItemCategory> categories;
+    private Set<ItemCategory> availableItemCategories;
 
 
-    public PlaceTag(String id, String singular, String plural, Gender gender, PlaceType placeType, ItemCategory... categories) {
+    public PlaceTag(String id, String singular, String plural, Gender gender, PlaceType placeType, ItemCategory... availableItemCategories) {
         this.id = id;
         this.singular = singular;
         this.plural = plural;
         this.gender = gender;
         this.placeType = placeType;
-        this.categories = new HashSet<>(Arrays.asList(categories));
+        this.availableItemCategories = new HashSet<>(Arrays.asList(availableItemCategories));
     }
 
     public PlaceTag(PlaceEntity entity) {
@@ -39,118 +40,76 @@ public class PlaceTag implements MatchableTag {
         this.plural = entity.getPlural();
         this.gender = entity.getGender();
         this.placeType = entity.getPlaceType();
-        this.categories = entity.getCategories();
+        this.availableItemCategories = entity.getAvailableItemCategories();
     }
 
     @Override
     public String getProperty(String key) {
-        if ("id".equals(key)) return id;
-        if ("s".equals(key)) return singular;
-        if ("p".equals(key)) return plural;
-        if ("g".equals(key)) return gender.toString();
+        if (key == null || key.isEmpty()) return singular;
+        if (key.equals("*")) return "";
 
-        if ("t".equalsIgnoreCase(key)) {
-            return categories.stream()
+        String normalizedKey = key.trim().toLowerCase();
+
+        return switch (normalizedKey) {
+            case "id" -> id;
+            case "s", "singular" -> singular;
+            case "p", "plural" -> plural;
+            case "g", "gender" -> gender.name();
+            case "t", "type", "c", "categories" -> availableItemCategories.stream()
                     .map(Enum::name)
                     .collect(java.util.stream.Collectors.joining("|"));
-        }
-
-        if ("pt".equals(key) || "place_type".equals(key)) return placeType.name();
-
-        if ("he_she".equals(key)) {
-            return gender == Gender.MALE ? "הוא" : "היא";
-        }
-        if ("his_hers".equals(key)) {
-            return gender == Gender.MALE ? "שלו" : "שלה";
-        }
-        if ("to_him_her".equals(key)) {
-            return gender == Gender.MALE ? "לו" : "לה";
-        }
-
-        if ("in_it".equals(key)) {
-            return gender == Gender.MALE ? "בו" : "בה";
-        }
-        if ("to_it".equals(key)) {
-            return gender == Gender.MALE ? "אליו" : "אליה";
-        }
-        if ("from_it".equals(key)) {
-            return gender == Gender.MALE ? "ממנו" : "ממנה";
-        }
-
-        return singular;
+            case "pt", "place_type" -> placeType.name();
+            case "he_she" -> gender == Gender.MALE ? "הוא" : "היא";
+            case "his_hers" -> gender == Gender.MALE ? "שלו" : "שלה";
+            case "to_him_her" -> gender == Gender.MALE ? "לו" : "לה";
+            case "in_it" -> gender == Gender.MALE ? "בו" : "בה";
+            case "to_it" -> gender == Gender.MALE ? "אליו" : "אליה";
+            case "from_it", "from_him_her" -> gender == Gender.MALE ? "ממנו" : "ממנה";
+            default -> {
+                System.out.println("\u001B[31m" + "Warning: Unrecognized property key in PlaceTag.getProperty: '" + key + "'\u001B[0m");
+                yield singular;
+            }
+        };
     }
 
+    @Override
     public boolean matches(Map<String, String> constraints) {
-        if (constraints.containsKey("id") && !constraints.get("id").equals("?")) {
-            String reqId = constraints.get("id").trim();
+        String reqId = null;
+        String reqPlaceType = null;
+        String reqType = null;
 
-            if (reqId.startsWith("!")) {
-                String excludedId = reqId.substring(1);
+        for (Map.Entry<String, String> entry : constraints.entrySet()) {
+            if (entry.getKey() == null || entry.getValue() == null) continue;
 
-                if (this.id.equalsIgnoreCase(excludedId)) return false;
-            } else {
-                if (!this.id.equalsIgnoreCase(reqId)) return false;
+            String key = entry.getKey().trim().toLowerCase();
+            String value = entry.getValue().trim();
+
+            if (value.equals("?")) continue;
+
+            switch (key) {
+                case "id" -> reqId = value;
+                case "pt", "place_type" -> reqPlaceType = value;
+                case "t", "type", "c", "categories" -> reqType = value;
+                default -> System.out.println("\u001B[31m" + "Warning: Unrecognized constraint key in PlaceTag.matches: '" + key + "'\u001B[0m");
             }
         }
 
-        if (constraints.containsKey("place_type") && !constraints.get("place_type").equals("?")) {
-            String req = constraints.get("place_type").trim().toUpperCase();
-            boolean isNot = req.startsWith("!");
-            if (isNot) req = req.substring(1);
-
-            // ב-PlaceType בדרך כלל יש רק ערך אחד למקום, אז נתמוך ב-OR (|) בלבד
-            String[] allowedTypes = req.split("\\|");
-            boolean foundMatch = false;
-            for (String t : allowedTypes) {
-                if (this.placeType.name().equals(t.trim())) {
-                    foundMatch = true;
-                    break;
-                }
-            }
-
-            if (isNot == foundMatch) return false;
+        if (reqId != null) {
+            boolean isNegated = reqId.startsWith("!");
+            String val = isNegated ? reqId.substring(1).trim() : reqId;
+            if (isNegated == this.id.equalsIgnoreCase(val)) return false;
         }
 
-        if (constraints.containsKey("type") && !constraints.get("type").equals("?")) {
-
-            String rawExpr = constraints.get("type").trim().toUpperCase();
-            boolean isNegated = rawExpr.startsWith("!");
-
-            if (isNegated) {
-                rawExpr = rawExpr.substring(1);
+        if (reqPlaceType != null) {
+            if (!matchComplexExpression(reqPlaceType, java.util.Collections.singleton(this.placeType), PlaceType.class)) {
+                return false;
             }
+        }
 
-
-            String[] orGroups = rawExpr.split("\\|");
-            boolean expressionResult = false;
-
-            for (String group : orGroups) {
-                String[] andRequirements = group.split("&");
-                boolean allInGroupMatch = true;
-
-                for (String req : andRequirements) {
-                    try {
-                        ItemCategory cat = ItemCategory.valueOf(req.trim());
-                        if (!this.categories.contains(cat)) {
-                            allInGroupMatch = false;
-                            break;
-                        }
-                    } catch (IllegalArgumentException e) {
-                        allInGroupMatch = false;
-                        break;
-                    }
-                }
-
-                if (allInGroupMatch) {
-                    expressionResult = true;
-                    break;
-                }
-            }
-
-            return isNegated != expressionResult;
+        if (reqType != null) {
+            return matchComplexExpression(reqType, this.availableItemCategories, ItemCategory.class);
         }
 
         return true;
     }
-
 }

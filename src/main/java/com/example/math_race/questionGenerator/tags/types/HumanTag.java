@@ -9,6 +9,7 @@ import lombok.NoArgsConstructor;
 
 import java.util.Map;
 
+import static com.example.math_race.questionGenerator.tags.types.TagUtils.matchComplexExpression;
 
 @Data
 @AllArgsConstructor
@@ -25,82 +26,25 @@ public class HumanTag implements MatchableTag {
     @Override
     public String getProperty(String key) {
         if (key == null || key.isEmpty()) return name;
+        if (key.equals("*")) return "";
 
         String normalizedKey = key.trim().toLowerCase();
 
         return switch (normalizedKey) {
             case "n", "name" -> name;
-            case "g", "gender" -> gender.toString();
+            case "g", "gender" -> gender.name();
             case "he_she" -> gender == Gender.MALE ? "הוא" : "היא";
             case "his_hers" -> gender == Gender.MALE ? "שלו" : "שלה";
             case "to_him_her" -> gender == Gender.MALE ? "לו" : "לה";
             case "one" -> gender == Gender.MALE ? "אחד" : "אחת";
             case "loves", "likes" -> gender == Gender.MALE ? "אוהב" : "אוהבת";
             case "from_him_her" -> gender == Gender.MALE ? "ממנו" : "ממנה";
-            default -> name;
+            default -> {
+                System.out.println("\u001B[31m" + "Warning: Unrecognized property key in HumanTag.getProperty: '" + key + "'\u001B[0m");
+                yield name;
+            }
         };
     }
-
-//    @Override
-//    public String getProperty(String key) {
-//        if ("n".equals(key)) return name;
-//        if ("g".equals(key)) return gender.toString();
-//
-//        if ("he_she".equals(key)) {
-//            return gender == Gender.MALE ? "הוא" : "היא";
-//        }
-//        if ("his_hers".equals(key)) {
-//            return gender == Gender.MALE ? "שלו" : "שלה";
-//        }
-//        if ("to_him_her".equals(key)) {
-//            return gender == Gender.MALE ? "לו" : "לה";
-//        }
-//
-//        if ("one".equals(key)) {
-//            return gender == Gender.MALE ? "אחד" : "אחת";
-//        }
-//
-//        if ("loves".equals(key) || "likes".equals(key)) {
-//            return gender == Gender.MALE ? "אוהב" : "אוהבת";
-//        }
-//
-//        if ("from_him_her".equals(key)) {
-//            return gender == Gender.MALE ? "ממנו" : "ממנה";
-//        }
-//
-//        return name;
-//    }
-
-//    public boolean matches(Map<String, String> constraints) {
-//        if (constraints.containsKey("g") && !constraints.get("g").equals("?")) {
-//            String reqGender = constraints.get("g").trim().toUpperCase();
-//
-//            if (reqGender.startsWith("!")) {
-//                String excludedGender = reqGender.substring(1);
-//
-//                if ((excludedGender.equals("M") || excludedGender.equals("MALE")) && this.gender == Gender.MALE) return false;
-//                if ((excludedGender.equals("M") || excludedGender.equals("FEMALE")) && this.gender == Gender.FEMALE) return false;
-//
-//            } else {
-//
-//                if ((reqGender.equals("M") || reqGender.equals("MALE")) && this.gender == Gender.MALE) return false;
-//                if ((reqGender.equals("F") || reqGender.equals("FEMALE")) && this.gender == Gender.FEMALE) return false;
-//            }
-//        }
-//
-//        if (constraints.containsKey("n") && !constraints.get("n").equals("?")) {
-//            String reqName = constraints.get("n").trim();
-//
-//            if (reqName.startsWith("!")) {
-//                String excludedName = reqName.substring(1);
-//                if (this.name.equalsIgnoreCase(excludedName)) return false;
-//            } else {
-//                if (!this.name.equalsIgnoreCase(reqName)) return false;
-//            }
-//        }
-//
-//        return true;
-//    }
 
     @Override
     public boolean matches(Map<String, String> constraints) {
@@ -111,37 +55,30 @@ public class HumanTag implements MatchableTag {
             if (entry.getKey() == null || entry.getValue() == null) continue;
 
             String key = entry.getKey().trim().toLowerCase();
-            if (key.equals("g") || key.equals("gender")) {
-                reqGender = entry.getValue();
-            } else if (key.equals("n") || key.equals("name")) {
-                reqName = entry.getValue();
+            String value = entry.getValue().trim();
+
+            if (value.equals("?")) continue;
+
+            switch (key) {
+                case "g", "gender" -> reqGender = value;
+                case "n", "name" -> reqName = value;
+                default -> System.out.println("\u001B[31m" + "Warning: Unrecognized constraint key in HumanTag.matches: " + key + "\u001B[0m");
             }
         }
 
-        if (reqGender != null && !reqGender.trim().equals("?")) {
-            reqGender = reqGender.trim().toUpperCase();
-
-            if (reqGender.startsWith("!")) {
-                String excludedGender = reqGender.substring(1).trim();
-
-                if ((excludedGender.equals("M") || excludedGender.equals("MALE")) && this.gender == Gender.MALE) return false;
-                if ((excludedGender.equals("F") || excludedGender.equals("FEMALE")) && this.gender == Gender.FEMALE) return false;
-            } else {
-                if ((reqGender.equals("M") || reqGender.equals("MALE")) && this.gender != Gender.MALE) return false;
-                if ((reqGender.equals("F") || reqGender.equals("FEMALE")) && this.gender != Gender.FEMALE) return false;
-            }
+        if (reqName != null) {
+            boolean isNegated = reqName.startsWith("!");
+            String val = isNegated ? reqName.substring(1).trim() : reqName;
+            if (isNegated == this.name.equalsIgnoreCase(val)) return false;
         }
 
-        if (reqName != null && !reqName.trim().equals("?")) {
-            reqName = reqName.trim();
+        if (reqGender != null) {
+            String expr = reqGender.toUpperCase();
 
-            if (reqName.startsWith("!")) {
-                String excludedName = reqName.substring(1).trim();
+            if (expr.equals("M") || expr.equals("!M")) expr = expr.replace("M", "MALE");
+            if (expr.equals("F") || expr.equals("!F")) expr = expr.replace("F", "FEMALE");
 
-                if (this.name.equalsIgnoreCase(excludedName)) return false;
-            } else {
-                if (!this.name.equalsIgnoreCase(reqName)) return false;
-            }
+            return matchComplexExpression(expr, java.util.Collections.singleton(this.gender), Gender.class);
         }
 
         return true;
