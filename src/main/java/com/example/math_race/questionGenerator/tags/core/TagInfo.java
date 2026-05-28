@@ -23,8 +23,6 @@ public class TagInfo {
         this.id = id;
     }
 
-
-
     public static TagInfo parse(String tag) {
         String clean = tag.trim().substring(1, tag.length() - 1);
         List<String> parts = smartSplit(clean, ':');

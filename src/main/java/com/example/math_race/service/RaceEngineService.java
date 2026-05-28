@@ -2,9 +2,9 @@ package com.example.math_race.service;
 
 import com.example.math_race.dto.wsMessage.response.*;
 import com.example.math_race.exception.ErrorCode;
+import com.example.math_race.questionGenerator.QuestionEngine;
 import com.example.math_race.race.*;
-import com.example.math_race.race.questions.MathQuestion;
-import com.example.math_race.race.questions.MathQuestionGenerator;
+import com.example.math_race.questionGenerator.question.MathQuestion;
 import com.example.math_race.repositories.RaceRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
@@ -26,7 +26,8 @@ public class RaceEngineService {
 
     private final ThreadPoolTaskScheduler scheduler;
     private final WebSocketService webSocketService;
-    private final MathQuestionGenerator mathQuestionGenerator;
+    private final QuestionEngine questionEngine;
+    private final QuestionTemplateService  questionTemplateService;
     private final RaceRepository raceRepository;
     private final RandomEventEngine randomEventEngine;
     private final RaceService raceService;
@@ -37,14 +38,16 @@ public class RaceEngineService {
     @Autowired
     public RaceEngineService(
             @Qualifier(GAME_SCHEDULER_BEAN_NAME) ThreadPoolTaskScheduler scheduler, WebSocketService webSocketService,
-            MathQuestionGenerator mathQuestionGenerator, RaceRepository raceRepository, RandomEventEngine randomEventEngine, @Lazy RaceService raceService) {
+            QuestionEngine questionEngine, RaceRepository raceRepository, RandomEventEngine randomEventEngine,
+            QuestionTemplateService  questionTemplateService, @Lazy RaceService raceService) {
 
         this.scheduler = scheduler;
         this.webSocketService = webSocketService;
-        this.mathQuestionGenerator = mathQuestionGenerator;
         this.raceRepository = raceRepository;
         this.randomEventEngine = randomEventEngine;
         this.raceService = raceService;
+        this.questionEngine = questionEngine;
+        this.questionTemplateService = questionTemplateService;
     }
 
     public void startRace(RaceManager race) {
@@ -59,11 +62,8 @@ public class RaceEngineService {
         raceEndTimers.put(race.getId().toString(), endTask);
 
         StatusChangedDTO statusChangedDTO = new StatusChangedDTO(race);
-//        webSocketService.sendSuccessToQueueSession(QUEUE_RACE_HOST, "RACE_START", statusChangedDTO,
-//                race.getHost().getId(), race.getHost().getSessionActive());
         webSocketService.sendSuccessToTopic(webSocketService.getRaceUpdatesTopic(race.getRoomCode()),
                 "RACE_START", statusChangedDTO);
-
 
         for (RacePlayer player : race.getPlayers().values()) {
             processNextStep(race, player);
@@ -217,7 +217,7 @@ public class RaceEngineService {
                 existingTimer.cancel(false);
             }
 
-            MathQuestion question = mathQuestionGenerator.generateForPlayer(player);
+            MathQuestion question = generateForPlayer(player);
 
             player.setCurrentQuestion(question);
             player.setQuestionStartTimeAtMs(System.currentTimeMillis());
@@ -271,7 +271,6 @@ public class RaceEngineService {
                     player.addRegularSuccessTimeMs(timeSpent);
                     if (player.getCurrentRegularStreak() > player.getMaxRegularStreak()) {
                         player.setMaxRegularStreak(player.getCurrentRegularStreak());
-                        //לשלוח הודעה לכול מי שצריך אולי לנתיב הראשי על רצף חם של מעל 5
                     }
                 }
             } else {
@@ -391,9 +390,7 @@ public class RaceEngineService {
         StatusChangedDTO statusChangedDTO = new StatusChangedDTO(race);
 
         webSocketService.sendSuccessToTopic(webSocketService.getRaceUpdatesTopic(race.getRoomCode()), "RACE_PAUSED", statusChangedDTO);
-//        webSocketService.sendSuccessToQueueSession(QUEUE_RACE_HOST, "RACE_PAUSED", statusChangedDTO,
-//                race.getHost().getId(), race.getHost().getSessionActive());
-    }
+   }
 
     public void resumeRace(RaceManager race) {
         if (race == null || !race.getStatus().equals(RaceStatus.PAUSED)) return;
@@ -408,10 +405,7 @@ public class RaceEngineService {
         raceEndTimers.put(race.getId().toString(), endTask);
 
         StatusChangedDTO  statusChangedDTO = new StatusChangedDTO(race);
-
         webSocketService.sendSuccessToTopic(webSocketService.getRaceUpdatesTopic(race.getRoomCode()), "RACE_RESUMED", statusChangedDTO);
-//        webSocketService.sendSuccessToQueueSession(QUEUE_RACE_HOST, "RACE_RESUMED", statusChangedDTO,
-//                race.getHost().getId(), race.getHost().getSessionActive());
 
         for (RacePlayer player : race.getPlayers().values()) {
             resumePlayerState(race, player);
@@ -430,10 +424,7 @@ public class RaceEngineService {
         }
 
         RaceResultsDTO resultsDTO = new RaceResultsDTO(race);
-
         webSocketService.sendSuccessToTopic(webSocketService.getRaceUpdatesTopic(race.getRoomCode()),"RACE_COMPLETED",resultsDTO);
-//        webSocketService.sendSuccessToQueueSession(QUEUE_RACE_HOST,"RACE_COMPLETED",resultsDTO,
-//                race.getHost().getId(),race.getHost().getSessionActive());
 
         endRace(race);
     }
@@ -454,10 +445,7 @@ public class RaceEngineService {
         }
 
         StatusChangedDTO  statusChangedDTO = new StatusChangedDTO(race);
-
         webSocketService.sendSuccessToTopic(webSocketService.getRaceUpdatesTopic(race.getRoomCode()),"RACE_CANCELLED",statusChangedDTO);
-//        webSocketService.sendSuccessToQueueSession(QUEUE_RACE_HOST,"RACE_CANCELLED",statusChangedDTO,
-//                race.getHost().getId(),race.getHost().getSessionActive());
 
         endRace(race);
     }
@@ -494,5 +482,11 @@ public class RaceEngineService {
         if (timer != null) {
             timer.cancel(false);
         }
+    }
+
+    public MathQuestion generateForPlayer(RacePlayer player) {
+        String level = player.getTrackState().getLevel();
+        if (level.isEmpty()) return null;
+        return questionEngine.processTemplate(questionTemplateService.getTemplateByDifficulty(level));
     }
 }

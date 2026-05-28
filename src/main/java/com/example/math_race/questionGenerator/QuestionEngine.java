@@ -1,12 +1,12 @@
 package com.example.math_race.questionGenerator;
 
+import com.example.math_race.questionGenerator.dictionary.DictionaryProvider;
+import com.example.math_race.questionGenerator.question.MathQuestion;
+import com.example.math_race.questionGenerator.question.QuestionTemplate;
 import com.example.math_race.questionGenerator.tags.core.MatchableTag;
 import com.example.math_race.questionGenerator.tags.core.TemplateTag;
 import com.example.math_race.questionGenerator.tags.core.TagInfo;
 import com.example.math_race.questionGenerator.tags.types.*;
-import com.example.math_race.race.questions.MathQuestion;
-import com.example.math_race.race.questions.MathQuestionGenerator;
-import com.example.math_race.repositories.DictionaryRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -15,15 +15,11 @@ import java.util.*;
 import java.util.concurrent.ThreadLocalRandom;
 
 import static com.example.math_race.questionGenerator.tags.core.TagInfo.smartSplit;
-import static com.example.math_race.questionGenerator.tags.enums.Gender.FEMALE;
-import static com.example.math_race.questionGenerator.tags.enums.Gender.MALE;
-import static com.example.math_race.questionGenerator.tags.enums.ItemCategory.*;
-import static com.example.math_race.questionGenerator.tags.enums.UnitType.COUNT;
 
 @Component
 public class QuestionEngine {
 
-    private final DictionaryRepository dictionaryRepository;
+    private final DictionaryProvider dictionaryProvider;
 
     private List<HumanTag> humans;
     private List<ItemTag> items;
@@ -34,41 +30,19 @@ public class QuestionEngine {
     private List<RoleTag> roles;
 
     @Autowired
-    public QuestionEngine(DictionaryRepository dictionaryRepository){
-        this.dictionaryRepository = dictionaryRepository;
+    public QuestionEngine(DictionaryProvider dictionaryProvider){
+        this.dictionaryProvider = dictionaryProvider;
     }
 
     @PostConstruct
     public void initDictionaryCache() {
-        this.humans = dictionaryRepository.loadHumanTags();
-        this.items = dictionaryRepository.loadItemTag();
-        ensureTemplateCoverageItems();
-        this.verbs = dictionaryRepository.loadVerbTag();
-        this.places = dictionaryRepository.loadPlaceTag();
-        this.adjectives = dictionaryRepository.loadAdjectiveTag();
-        this.units = dictionaryRepository.loadUnitTag();
-        ensureTemplateCoverageUnits();
-        this.roles = dictionaryRepository.loadRoleTag();
-
-    }
-
-    public void fill() {
-        this.humans = MathQuestionGenerator.fillHumans();
-        this.items = MathQuestionGenerator.fillItems();
-        ensureTemplateCoverageItems();
-        this.verbs = MathQuestionGenerator.fillVerbs();
-        this.places = MathQuestionGenerator.fillPlaces();
-        this.adjectives = MathQuestionGenerator.fillAdjectives();
-        this.units = MathQuestionGenerator.fillUnits();
-        ensureTemplateCoverageUnits();
-        this.roles = MathQuestionGenerator.fillRoles();
-
-        System.out.println("✅ QuestionEngine: Dictionary loaded successfully to memory!");
-    }
-
-    public QuestionEngine(){
-        fill();
-        this.dictionaryRepository = null;
+        this.humans = dictionaryProvider.loadHumanTags();
+        this.items = dictionaryProvider.loadItemTag();
+        this.verbs = dictionaryProvider.loadVerbTag();
+        this.places = dictionaryProvider.loadPlaceTag();
+        this.adjectives = dictionaryProvider.loadAdjectiveTag();
+        this.units = dictionaryProvider.loadUnitTag();
+        this.roles = dictionaryProvider.loadRoleTag();
     }
 
     public MathQuestion processTemplate(QuestionTemplate questionTemplate) {
@@ -175,10 +149,11 @@ public class QuestionEngine {
                     memory.put(tagId, chosen);
                     String resolvedProp = resolveValue("("+ tagId + ":" + info.getProperty() + ")", memory);
 
-                    //result = result.replace(tag, !info.getProperty().equals("*") ? resolvedProp : "");
                     result = result.replace(tag, resolvedProp);
 
                     if (isTemp) memory.remove(tagId);
+                } else {
+                    System.out.println("\u001B[31m" + "Warning: No match found for type [" + info.getType() + "] with constraints: " + resolvedConstraints + "\u001B[0m");
                 }
             } else {
                 if (memory.containsKey(info.getId())) {
@@ -268,7 +243,7 @@ public class QuestionEngine {
 
                 return isNot ? "!" + finalValue : finalValue;
             } else {
-                System.out.println("the id : " + id + " does not exist in the memory");
+                System.out.println("\u001B[31m" + "the id : " + id + " does not exist in the memory" + "\u001B[0m");
             }
         }
 
@@ -348,7 +323,7 @@ public class QuestionEngine {
                             default -> false;
                         };
                     } catch (NumberFormatException nfe) {
-                        System.out.println("Warning: Numeric comparison failed for actual: [" + leftSide + "] and expected: [" + rightSide + "]");
+                        System.out.println("\u001B[31m" + "Warning: Numeric comparison failed for actual: [" + leftSide + "] and expected: [" + rightSide + "]" + "\u001B[0m");
                     }
                 }
 
@@ -358,7 +333,7 @@ public class QuestionEngine {
                 result = result.replace(currentTag, resolvedText);
             }
         } catch (Exception e) {
-            System.out.println("Error parsing IF tag: " + tag);
+            System.out.println("\u001B[31m" + "Error parsing IF tag: " + tag + "\u001B[0m");
         }
 
         return result;
@@ -377,64 +352,6 @@ public class QuestionEngine {
         return matches.get(ThreadLocalRandom.current().nextInt(matches.size()));
     }
 
-    private void ensureTemplateCoverageItems() {
-        if (this.items == null) {
-            return;
-        }
-
-        Set<com.example.math_race.questionGenerator.tags.enums.UnitType> countOnly = Set.of(COUNT);
-        Set<String> ids = new HashSet<>();
-        for (ItemTag item : this.items) {
-            ids.add(item.getId());
-        }
-
-        List<ItemTag> extras = List.of(
-                // MONEY (COUNT)
-                new ItemTag("banknote", "שטר", "שטרות", MALE, countOnly, MONEY),
-                new ItemTag("coin", "מטבע", "מטבעות", MALE, countOnly, MONEY),
-                // ENTERTAINMENT (COUNT)
-                new ItemTag("ticket", "כרטיס", "כרטיסים", MALE, countOnly, ENTERTAINMENT),
-                new ItemTag("game_card", "כרטיס משחק", "כרטיסי משחק", MALE, countOnly, ENTERTAINMENT),
-                // CLOTHING (COUNT)
-                new ItemTag("hat", "כובע", "כובעים", MALE, countOnly, CLOTHING),
-                new ItemTag("jacket", "ז'קט", "ז'קטים", MALE, countOnly, CLOTHING),
-                // FOOD (COUNT)
-                new ItemTag("cookie", "עוגייה", "עוגיות", FEMALE, countOnly, FOOD),
-                new ItemTag("apple_count", "תפוח", "תפוחים", MALE, countOnly, FOOD)
-        );
-
-        for (ItemTag extra : extras) {
-            if (!ids.contains(extra.getId())) {
-                this.items.add(extra);
-            }
-        }
-    }
-
-    private void ensureTemplateCoverageUnits() {
-        if (this.units == null) {
-            this.units = new ArrayList<>();
-        } else {
-            this.units = new ArrayList<>(this.units);
-        }
-
-        Set<String> ids = new HashSet<>();
-        for (UnitTag unit : this.units) {
-            ids.add(unit.getProperty("id"));
-        }
-
-        List<UnitTag> extras = List.of(
-                new UnitTag("unit_pair_clothing", "זוג", "זוגות", MALE, COUNT, CLOTHING),
-                new UnitTag("unit_item_clothing", "יחידה", "יחידות", FEMALE, COUNT, CLOTHING),
-                new UnitTag("unit_pack_clothing", "מארז", "מארזים", MALE, COUNT, CLOTHING)
-        );
-
-        for (UnitTag extra : extras) {
-            if (!ids.contains(extra.getProperty("id"))) {
-                this.units.add(extra);
-            }
-        }
-    }
-
     private NumberTag findNumber(Map<String, String> constraints) {
         int min = 1;
         int max = 100;
@@ -442,13 +359,13 @@ public class QuestionEngine {
         String minStr = constraints.get("min");
         if (minStr != null && !minStr.trim().equals("?")) {
             try { min = Integer.parseInt(minStr.trim()); }
-            catch (NumberFormatException e) { System.out.println("Warning: Invalid min format."); }
+            catch (NumberFormatException e) { System.out.println("\u001B[31m" + "Warning: Invalid min format." + "\u001B[0m"); }
         }
 
         String maxStr = constraints.get("max");
         if (maxStr != null && !maxStr.trim().equals("?")) {
             try { max = Integer.parseInt(maxStr.trim()); }
-            catch (NumberFormatException e) { System.out.println("Warning: Invalid max format."); }
+            catch (NumberFormatException e) { System.out.println("\u001B[31m" + "Warning: Invalid max format." + "\u001B[0m"); }
         }
 
         if (min > max) {
@@ -468,13 +385,13 @@ public class QuestionEngine {
         String minStr = constraints.get("min");
         if (minStr != null && !minStr.trim().equals("?")) {
             try { minMinutes = TimeTag.parseTime(minStr.trim()); }
-            catch (Exception e) { System.out.println("Warning: Invalid min time format."); }
+            catch (Exception e) { System.out.println("\u001B[31m" + "Warning: Invalid min time format." + "\u001B[0m"); }
         }
 
         String maxStr = constraints.get("max");
         if (maxStr != null && !maxStr.trim().equals("?")) {
             try { maxMinutes = TimeTag.parseTime(maxStr.trim()); }
-            catch (Exception e) { System.out.println("Warning: Invalid max time format."); }
+            catch (Exception e) { System.out.println("\u001B[31m" + "Warning: Invalid max time format." + "\u001B[0m"); }
         }
 
         if (minMinutes > maxMinutes) {

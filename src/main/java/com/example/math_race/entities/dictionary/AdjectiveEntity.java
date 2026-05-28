@@ -1,7 +1,7 @@
 package com.example.math_race.entities.dictionary;
 
 import com.example.math_race.entities.BaseEntity;
-import com.example.math_race.models.dictionary.AdjectiveJsonModel;
+import com.example.math_race.json.models.dictionary.AdjectiveJsonModel;
 import com.example.math_race.questionGenerator.tags.enums.AdjectiveType;
 import com.example.math_race.questionGenerator.tags.enums.Gender;
 import com.example.math_race.questionGenerator.tags.enums.Plurality;

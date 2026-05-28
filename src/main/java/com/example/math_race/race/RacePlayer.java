@@ -1,7 +1,7 @@
 package com.example.math_race.race;
 
 import com.example.math_race.entities.UserEntity;
-import com.example.math_race.race.questions.MathQuestion;
+import com.example.math_race.questionGenerator.question.MathQuestion;
 import lombok.*;
 
 import java.util.Objects;

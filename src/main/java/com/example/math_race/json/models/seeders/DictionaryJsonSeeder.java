@@ -1,6 +1,7 @@
-package com.example.math_race.models.dictionary;
+package com.example.math_race.json.models.seeders;
 
 import com.example.math_race.entities.dictionary.*;
+import com.example.math_race.json.models.dictionary.*;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.springframework.stereotype.Component;

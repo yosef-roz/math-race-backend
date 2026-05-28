@@ -1,4 +1,4 @@
-package com.example.math_race.models.dictionary;
+package com.example.math_race.json.models.dictionary;
 
 import com.example.math_race.questionGenerator.tags.enums.AdjectiveType;
 import java.util.Map;

@@ -1,7 +1,7 @@
 package com.example.math_race.entities.dictionary;
 
 import com.example.math_race.entities.BaseEntity;
-import com.example.math_race.models.dictionary.RoleJsonModel;
+import com.example.math_race.json.models.dictionary.RoleJsonModel;
 import com.example.math_race.questionGenerator.tags.enums.RoleType;
 import lombok.AllArgsConstructor;
 import lombok.Data;

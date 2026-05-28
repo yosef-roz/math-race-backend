@@ -2,7 +2,8 @@ package com.example.math_race.repositories;
 
 import com.example.math_race.entities.BaseEntity;
 import com.example.math_race.entities.dictionary.*;
-import com.example.math_race.models.dictionary.DictionaryJsonSeeder;
+import com.example.math_race.json.models.seeders.DictionaryJsonSeeder;
+import com.example.math_race.questionGenerator.dictionary.DictionaryProvider;
 import com.example.math_race.questionGenerator.tags.types.*;
 import org.hibernate.SessionFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -14,7 +15,7 @@ import java.util.function.Supplier;
 import java.util.stream.Collectors;
 
 @Repository
-public class DictionaryRepository extends BaseRepository {
+public class DictionaryRepository extends BaseRepository implements DictionaryProvider {
 
     private final DictionaryJsonSeeder seeder;
 

@@ -2,7 +2,7 @@ package com.example.math_race.dto.wsMessage.response;
 
 import com.example.math_race.race.RaceManager;
 import com.example.math_race.race.RacePlayer;
-import com.example.math_race.race.questions.MathQuestion;
+import com.example.math_race.questionGenerator.question.MathQuestion;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;

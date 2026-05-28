@@ -1,7 +1,7 @@
 package com.example.math_race.entities.dictionary;
 
 import com.example.math_race.entities.BaseEntity;
-import com.example.math_race.models.dictionary.VerbJsonModel;
+import com.example.math_race.json.models.dictionary.VerbJsonModel;
 import com.example.math_race.questionGenerator.tags.enums.Gender;
 import com.example.math_race.questionGenerator.tags.enums.Plurality;
 import com.example.math_race.questionGenerator.tags.enums.Tense;

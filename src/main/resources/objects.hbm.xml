@@ -427,4 +427,28 @@
         <property name="deleted" type="boolean" column="deleted" not-null="true"/>
         <property name="deletionDate" type="java.util.Date" column="deletion_date"/>
     </class>
+
+    <class name="com.example.math_race.entities.templates.QuestionTemplateEntity" table="question_templates" lazy="false">
+
+        <id name="id" type="org.hibernate.type.UUIDBinaryType">
+            <column name="id" length="16" />
+            <generator class="org.hibernate.id.UUIDGenerator"/>
+        </id>
+
+        <property name="templateId" type="string" column="template_id" not-null="true" unique="true" index="idx_template_id"/>
+
+        <property name="questionTemplate" type="string" column="question_template" length="2000" not-null="true"/>
+        <property name="answerTemplate" type="string" column="answer_template" length="1000" not-null="true"/>
+        <property name="hintTemplate" type="string" column="hint_template" length="1000" not-null="true"/>
+
+        <property name="distractor1" type="string" column="distractor_1" length="1000" not-null="true"/>
+        <property name="distractor2" type="string" column="distractor_2" length="1000" not-null="true"/>
+        <property name="distractor3" type="string" column="distractor_3" length="1000" not-null="true"/>
+
+        <property name="creationDate" type="java.util.Date" column="creation_date" not-null="true"/>
+        <property name="updatedDate" type="java.util.Date" column="updated_date"/>
+        <property name="deleted" type="boolean" column="deleted" not-null="true"/>
+        <property name="deletionDate" type="java.util.Date" column="deletion_date"/>
+
+    </class>
 </hibernate-mapping>

@@ -1,6 +1,9 @@
 package com.example.math_race;
 
+import com.example.math_race.json.loader.JsonOnlyDictionaryProvider;
+import com.example.math_race.json.models.seeders.DictionaryJsonSeeder;
 import com.example.math_race.questionGenerator.QuestionEngine;
+import com.example.math_race.questionGenerator.dictionary.DictionaryProvider;
 import com.example.math_race.questionGenerator.tags.core.TemplateTag;
 
 import java.util.ArrayList;
@@ -17,8 +20,12 @@ public class Main {
         System.out.println("  Application 'Math Race' is running successfully!");
         System.out.println("----------------------------------------------------------\n");
 
-        Map<String, TemplateTag> memory = new HashMap<>();
-        QuestionEngine questionEngine = new QuestionEngine();
+        DictionaryJsonSeeder seeder = new DictionaryJsonSeeder();
+        DictionaryProvider jsonProvider = new JsonOnlyDictionaryProvider(seeder);
+        QuestionEngine questionEngine = new QuestionEngine(jsonProvider);
+        questionEngine.initDictionaryCache();
+        Map<String, TemplateTag> memory;
+
 
 
         String template1 = "[HUMAN:n:#1] [VERB:id=find;t=past;g=(#1:g);num=s:#V1] [NUM:min=10;max=20:#X] [ITEM:type=COLLECTIBLE:p:#2]. " +

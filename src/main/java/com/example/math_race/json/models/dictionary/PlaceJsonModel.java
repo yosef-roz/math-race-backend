@@ -1,17 +1,16 @@
-package com.example.math_race.models.dictionary;
+package com.example.math_race.json.models.dictionary;
 
 import com.example.math_race.questionGenerator.tags.enums.Gender;
 import com.example.math_race.questionGenerator.tags.enums.ItemCategory;
-import com.example.math_race.questionGenerator.tags.enums.UnitType;
+import com.example.math_race.questionGenerator.tags.enums.PlaceType;
 
 import java.util.Set;
 
-public record UnitJsonModel(
+public record PlaceJsonModel(
         String id,
         String singular,
         String plural,
         Gender gender,
-        UnitType type,
-        Set<ItemCategory>validItemCategories
-) {
-}
+        PlaceType placeType,
+        Set<ItemCategory> availableItemCategories
+) {}

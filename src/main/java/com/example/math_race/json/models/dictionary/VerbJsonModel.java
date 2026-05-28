@@ -1,4 +1,4 @@
-package com.example.math_race.models.dictionary;
+package com.example.math_race.json.models.dictionary;
 
 
 import java.util.Map;

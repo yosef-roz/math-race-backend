@@ -1,52 +1,46 @@
 package com.example.math_race.service;
 
-import com.example.math_race.questionGenerator.QuestionTemplate;
-import com.fasterxml.jackson.core.type.TypeReference;
-import com.fasterxml.jackson.databind.ObjectMapper;
+import com.example.math_race.entities.templates.QuestionTemplateEntity;
+import com.example.math_race.questionGenerator.question.QuestionTemplate;
+import com.example.math_race.repositories.QuestionTemplatesRepository;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.core.io.ClassPathResource;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.PostConstruct;
-import java.io.IOException;
-import java.io.InputStream;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ThreadLocalRandom;
+import java.util.stream.Collectors;
 
 @Service
 public class QuestionTemplateService {
 
-    private final ObjectMapper objectMapper;
-    private final Map<String, List<QuestionTemplate>> templatesCache;
+    private final QuestionTemplatesRepository questionRepository;
+    private Map<String, List<QuestionTemplate>> templatesCache;
 
     @Autowired
-    public QuestionTemplateService(ObjectMapper objectMapper) {
-        this.objectMapper = objectMapper;
-        this.templatesCache = new HashMap<>();
+    public QuestionTemplateService(QuestionTemplatesRepository questionRepository) {
+        this.questionRepository = questionRepository;
     }
 
     @PostConstruct
     public void initTemplates() {
-        try {
+        List<QuestionTemplateEntity> entities = questionRepository.loadAllTemplates();
 
-            templatesCache.put("easy", loadFromFile("templates/math-questions/easy.json"));
-            templatesCache.put("medium", loadFromFile("templates/math-questions/medium.json"));
-            templatesCache.put("hard", loadFromFile("templates/math-questions/hard.json"));
-
-            System.out.println("✅ Question templates loaded successfully!");
-        } catch (IOException e) {
-            throw new RuntimeException("❌ Failed to load question templates on startup", e);
-        }
+        this.templatesCache = entities.stream()
+                .map(QuestionTemplate::new)
+                .collect(Collectors.groupingBy(
+                        this::extractDifficulty,
+                        Collectors.toList()
+                ));
     }
 
-
-    private List<QuestionTemplate> loadFromFile(String filePath) throws IOException {
-        ClassPathResource resource = new ClassPathResource(filePath);
-        try (InputStream inputStream = resource.getInputStream()) {
-            return objectMapper.readValue(inputStream, new TypeReference<List<QuestionTemplate>>() {});
+    private String extractDifficulty(QuestionTemplate template) {
+        String id = template.id();
+        if (id != null && id.contains("_")) {
+            return id.split("_")[0].toLowerCase();
         }
+        return "general";
     }
 
     public List<QuestionTemplate> getTemplatesByDifficulty(String difficulty) {
