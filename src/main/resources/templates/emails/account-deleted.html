@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="he" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            line-height: 1.6;
+            color: #333333;
+            background-color: #f4f7f6;
+            margin: 0;
+            padding: 40px 20px;
+        }
+        .container {
+            max-width: 600px;
+            margin: 0 auto;
+            background-color: #ffffff;
+            border: 1px solid #e1e5eb;
+            padding: 40px;
+            border-radius: 8px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.05);
+        }
+        .header {
+            text-align: center;
+            margin-bottom: 30px;
+            padding-bottom: 20px;
+            border-bottom: 1px solid #eeeeee;
+        }
+        .header h1 {
+            color: #2c3e50;
+            margin: 0;
+            font-size: 24px;
+        }
+        .content {
+            font-size: 16px;
+            color: #444444;
+        }
+        .info-box {
+            background-color: #f8f9fa;
+            border-right: 4px solid #7f8c8d;
+            padding: 20px;
+            margin-top: 30px;
+            margin-bottom: 30px;
+            border-radius: 4px;
+            font-size: 15px;
+            color: #444444;
+        }
+        .info-box strong {
+            color: #2c3e50;
+            display: block;
+            margin-bottom: 10px;
+            font-size: 16px;
+        }
+        .info-box ul {
+            margin: 0;
+            padding-right: 20px;
+        }
+        .info-box li {
+            margin-bottom: 8px;
+        }
+        .footer {
+            margin-top: 40px;
+            padding-top: 20px;
+            border-top: 1px dashed #dddddd;
+            text-align: center;
+            font-size: 13px;
+            color: #888888;
+            line-height: 1.5;
+        }
+    </style>
+</head>
+<body dir="rtl">
+<div class="container">
+    <div class="header">
+        <h1 th:text="'שלום ' + ${name} + ','">שלום שם_משתמש,</h1>
+    </div>
+
+    <div class="content">
+        <p>אנו מאשרים שחשבונך במערכת <strong>Math Race</strong> נמחק בהצלחה, כפי שביקשת.</p>
+
+        <div class="info-box">
+            <strong>מה זה אומר?</strong>
+            <ul>
+                <li>המידע האישי והיסטוריית המשחקים שלך הוסרו מהמערכת.</li>
+                <li>נותקת מכל המכשירים המחוברים.</li>
+                <li>לא נשלח אליך הודעות נוספות לכתובת זו.</li>
+            </ul>
+        </div>
+
+        <p>היה לנו כיף לארח אותך במירוצים שלנו! אם אי פעם תתגעגע לאתגרי החשבון, נשמח לראותך שוב ותמיד תוכל ליצור חשבון חדש ולהתחיל מחדש.</p>
+    </div>
+
+    <div class="footer">
+        <p>הודעה זו נשלחה כדי לאשר שפעולת המחיקה הושלמה בהצלחה.<br>זהו המייל האחרון שתקבל מאיתנו לכתובת זו.</p>
+        <p>תודה, צוות Math Race.</p>
+    </div>
+</div>
+</body>
+</html>

@@ -14,6 +14,9 @@ public enum ErrorCode {
     EMAIL_NOT_EXISTS(1006, "Email not exists!"),
     ACCOUNT_NOT_FOUND(1007, "Account not found!"),
     PASSWORD_SAME_AS_OLD(1008, "New password cannot be the same as the current password!"),
+    USERNAME_SAME_AS_OLD(1009, "New username cannot be the same as the current username!"),
+    ACCOUNT_DELETED(1010,"Account has been deleted!"),
+    INCORRECT_PASSWORD(1011, "Incorrect password!"),
 
     // Token & Security Errors (1100 Series)
     INVALID_TOKEN(1100, "The token is invalid or has expired."),

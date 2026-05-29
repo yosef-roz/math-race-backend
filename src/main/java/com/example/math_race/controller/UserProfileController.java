@@ -2,17 +2,16 @@ package com.example.math_race.controller;
 
 import com.example.math_race.dto.http.ApiResponse;
 import com.example.math_race.dto.http.request.RequestMetadata;
+import com.example.math_race.dto.http.request.UpdateUsernameRequest;
 import com.example.math_race.dto.http.response.*;
-
 import com.example.math_race.exception.ErrorCode;
+import com.example.math_race.exception.LogicException;
 import com.example.math_race.service.UserProfileService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.util.StringUtils;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
+import javax.validation.Valid;
 import java.util.List;
 
 @RestController
@@ -52,5 +51,28 @@ public class UserProfileController {
 
         RaceHistoryDetailsResponse raceDetails = userProfileService.getSpecificRaceDetails(raceId, metadata);
         return ApiResponse.success(raceDetails);
+    }
+
+    @PatchMapping("/me/username")
+    public ApiResponse<Void> updateUsername(@Valid @RequestBody UpdateUsernameRequest request, RequestMetadata metadata) {
+        userProfileService.updateUsername(request,metadata);
+        return ApiResponse.success(null);
+    }
+
+
+    @PostMapping("/me/delete-request")
+    public ApiResponse<Void> requestAccountDeletion(RequestMetadata metadata) {
+        userProfileService.requestAccountDeletion(metadata);
+        return ApiResponse.success(null);
+    }
+
+    @DeleteMapping("/me")
+    public ApiResponse<Void> confirmAccountDeletion(@RequestParam("token") String deletionToken, RequestMetadata metadata) {
+        if (!StringUtils.hasText(deletionToken)) {
+            throw new LogicException(ErrorCode.INVALID_INPUT);
+        }
+
+        userProfileService.confirmAccountDeletion(deletionToken, metadata);
+        return ApiResponse.success(null);
     }
 }

@@ -9,4 +9,7 @@ public class ChangePasswordRequest {
 
     @NotBlank(message = "NewPassword is required")
     private String newPassword;
+
+    @NotBlank(message = "OldPassword is required")
+    private String oldPassword;
 }

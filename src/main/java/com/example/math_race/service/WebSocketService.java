@@ -111,7 +111,7 @@ public class WebSocketService {
     }
 
     public void removeSession(String userId, String sessionId, ErrorCode errorCode) {
-        if (!StringUtils.hasText(sessionId) || !StringUtils.hasText(sessionId)) return;
+        if (!StringUtils.hasText(userId) || !StringUtils.hasText(sessionId)) return;
 
         Set<String> sessions = userSessions.get(userId);
         if (sessions != null && sessions.contains(sessionId)) {
@@ -128,6 +128,21 @@ public class WebSocketService {
 
     public void removeSession(String userId, String sessionId) {
        removeSession(userId,sessionId,null);
+    }
+
+    public void removeAllUserSessions(String userId, ErrorCode errorCode) {
+        if (!StringUtils.hasText(userId)) return;
+        Set<String> sessions = userSessions.remove(userId);
+
+        if (sessions != null) {
+            for (String sessionId : sessions) {
+                if (errorCode == null) {
+                    webSocketSessionRegistry.forceDisconnect(sessionId);
+                } else {
+                    webSocketSessionRegistry.forceDisconnect(sessionId, errorCode);
+                }
+            }
+        }
     }
 
     public String getRaceUpdatesTopic(String roomCode) {

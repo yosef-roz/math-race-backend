@@ -56,7 +56,7 @@ public class AuthService {
         }
 
         if (!user.isVerified()){
-            resendVerificationEmail(user, metadata);
+            tokenService.resendVerificationEmail(user, metadata);
             throw new LogicException(ErrorCode.ACCOUNT_NOT_VERIFIED);
         }
 
@@ -69,13 +69,6 @@ public class AuthService {
                 user.getUsername(),
                 user.getEmail()
         );
-    }
-
-    @Transactional(propagation = Propagation.REQUIRES_NEW)
-    public void resendVerificationEmail(UserEntity user, RequestMetadata metadata) {
-        TokenEntity newToken = tokenService.createTokenEntity(user, VERIFICATION,
-                metadata.getIpAddress(),  metadata.getUserAgent());
-        emailService.sendVerificationEmail(user,newToken);
     }
 
     @Transactional
@@ -158,6 +151,10 @@ public class AuthService {
 
         if (checkPassword(request.getNewPassword(), user.getPassword())) {
             throw new LogicException(ErrorCode.PASSWORD_SAME_AS_OLD);
+        }
+
+        if (!checkPassword(request.getOldPassword(), user.getPassword())) {
+            throw new LogicException(ErrorCode.INCORRECT_PASSWORD);
         }
 
         user.setPassword(hashPassword(request.getNewPassword()));

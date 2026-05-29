@@ -42,13 +42,28 @@
         .button {
             display: inline-block;
             padding: 14px 30px;
-            background-color: #27ae60;
+            background-color: #e74c3c; /* אדום אזהרה למחיקה */
             color: #ffffff !important;
             text-decoration: none;
             border-radius: 6px;
             font-weight: bold;
             font-size: 16px;
             transition: background-color 0.3s ease;
+        }
+        .warning {
+            background-color: #fdf2f2;
+            border-right: 4px solid #e74c3c;
+            padding: 15px 20px;
+            margin-top: 40px;
+            border-radius: 4px;
+            font-size: 14px;
+            color: #555555;
+        }
+        .warning strong {
+            color: #c0392b;
+            display: block;
+            margin-bottom: 5px;
+            font-size: 15px;
         }
         .fallback-link-container {
             margin-top: 30px;
@@ -83,23 +98,29 @@
     </div>
 
     <div class="content">
-        <p>ברוך הבא! תודה שנרשמת למערכת <strong>Math Race</strong>.</p>
+        <p>קיבלנו בקשה למחיקת חשבונך במערכת <strong>Math Race</strong>.</p>
 
-        <p>כדי להשלים את תהליך ההרשמה ולהתחיל לשחק, יש לאמת את חשבונך בלחיצה על הכפתור הבא:</p>
+        <p>כדי לאשר את מחיקת החשבון לצמיתות, יש ללחוץ על הכפתור הבא:</p>
 
         <div class="button-container">
-            <a th:href="${verificationUrl}" class="button">אימות חשבון</a>
+            <a th:href="${deleteUrl}" class="button">אישור מחיקת חשבון</a>
         </div>
 
         <div class="fallback-link-container">
             <strong>הכפתור לא עובד?</strong><br>
             ניתן להעתיק ולהדביק את הקישור הבא ישירות לשורת הכתובת בדפדפן:
-            <span class="fallback-link" th:text="${verificationUrl}">https://example.com/verify-link</span>
+            <span class="fallback-link" th:text="${deleteUrl}">https://example.com/delete-link</span>
         </div>
     </div>
 
+    <div class="warning">
+        <strong>שים לב: פעולה זו היא סופית ובלתי הפיכה!</strong>
+        כל הנתונים, ההיסטוריה והניקוד שלך יימחקו באופן מיידי ממערכותינו, ולא ניתן יהיה לשחזר אותם לאחר מכן.
+    </div>
+
     <div class="footer">
-        <p>הודעה זו נשלחה אוטומטית ממערכת Math Race.<br>אנא אל תשיב/י למייל זה.</p>
+        <p>אם לא ביקשת למחוק את החשבון שלך, ניתן להתעלם מהודעה זו בבטחה. החשבון שלך לא יימחק.</p>
+        <p>הודעה זו נשלחה אוטומטית ממערכת Math Race.</p>
     </div>
 </div>
 </body>

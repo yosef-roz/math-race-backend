@@ -14,7 +14,8 @@ public class TokenEntity extends BaseEntity {
     public enum TokenType {
         SESSION,
         VERIFICATION,
-        PASSWORD_RESET
+        PASSWORD_RESET,
+        DELETE_ACCOUNT
     }
 
     private String token;

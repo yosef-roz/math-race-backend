@@ -48,6 +48,16 @@ public class TokenRepository extends BaseRepository {
                 .executeUpdate();
     }
 
+    public int invalidateTokensByUser(UserEntity user) {
+        String hql = "update TokenEntity set revoked = true " +
+                "where user.id = :userId and revoked = false";
+
+        return getCurrentSession()
+                .createQuery(hql)
+                .setParameter("userId", user.getId())
+                .executeUpdate();
+    }
+
     public TokenEntity findLatestActiveToken(UserEntity user, TokenEntity.TokenType tokenType) {
         String hql = "FROM TokenEntity WHERE user.id = :userId " +
                 "AND type = :tokenType " +

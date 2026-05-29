@@ -26,21 +26,11 @@ public class DatabaseConfig {
         String dbUser,dbSchema, dbPass,host;
         Integer port;
 
-        boolean isPublic = false;
-
-        if (isPublic) {
-            dbUser = env.getProperty("DB_ROOT");
-            dbSchema = env.getProperty("DB_SCHEMA");
-            dbPass = env.getProperty("DB_PASSWORD");
-            host = env.getProperty("DB_HOST");
-            port = env.getProperty("DB_PORT", Integer.class);
-        }else {
-            dbUser = "root";
-            dbSchema = "math_race_db_loc";
-            dbPass = "1234";
-            host ="localhost";
-            port = 3306;
-        }
+        dbUser = env.getProperty("DB_ROOT");
+        dbSchema = env.getProperty("DB_SCHEMA");
+        dbPass = env.getProperty("DB_PASSWORD");
+        host = env.getProperty("DB_HOST");
+        port = env.getProperty("DB_PORT", Integer.class);
 
         ComboPooledDataSource dataSource = new ComboPooledDataSource();
         dataSource.setDriverClass("com.mysql.cj.jdbc.Driver");
@@ -74,7 +64,6 @@ public class DatabaseConfig {
         hibernateProperties.put("hibernate.enable_lazy_load_no_trans", "true");
 
         sessionFactoryBean.setHibernateProperties(hibernateProperties);
-
         sessionFactoryBean.setMappingResources("objects.hbm.xml");
 
         return sessionFactoryBean;

@@ -25,7 +25,7 @@ public class RaceParticipantHistoryResponse {
 
     public RaceParticipantHistoryResponse(RaceHistoryEntity raceHistoryEntity, RaceParticipantHistoryEntity player) {
         this.isGuest = player.isGuest();
-        if (!player.isGuest()) {
+        if (!player.isGuest() && !player.getUser().isDeleted()) {
             userName = player.getUser().getUsername();
         }
         this.nickname = player.getNickname();

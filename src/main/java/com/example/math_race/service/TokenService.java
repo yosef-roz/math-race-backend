@@ -1,5 +1,6 @@
 package com.example.math_race.service;
 
+import com.example.math_race.dto.http.request.RequestMetadata;
 import com.example.math_race.entities.TokenEntity;
 import com.example.math_race.entities.UserEntity;
 import com.example.math_race.exception.ErrorCode;
@@ -7,6 +8,7 @@ import com.example.math_race.exception.LogicException;
 import com.example.math_race.repositories.TokenRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.Duration;
@@ -22,10 +24,12 @@ import static com.example.math_race.entities.TokenEntity.TokenType.*;
 public class TokenService {
 
     private final TokenRepository tokenRepository;
+    private final EmailService emailService;
 
     @Autowired
-    public TokenService(TokenRepository tokenRepository) {
+    public TokenService(TokenRepository tokenRepository, EmailService emailService) {
         this.tokenRepository = tokenRepository;
+        this.emailService = emailService;
     }
 
     @Transactional
@@ -38,7 +42,7 @@ public class TokenService {
         if (tokenType == SESSION) {
             expiresAt = Date.from(Instant.now().plus(30, ChronoUnit.DAYS));
 
-        }else if (tokenType == VERIFICATION || tokenType == PASSWORD_RESET) {
+        }else if (tokenType == VERIFICATION || tokenType == PASSWORD_RESET || tokenType == DELETE_ACCOUNT) {
             TokenEntity oldToken = tokenRepository.findLatestActiveToken(user,tokenType);
 
             if (oldToken != null && Duration.between(oldToken.getCreationDate().toInstant(), now).toMinutes() <= 2) {
@@ -48,8 +52,10 @@ public class TokenService {
             tokenRepository.invalidateTokensByUserAndType(user, tokenType);
             if (tokenType == VERIFICATION) {
                 expiresAt = Date.from(Instant.now().plus(24, ChronoUnit.HOURS));
-            }else {
+            }else if (tokenType == PASSWORD_RESET) {
                 expiresAt = Date.from(Instant.now().plus(12, ChronoUnit.HOURS));
+            }else {
+                expiresAt = Date.from(Instant.now().plus(6, ChronoUnit.HOURS));
             }
         }
 
@@ -65,6 +71,13 @@ public class TokenService {
         tokenRepository.save(token);
 
         return token;
+    }
+
+    @Transactional(propagation = Propagation.REQUIRES_NEW)
+    public void resendVerificationEmail(UserEntity user, RequestMetadata metadata) {
+        TokenEntity newToken = createTokenEntity(user, VERIFICATION,
+                metadata.getIpAddress(),  metadata.getUserAgent());
+        emailService.sendVerificationEmail(user,newToken);
     }
 
     @Transactional

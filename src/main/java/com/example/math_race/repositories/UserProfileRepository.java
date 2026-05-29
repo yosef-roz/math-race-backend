@@ -155,4 +155,11 @@ public class UserProfileRepository extends BaseRepository {
 
         return new RaceHistoryDetailsResponse(race, participants, isHost, userRank);
     }
+
+    public UserEntity findByUsername(String username) {
+        return getCurrentSession()
+                .createQuery("FROM UserEntity WHERE username = :username", UserEntity.class)
+                .setParameter("username", username)
+                .uniqueResult();
+    }
 }

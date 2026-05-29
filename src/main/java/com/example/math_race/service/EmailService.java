@@ -85,4 +85,41 @@ public class EmailService {
 
         emailSender.sendEmail(mailRequest);
     }
+
+    @Async(EMAIL_TASK_EXECUTOR_BEAN_NAME)
+    public void sendDeleteAccountEmail(UserEntity to, TokenEntity token) {
+        Context context = new Context();
+
+        context.setVariable("name", to.getUsername());
+        context.setVariable("deleteUrl", BASE_PATH + "/manage-profile/delete-account/" + token.getToken());
+
+        String htmlContent = templateEngine.process("delete-account", context);
+
+        MailRequest mailRequest = new MailRequest(
+                to.getEmail(),
+                "אישור מחיקת חשבון - Math Race",
+                htmlContent,
+                true
+        );
+
+        emailSender.sendEmail(mailRequest);
+    }
+
+    @Async(EMAIL_TASK_EXECUTOR_BEAN_NAME)
+    public void sendAccountDeletedSuccessfullyEmail(String targetEmail, String originalUsername) {
+        Context context = new Context();
+
+        context.setVariable("name", originalUsername);
+
+        String htmlContent = templateEngine.process("account-deleted", context);
+
+        MailRequest mailRequest = new MailRequest(
+                targetEmail,
+                "החשבון שלך נמחק בהצלחה - Math Race",
+                htmlContent,
+                true
+        );
+
+        emailSender.sendEmail(mailRequest);
+    }
 }
