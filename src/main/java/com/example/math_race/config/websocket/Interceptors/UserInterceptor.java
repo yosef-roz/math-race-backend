@@ -1,6 +1,5 @@
 package com.example.math_race.config.websocket.Interceptors;
 
-import com.example.math_race.config.websocket.WebSocketSessionRegistry;
 import com.example.math_race.dto.wsMessage.WsMessage;
 import com.example.math_race.dto.wsMessage.response.AccountConnectionDTO;
 import com.example.math_race.entities.UserEntity;
@@ -11,6 +10,7 @@ import com.example.math_race.service.AuthService;
 import com.example.math_race.service.WebSocketService;
 import com.example.math_race.service.RaceService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.context.event.EventListener;
 import org.springframework.messaging.Message;
@@ -19,6 +19,7 @@ import org.springframework.messaging.MessageDeliveryException;
 import org.springframework.messaging.simp.stomp.StompCommand;
 import org.springframework.messaging.simp.stomp.StompHeaderAccessor;
 import org.springframework.messaging.support.ChannelInterceptor;
+import org.springframework.messaging.support.MessageBuilder;
 import org.springframework.messaging.support.MessageHeaderAccessor;
 import org.springframework.stereotype.Component;
 import org.springframework.util.AntPathMatcher;
@@ -38,13 +39,16 @@ public class UserInterceptor implements ChannelInterceptor {
     private final WebSocketService webSocketService;
     private final RaceService raceService;
     private final AntPathMatcher matcher;
+    private final MessageChannel clientOutboundChannel;
 
     @Autowired
-    public UserInterceptor(AuthService authService, @Lazy WebSocketService webSocketService, @Lazy RaceService raceService, @Lazy WebSocketSessionRegistry webSocketSessionRegistry) {
+    public UserInterceptor(AuthService authService, @Lazy WebSocketService webSocketService, @Lazy RaceService raceService,
+                           @Lazy @Qualifier("clientOutboundChannel") MessageChannel clientOutboundChannel) {
         this.authService = authService;
         this.webSocketService = webSocketService;
         this.raceService = raceService;
         this.matcher = new AntPathMatcher();
+        this.clientOutboundChannel = clientOutboundChannel;
     }
 
     @Override
@@ -172,6 +176,15 @@ public class UserInterceptor implements ChannelInterceptor {
         } else if (!destination.equals("/user/queue/notifications")) {
             webSocketService.sendErrorToQueueSession(QUEUE_NOTIFICATIONS, ErrorCode.INVALID_RACE_PATH, accessor);
             return null;
+        }
+
+        String receiptId = accessor.getReceipt();
+        if (receiptId != null) {
+            StompHeaderAccessor receiptAccessor = StompHeaderAccessor.create(StompCommand.RECEIPT);
+            receiptAccessor.setReceiptId(receiptId);
+            receiptAccessor.setSessionId(accessor.getSessionId());
+
+            clientOutboundChannel.send(MessageBuilder.createMessage(new byte[0], receiptAccessor.getMessageHeaders()));
         }
 
         return message;
