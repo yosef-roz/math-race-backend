@@ -27,5 +27,5 @@ Content-Type: application/json
 
 ###
 
-GET http://localhost:8085/api/users/me/history
-Authorization: Bearer 2470af46-6c4c-4db2-a6d7-32d28180f1ee
+DELETE http://localhost:8085/api/users/me?token=dssfsd
+Authorization: Bearer b7e463b2-f2ea-4420-999d-2fdf1daa9d47

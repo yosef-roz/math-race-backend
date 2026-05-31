@@ -38,7 +38,8 @@ public class QuestionEngine {
 
     public QuestionEngine(){
         DictionaryJsonSeeder seeder = new DictionaryJsonSeeder();
-        this.dictionaryProvider = new JsonOnlyDictionaryProvider(seeder);;
+        this.dictionaryProvider = new JsonOnlyDictionaryProvider(seeder);
+        initDictionaryCache();
     }
 
     @PostConstruct
@@ -115,7 +116,7 @@ public class QuestionEngine {
                     resolvedConstraints.put(entry.getKey(), resolveValue(entry.getValue(), memory));
                 }
 
-                TemplateTag chosen = switch (info.getType()) {
+                TemplateTag chosen = switch (info.getType().toUpperCase()) {
                     case "HUMAN" -> getRandomMatch(humans,resolvedConstraints, HumanTag.class);
                     case "ITEM" -> getRandomMatch(items,resolvedConstraints, ItemTag.class);
                     case "NUM" -> findNumber(resolvedConstraints);
@@ -346,17 +347,33 @@ public class QuestionEngine {
     private NumberTag findNumber(Map<String, String> constraints) {
         int min = 1;
         int max = 100;
+        String valStr = "?";
 
-        String minStr = constraints.get("min");
-        if (minStr != null && !minStr.trim().equals("?")) {
-            try { min = Integer.parseInt(minStr.trim()); }
-            catch (NumberFormatException e) { System.out.println("\u001B[31m" + "Warning: Invalid min format." + "\u001B[0m"); }
-        }
+        for (Map.Entry<String, String> entry : constraints.entrySet()) {
+            if (entry.getKey() == null || entry.getValue() == null) continue;
 
-        String maxStr = constraints.get("max");
-        if (maxStr != null && !maxStr.trim().equals("?")) {
-            try { max = Integer.parseInt(maxStr.trim()); }
-            catch (NumberFormatException e) { System.out.println("\u001B[31m" + "Warning: Invalid max format." + "\u001B[0m"); }
+            String key = entry.getKey().toLowerCase();
+            String value = entry.getValue().trim();
+
+            if (value.equals("?")) continue;
+
+            switch (key) {
+                case "min" -> {
+                    try {
+                        min = Integer.parseInt(value);
+                    } catch (NumberFormatException e) {
+                        System.out.println("\u001B[31m" + "Warning: Invalid min format." + "\u001B[0m");
+                    }
+                }
+                case "max" -> {
+                    try {
+                        max = Integer.parseInt(value);
+                    } catch (NumberFormatException e) {
+                        System.out.println("\u001B[31m" + "Warning: Invalid max format." + "\u001B[0m");
+                    }
+                }
+                case "value", "v" -> valStr = value;
+            }
         }
 
         if (min > max) {
@@ -365,24 +382,41 @@ public class QuestionEngine {
             max = temp;
         }
 
-        String valStr = constraints.getOrDefault("value", "?").trim();
         return new NumberTag(valStr, min, max);
     }
 
     private TimeTag findTime(Map<String, String> constraints) {
         int minMinutes = 0;    // 00:00
         int maxMinutes = 1439; // 23:59
+        boolean round = true;
+        String valStr = "?";
 
-        String minStr = constraints.get("min");
-        if (minStr != null && !minStr.trim().equals("?")) {
-            try { minMinutes = TimeTag.parseTime(minStr.trim()); }
-            catch (Exception e) { System.out.println("\u001B[31m" + "Warning: Invalid min time format." + "\u001B[0m"); }
-        }
+        for (Map.Entry<String, String> entry : constraints.entrySet()) {
+            if (entry.getKey() == null || entry.getValue() == null) continue;
 
-        String maxStr = constraints.get("max");
-        if (maxStr != null && !maxStr.trim().equals("?")) {
-            try { maxMinutes = TimeTag.parseTime(maxStr.trim()); }
-            catch (Exception e) { System.out.println("\u001B[31m" + "Warning: Invalid max time format." + "\u001B[0m"); }
+            String key = entry.getKey().toLowerCase();
+            String value = entry.getValue().trim();
+
+            if (value.equals("?")) continue;
+
+            switch (key) {
+                case "min" -> {
+                    try {
+                        minMinutes = TimeTag.parseTime(value);
+                    } catch (Exception e) {
+                        System.out.println("\u001B[31m" + "Warning: Invalid min time format." + "\u001B[0m");
+                    }
+                }
+                case "max" -> {
+                    try {
+                        maxMinutes = TimeTag.parseTime(value);
+                    } catch (Exception e) {
+                        System.out.println("\u001B[31m" + "Warning: Invalid max time format." + "\u001B[0m");
+                    }
+                }
+                case "round", "r" -> round = !value.equalsIgnoreCase("false");
+                case "value", "v" -> valStr = value;
+            }
         }
 
         if (minMinutes > maxMinutes) {
@@ -390,9 +424,6 @@ public class QuestionEngine {
             minMinutes = maxMinutes;
             maxMinutes = temp;
         }
-
-        boolean round = !constraints.getOrDefault("round", "true").equalsIgnoreCase("false");
-        String valStr = constraints.getOrDefault("value", "?").trim();
 
         return new TimeTag(valStr, minMinutes, maxMinutes, round);
     }

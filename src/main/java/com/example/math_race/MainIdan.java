@@ -62,7 +62,6 @@ public class MainIdan {
         System.out.println("----------------------------------------------------------\n");
 
         QuestionEngine questionEngine = new QuestionEngine();
-        questionEngine.initDictionaryCache();
         Map<String, TemplateTag> memory;
 
 
@@ -785,7 +784,7 @@ public class MainIdan {
         });
         // 1
         newTemplates.add(new String[]{
-                "[PLACE:place_type=STORE:*:#P1][ROLE:place_id=(#P1:id);role_type=OPERATOR:*:#O1][ITEM:unit_type=COUNT;type=(#P1:t):*:#I1][ITEM:unit_type=COUNT;type=(#P1:t);id=!(#I1:id):*:#I2][HUMAN:*:#1][NUM:min=3;max=6:*:#QTY][NUM:min=5;max=12:*:#PRICE][NUM:value=100:*:#BILL][NUM:min=10;max=20:*:#EXTRA_PRICE][NUM:value=(#QTY:mul_(#PRICE)):*:#TOTAL_COST][NUM:min=0;max=1:*:#W][NUM:min=0;max=1:*:#OG][#1:n] [VERB:id=buy:(past_+(#1:g)+_s)] ב[#P1:s] [IF:(#I1:allowed_unit)=NONE:<[#QTY] [#I1:p]. כל [#I1:s]>:<[UNIT:type=(#I1:allowed_unit);item_category=(#I1:t):*:#U1][#QTY] [#U1:p] של [#I1:p]. כל [#U1:s]>] עולה [#PRICE] שקלים. [IF:(#W)=0:<אם [#1:he_she] [VERB:id=pay:(past_+(#1:g)+_s)] [IF:(#OG)=0:<ל[#O1:sm]>:<ל[#O1:sf]>] בשטר של [#BILL] שקלים, כמה עודף [#1:he_she] [VERB:id=receive:(past_+(#1:g)+_s)]?>:<בנוסף, [#1:he_she] [VERB:id=buy:(past_+(#1:g)+_s)] מה[IF:(#OG)=0:<[#O1:sm]>:<[#O1:sf]>] גם [#I2:s] ב-[#EXTRA_PRICE] שקלים. כמה שקלים סך הכל [#1:he_she] [VERB:id=pay:(past_+(#1:g)+_s)]?>]",
+                "[PLACE:place_type=STORE:*:#P1][ROLE:place_id=(#P1:id);role_type=OPERATOR:*:#O1][ITEM:unit_type=COUNT;type=(#P1:t):*:#I1][ITEM:unit_type=COUNT;type=(#P1:t);id=!(#I1:id):*:#I2][HUMAN:*:#1][NUM:min=3;max=6:*:#QTY][NUM:min=5;max=12:*:#PRICE][NUM:value=100:*:#BILL][NUM:min=10;max=20:*:#EXTRA_PRICE][NUM:value=(#QTY:mul_(#PRICE)):*:#TOTAL_COST][NUM:min=0;max=1:*:#W][NUM:min=0;max=1:*:#OG][#1:n] [VERB:id=buy:(past_+(#1:g)+_s)] ב[#P1:s] [IF:(#I1:allowed_unit)=NONE:<[#QTY] [#I1:p]. כל [#I1:s]>:<[UNIT:type=(#I1:allowed_unit);item_category=(#I1:t):*:#U1][#QTY] [#U1:p] של [#I1:p]. כל [#U1:s]>] עולה [#PRICE] שקלים. [IF:(#W)=0:<אם [#1:he_she] [VERB:id=pay:(past_+(#1:g)+_s)] [IF:(#OG)=0:<ל[#O1:m_s]>:<ל[#O1:sf]>] בשטר של [#BILL] שקלים, כמה עודף [#1:he_she] [VERB:id=receive:(past_+(#1:g)+_s)]?>:<בנוסף, [#1:he_she] [VERB:id=buy:(past_+(#1:g)+_s)] מה[IF:(#OG)=0:<[#O1:sm]>:<[#O1:sf]>] גם [#I2:s] ב-[#EXTRA_PRICE] שקלים. כמה שקלים סך הכל [#1:he_she] [VERB:id=pay:(past_+(#1:g)+_s)]?>]",
                 "[IF:(#W)=0:<[NUM:value=(#BILL:sub_(#TOTAL_COST)):#R]>:<[NUM:value=(#TOTAL_COST:add_(#EXTRA_PRICE)):#R]>]",
                 "[IF:(#W)=0:<[NUM:value=(#BILL:sub_(#PRICE)):#R]>:<[NUM:value=(#PRICE:add_(#EXTRA_PRICE)):#R]>]",
                 "[NUM:value=(#TOTAL_COST):#R]",
@@ -805,7 +804,7 @@ public class MainIdan {
 
         // 3
         newTemplates.add(new String[]{
-                "[PLACE:place_type=FOOD_SERVICE:*:#P1][ROLE:place_id=(#P1:id);role_type=OPERATOR:*:#O1][ITEM:type=(#P1:t);unit_type=COUNT:*:#I1][HUMAN:*:*:#1][NUM:min=8;max=12:*:#MINS_PER][NUM:min=3;max=6:*:#QTY][NUM:value=(#QTY:mul_(#MINS_PER)):*:#TOTAL_MINS][TIME:min=08.00;max=16.00;round=true:*:#T_START][NUM:min=0;max=1:*:#W][#1:n] ה[#O1:s(#1:g)] [VERB:id=prepare:(past_+(#1:g)+_s):#V1] [#I1:p] ב[#P1:s]. הכנת כל [#I1:s] לוקחת בדיוק [#MINS_PER] דקות. [IF:(#W)=0:<אם [#1:he_she] [VERB:id=start:(past_+(#1:g)+_s):#V2] להכין [#QTY] [#I1:p] בשעה [#T_START], באיזו שעה [#1:he_she] [VERB:id=finish:(past_+(#1:g)+_s):#V3]?>:<אם [#1:he_she] [VERB:id=work:(past_+(#1:g)+_s):#V4] ברצף במשך [#TOTAL_MINS] דקות, כמה [#I1:p] [#1:he_she] [VERB:id=prepare:(past_+(#1:g)+_s):#V5] סך הכל?>]",
+                "[PLACE:place_type=FOOD_SERVICE:*:#P1][ROLE:place_id=(#P1:id);role_type=OPERATOR:*:#O1][ITEM:type=(#P1:t);unit_type=COUNT:*:#I1][HUMAN:*:*:#1][NUM:min=8;max=12:*:#MINS_PER][NUM:min=3;max=6:*:#QTY][NUM:value=(#QTY:mul_(#MINS_PER)):*:#TOTAL_MINS][TIME:min=08.00;max=16.00;round=true:*:#T_START][NUM:min=0;max=1:*:#W][#1:n] ה[#O1:((#1:g)+_s)] [VERB:id=prepare:(past_+(#1:g)+_s):#V1] [#I1:p] ב[#P1:s]. הכנת כל [#I1:s] לוקחת בדיוק [#MINS_PER] דקות. [IF:(#W)=0:<אם [#1:he_she] [VERB:id=start:(past_+(#1:g)+_s):#V2] להכין [#QTY] [#I1:p] בשעה [#T_START], באיזו שעה [#1:he_she] [VERB:id=finish:(past_+(#1:g)+_s):#V3]?>:<אם [#1:he_she] [VERB:id=work:(past_+(#1:g)+_s):#V4] ברצף במשך [#TOTAL_MINS] דקות, כמה [#I1:p] [#1:he_she] [VERB:id=prepare:(past_+(#1:g)+_s):#V5] סך הכל?>]",
                 "[IF:(#W)=0:<[TIME:value=(#T_START:add_m_(#TOTAL_MINS)):#R]>:<[NUM:value=(#TOTAL_MINS:div_(#MINS_PER)):#R]>]",
                 "[IF:(#W)=0:<[TIME:value=(#T_START:add_m_(#MINS_PER)):#R]>:<[NUM:value=(#TOTAL_MINS:mul_(#MINS_PER)):#R]>]",
                 "[IF:(#W)=0:<[TIME:value=(#T_START:add_m_(#QTY)):#R]>:<[NUM:value=(#TOTAL_MINS:sub_(#MINS_PER)):#R]>]",
@@ -825,7 +824,7 @@ public class MainIdan {
 
         // 5
         newTemplates.add(new String[]{
-                "[PLACE:place_type=FOOD_SERVICE|EDUCATION:*:#P1][ROLE:place_id=(#P1:id);role_type=OPERATOR:*:#O1][ITEM:type=(#P1:t);unit_type=COUNT:*:#I1][HUMAN:*:#1][NUM:min=5;max=12:*:#TABLES][NUM:min=4;max=8:*:#PER_TABLE][NUM:value=(#TABLES:mul_(#PER_TABLE)):*:#ARRANGED][NUM:min=10;max=25:*:#EXTRA][NUM:min=0;max=1:*:#W][#1:n] ה[#O1:s(#1:g)] [VERB:id=arrange:(past_+(#1:g)+_s):#V1] [#TABLES] שולחנות ב[#P1:s]. על כל שולחן [#1:he_she] [VERB:id=put:(past_+(#1:g)+_s):#V2] [#PER_TABLE] [#I1:p]. [IF:(#W)=0:<בנוסף, [#1:he_she] [VERB:id=put:(past_+(#1:g)+_s):#V3] בצד עוד [#EXTRA] [#I1:p]. כמה [#I1:p] [#1:he_she] [VERB:id=arrange:(past_+(#1:g)+_s):#V4] סך הכל?>:<לפני הפתיחה, [#1:he_she] [VERB:id=take:(past_+(#1:g)+_s):#V5] [#EXTRA] [#I1:p] בחזרה למחסן. כמה [#I1:p] נשארו על השולחנות?>]",
+                "[PLACE:place_type=FOOD_SERVICE|EDUCATION:*:#P1][ROLE:place_id=(#P1:id);role_type=OPERATOR:*:#O1][ITEM:type=(#P1:t);unit_type=COUNT:*:#I1][HUMAN:*:#1][NUM:min=5;max=12:*:#TABLES][NUM:min=4;max=8:*:#PER_TABLE][NUM:value=(#TABLES:mul_(#PER_TABLE)):*:#ARRANGED][NUM:min=10;max=25:*:#EXTRA][NUM:min=0;max=1:*:#W][#1:n] ה[#O1:((#1:g)+_s)] [VERB:id=arrange:(past_+(#1:g)+_s):#V1] [#TABLES] שולחנות ב[#P1:s]. על כל שולחן [#1:he_she] [VERB:id=put:(past_+(#1:g)+_s):#V2] [#PER_TABLE] [#I1:p]. [IF:(#W)=0:<בנוסף, [#1:he_she] [VERB:id=put:(past_+(#1:g)+_s):#V3] בצד עוד [#EXTRA] [#I1:p]. כמה [#I1:p] [#1:he_she] [VERB:id=arrange:(past_+(#1:g)+_s):#V4] סך הכל?>:<לפני הפתיחה, [#1:he_she] [VERB:id=take:(past_+(#1:g)+_s):#V5] [#EXTRA] [#I1:p] בחזרה למחסן. כמה [#I1:p] נשארו על השולחנות?>]",
                 "[IF:(#W)=0:<[NUM:value=(#ARRANGED:add_(#EXTRA)):#R]>:<[NUM:value=(#ARRANGED:sub_(#EXTRA)):#R]>]",
                 "[IF:(#W)=0:<[NUM:value=(#ARRANGED:sub_(#EXTRA)):#R]>:<[NUM:value=(#ARRANGED:add_(#EXTRA)):#R]>]",
                 "[NUM:value=(#ARRANGED):#R]",

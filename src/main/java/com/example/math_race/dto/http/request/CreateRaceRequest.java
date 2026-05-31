@@ -1,5 +1,6 @@
 package com.example.math_race.dto.http.request;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Data;
 
 import javax.validation.constraints.Max;
@@ -14,6 +15,7 @@ public class CreateRaceRequest {
     @Size(max = 15, message = "name cannot exceed 15 characters")
     @Pattern(regexp = "^(?:.*\\S){3}.*$", message = "name must contain at least 3 actual characters")
     @Pattern(regexp = "^\\S.*\\S$", message = "name must not start or end with a space")
+    @Pattern(regexp = ".*[a-zA-Z].*[a-zA-Z].*", message = "name must contain at least 2 English letters")
     private String name;
 
     @NotNull(message = "Target score is required")
@@ -24,7 +26,9 @@ public class CreateRaceRequest {
     @Size(max = 15, message = "nickname cannot exceed 15 characters")
     @Pattern(regexp = "^(?:.*\\S){3}.*$", message = "nickname must contain at least 3 actual characters")
     @Pattern(regexp = "^\\S.*\\S$", message = "nickname must not start or end with a space")
+    @Pattern(regexp = ".*[a-zA-Z].*[a-zA-Z].*", message = "nickname must contain at least 2 English letters")
     private String nickname;
 
+    @JsonProperty("isPrivate")
     private boolean isPrivate = true;
 }

@@ -30,12 +30,14 @@ public class NumberTag implements TemplateTag {
                     this.value = randomNumber;
                 }
             } catch (NumberFormatException e) {
+                System.out.println("\u001B[31m" + "Warning: Invalid forbidden value format ('" + valStr + "'). Generating random number." + "\u001B[0m");
                 this.value = java.util.concurrent.ThreadLocalRandom.current().nextInt(this.min, this.max + 1);
             }
         } else {
             try {
                 this.value = Integer.parseInt(valStr);
             } catch (NumberFormatException e) {
+                System.out.println("\u001B[31m" + "Warning: Invalid value format ('" + valStr + "'). Generating random number." + "\u001B[0m");
                 this.value = java.util.concurrent.ThreadLocalRandom.current().nextInt(this.min, this.max + 1);
             }
         }

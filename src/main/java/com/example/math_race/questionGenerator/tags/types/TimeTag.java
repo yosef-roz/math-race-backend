@@ -3,11 +3,11 @@ package com.example.math_race.questionGenerator.tags.types;
 import com.example.math_race.questionGenerator.tags.core.TemplateTag;
 
 public class TimeTag implements TemplateTag {
+
     private int totalMinutes;
     private int minMinutes;
     private int maxMinutes;
     private  boolean round;
-
 
     public TimeTag(String valStr, int minMinutes, int maxMinutes, boolean round) {
         this.minMinutes = minMinutes;
@@ -25,12 +25,14 @@ public class TimeTag implements TemplateTag {
                     this.totalMinutes = generateRandomTime(round, forbiddenValue);
                 }
             } catch (Exception e) {
+                System.out.println("\u001B[31m" + "Warning: Invalid forbidden time format ('" + valStr + "'). Generating random time." + "\u001B[0m");
                 this.totalMinutes = generateRandomTime(round, -1);
             }
         } else {
             try {
                 this.totalMinutes = parseTime(valStr);
             } catch (Exception e) {
+                System.out.println("\u001B[31m" + "Warning: Invalid time format ('" + valStr + "'). Generating random time." + "\u001B[0m");
                 this.totalMinutes = generateRandomTime(round, -1);
             }
         }

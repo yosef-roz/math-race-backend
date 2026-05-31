@@ -3,13 +3,16 @@ package com.example.math_race;
 import com.example.math_race.questionGenerator.QuestionEngine;
 import com.example.math_race.questionGenerator.question.QuestionTemplate;
 import com.example.math_race.questionGenerator.question.MathQuestion;
+import com.example.math_race.questionGenerator.tags.core.TemplateTag;
 import com.example.math_race.service.QuestionTemplateService;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 @SpringBootTest
 class MathRaceApplicationTests {
@@ -44,6 +47,18 @@ class MathRaceApplicationTests {
 
             System.out.println("===============================================");
         }
+    }
+
+    @Test
+    void runningTemplate() {
+
+        String template = "[NUM:#A] [NUM:value=(#A:sub_(#A:v))]";
+
+
+        Map<String, TemplateTag> memoryTags = new HashMap<>();
+        String re = questionEngine.evaluateTemplate(template, memoryTags);
+
+        System.out.println(re);
     }
 
 }

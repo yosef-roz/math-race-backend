@@ -10,8 +10,8 @@ import org.springframework.scheduling.annotation.EnableAsync;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
 
-@SpringBootApplication(exclude = HibernateJpaAutoConfiguration.class)
 @EnableAsync
+@SpringBootApplication(exclude = HibernateJpaAutoConfiguration.class)
 public class MathRaceApplication {
 
     public static void main(String[] args) {

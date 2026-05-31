@@ -21,7 +21,11 @@ public class RaceSettings {
     }
 
     public RaceSettings(String raceName, int targetScore, boolean isPrivate) {
-        this.raceName = raceName;
+        if (raceName == null || raceName.isEmpty()) {
+            setDefaultName();
+        }else {
+            this.raceName = raceName;
+        }
         this.targetScore = targetScore;
         this.totalDurationTimeMs = (long) targetScore * 600;
         this.isPrivate = isPrivate;
