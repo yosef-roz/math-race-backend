@@ -1,10 +1,7 @@
 package com.example.math_race;
 
 
-import com.example.math_race.json.loader.JsonOnlyDictionaryProvider;
-import com.example.math_race.json.models.seeders.DictionaryJsonSeeder;
 import com.example.math_race.questionGenerator.QuestionEngine;
-import com.example.math_race.questionGenerator.dictionary.DictionaryProvider;
 import com.example.math_race.questionGenerator.tags.core.TemplateTag;
 
 import java.util.ArrayList;
@@ -64,9 +61,7 @@ public class MainIdan {
         System.out.println("  Application 'Math Race' is running successfully!");
         System.out.println("----------------------------------------------------------\n");
 
-        DictionaryJsonSeeder seeder = new DictionaryJsonSeeder();
-        DictionaryProvider jsonProvider = new JsonOnlyDictionaryProvider(seeder);
-        QuestionEngine questionEngine = new QuestionEngine(jsonProvider);
+        QuestionEngine questionEngine = new QuestionEngine();
         questionEngine.initDictionaryCache();
         Map<String, TemplateTag> memory;
 

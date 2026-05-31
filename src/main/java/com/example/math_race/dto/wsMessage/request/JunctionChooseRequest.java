@@ -5,6 +5,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.Size;
 
 @Data
 @AllArgsConstructor
@@ -12,5 +13,6 @@ import javax.validation.constraints.NotBlank;
 public class JunctionChooseRequest {
 
     @NotBlank(message = "choice is required")
+    @Size(min = 3, max = 15, message = "choice must be between 3 and 15 characters")
     private String choice;
 }

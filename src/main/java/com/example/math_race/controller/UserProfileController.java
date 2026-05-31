@@ -1,6 +1,7 @@
 package com.example.math_race.controller;
 
 import com.example.math_race.dto.http.ApiResponse;
+import com.example.math_race.dto.http.request.ChangePasswordRequest;
 import com.example.math_race.dto.http.request.RequestMetadata;
 import com.example.math_race.dto.http.request.UpdateUsernameRequest;
 import com.example.math_race.dto.http.response.*;
@@ -59,6 +60,11 @@ public class UserProfileController {
         return ApiResponse.success(null);
     }
 
+    @PostMapping("/me/change-password")
+    public ApiResponse<Void> changePassword(@Valid @RequestBody ChangePasswordRequest request, RequestMetadata metadata) {
+        userProfileService.userChangePassword(request,metadata);
+        return ApiResponse.success(null);
+    }
 
     @PostMapping("/me/delete-request")
     public ApiResponse<Void> requestAccountDeletion(RequestMetadata metadata) {

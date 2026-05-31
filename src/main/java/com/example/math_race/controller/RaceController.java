@@ -103,7 +103,6 @@ public class RaceController {
         raceService.checkJoinedRace(accessor);
     }
 
-    // http://localhost:8085/api/race/create
     @PostMapping("/create")
     public ApiResponse<CreateRaceResponse> createRace(@Valid @RequestBody CreateRaceRequest request, RequestMetadata metadata) {
         CreateRaceResponse createRaceResponse = raceService.creatRace(request, metadata);

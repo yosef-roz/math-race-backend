@@ -28,8 +28,8 @@ public class MathQuestionDTO {
         this.playerId = player.getId();
         this.expression = mathQuestion.getExpression();
         this.options = mathQuestion.getOptions();
-        this.timeLimitMillis = mathQuestion.getTimeLimitMillis();
-        this.score = mathQuestion.getScore();
+        this.timeLimitMillis = player.getTrackState().getTimeLimitMillis();
+        this.score = player.getTrackState().getScore();
         this.questionRemainingTimeMillis = player.getCalculatedQuestionRemainingTime(race.getStatus());
         this.sentAt = System.currentTimeMillis();
         this.hint = player.isGotHint() ? mathQuestion.getHint() : null;

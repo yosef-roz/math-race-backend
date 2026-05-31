@@ -13,8 +13,11 @@ import javax.validation.constraints.Size;
 @NoArgsConstructor
 public class UpdateUsernameRequest {
 
-    @NotBlank(message = "Username cannot be empty")
+    @NotBlank(message = "Username is required")
     @Size(min = 3, max = 15, message = "Username must be between 3 and 15 characters")
-    @Pattern(regexp = "^\\S+$", message = "Username cannot contain spaces")
+    @Pattern(
+            regexp = "^(?=.*[a-zA-Z])\\S+$",
+            message = "Username must contain at least one letter and no spaces"
+    )
     private String username;
 }

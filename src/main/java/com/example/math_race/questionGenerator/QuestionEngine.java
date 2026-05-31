@@ -1,5 +1,7 @@
 package com.example.math_race.questionGenerator;
 
+import com.example.math_race.json.loader.JsonOnlyDictionaryProvider;
+import com.example.math_race.json.models.seeders.DictionaryJsonSeeder;
 import com.example.math_race.questionGenerator.dictionary.DictionaryProvider;
 import com.example.math_race.questionGenerator.question.MathQuestion;
 import com.example.math_race.questionGenerator.question.QuestionTemplate;
@@ -32,6 +34,11 @@ public class QuestionEngine {
     @Autowired
     public QuestionEngine(DictionaryProvider dictionaryProvider){
         this.dictionaryProvider = dictionaryProvider;
+    }
+
+    public QuestionEngine(){
+        DictionaryJsonSeeder seeder = new DictionaryJsonSeeder();
+        this.dictionaryProvider = new JsonOnlyDictionaryProvider(seeder);;
     }
 
     @PostConstruct
@@ -74,20 +81,6 @@ public class QuestionEngine {
 
         Collections.shuffle(options);
 
-        int score = 0;
-        int timeLimit = 0;
-        String id = questionTemplate.id().toLowerCase();
-
-        if (id.startsWith("easy")) {
-            score = 10;
-            timeLimit = 15;
-        } else if (id.startsWith("medium")) {
-            score = 30;
-            timeLimit = 30;
-        } else if (id.startsWith("hard")) {
-            score = 100;
-            timeLimit = 60;
-        }
 
         MathQuestion mathQuestion = new MathQuestion();
         mathQuestion.setId(questionTemplate.id());
@@ -95,8 +88,6 @@ public class QuestionEngine {
         mathQuestion.setCorrectAnswer(correctAnswer);
         mathQuestion.setOptions(options);
         mathQuestion.setHint(evaluateTemplate(questionTemplate.hintTemplate(), memory));
-        mathQuestion.setScore(score);
-        mathQuestion.setTimeLimitSeconds(timeLimit);
 
         return mathQuestion;
     }

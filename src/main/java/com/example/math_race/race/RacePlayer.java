@@ -145,7 +145,7 @@ public class RacePlayer extends RaceAccount{
     public long getQuestionTimeSpent() {
         long timeElapsed = System.currentTimeMillis() - this.questionStartTimeAtMs;
 
-        return Math.min(timeElapsed, currentQuestion.getTimeLimitMillis());
+        return Math.min(timeElapsed, trackState.getTimeLimitMillis());
     }
 
     public static String assignRandomColor() {

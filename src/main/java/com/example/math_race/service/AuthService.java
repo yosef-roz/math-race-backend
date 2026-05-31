@@ -134,37 +134,6 @@ public class AuthService {
     }
 
     @Transactional
-    public void userChangePassword(ChangePasswordRequest request, RequestMetadata metadata) {
-        TokenEntity token = null;
-        if (StringUtils.hasText(metadata.getAuthorization())) {
-            token = tokenRepository.findByToken(metadata.getAuthorization());
-        }
-
-        if (token == null || !token.isValid() || token.isDeleted() || token.getType() != SESSION) {
-            throw new LogicException(ErrorCode.INVALID_TOKEN);
-        }
-
-        UserEntity user = token.getUser();
-        if (user.isDeleted()) {
-            throw new LogicException(ErrorCode.ACCOUNT_NOT_FOUND);
-        }
-
-        if (checkPassword(request.getNewPassword(), user.getPassword())) {
-            throw new LogicException(ErrorCode.PASSWORD_SAME_AS_OLD);
-        }
-
-        if (!checkPassword(request.getOldPassword(), user.getPassword())) {
-            throw new LogicException(ErrorCode.INCORRECT_PASSWORD);
-        }
-
-        user.setPassword(hashPassword(request.getNewPassword()));
-        userRepository.save(user);
-
-        tokenService.updateTokenSessionExpiresDate(token);
-        emailService.sendPasswordChangedEmail(user);
-    }
-
-    @Transactional
     public void userResetPassword(ResetPasswordRequest request) {
         TokenEntity token = tokenRepository.findByToken(request.getToken());
 

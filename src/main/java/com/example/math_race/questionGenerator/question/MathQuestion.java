@@ -15,15 +15,9 @@ public class MathQuestion {
     private List<String> options;
     private String hint;
     private String correctAnswer;
-    private int timeLimitSeconds;
-    private int score;
 
     public MathQuestion(){
         this.options = new ArrayList<>();
-    }
-
-    public long getTimeLimitMillis(){
-        return timeLimitSeconds * 1000L;
     }
 
 }

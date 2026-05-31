@@ -4,7 +4,6 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.Pattern;
 import javax.validation.constraints.Size;
 
@@ -13,8 +12,8 @@ import javax.validation.constraints.Size;
 @NoArgsConstructor
 public class ChangeRaceNameRequest {
 
-    @NotBlank(message = "raceName is required")
-    @Size(max = 20, message = "raceName cannot exceed 20 characters")
-    @Pattern(regexp = "^(?:.*\\S){3}.*$", message = "raceName must contain at least 3 actual characters (not spaces)")
+    @Size(max = 15, message = "race name cannot exceed 15 characters")
+    @Pattern(regexp = "^(?:.*\\S){3}.*$", message = "race name must contain at least 3 actual characters")
+    @Pattern(regexp = "^\\S.*\\S$", message = "race name must not start or end with a space")
     private String raceName;
 }

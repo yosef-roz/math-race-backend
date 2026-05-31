@@ -221,7 +221,7 @@ public class RaceEngineService {
 
             player.setCurrentQuestion(question);
             player.setQuestionStartTimeAtMs(System.currentTimeMillis());
-            player.setQuestionRemainingTimeMs(question.getTimeLimitMillis());
+            player.setQuestionRemainingTimeMs(player.getTrackState().getTimeLimitMillis());
             player.setGotHint(false);
             player.setCanAskHint(randomEventEngine.shouldGiveHint(player,race));
 
@@ -232,7 +232,7 @@ public class RaceEngineService {
             webSocketService.sendSuccessToQueueSession(QUEUE_RACE_HOST, "QUESTION_SENT", questionDTO,
                     race.getHost().getId(), race.getHost().getSessionActive());
 
-            Instant timeoutTime = Instant.now().plusMillis(question.getTimeLimitMillis());
+            Instant timeoutTime = Instant.now().plusMillis(player.getTrackState().getTimeLimitMillis());
             ScheduledFuture<?> timeoutTask = scheduler.schedule(() -> handleQuestionTimeout(race, player, question), Date.from(timeoutTime));
 
             playerQuestionTimers.put(player.getId(), timeoutTask);
@@ -264,7 +264,7 @@ public class RaceEngineService {
             boolean isCorrect = player.checkAnswer(answer);
             int addScore;
             if (isCorrect) {
-                addScore = player.getCurrentQuestion().getScore();
+                addScore = player.getTrackState().getScore();
                 if (player.getTrackState().equals(PlayerTrackState.REGULAR)) {
                     player.addRegularSuccess();
                     player.addRegularStreak(1);
@@ -274,7 +274,7 @@ public class RaceEngineService {
                     }
                 }
             } else {
-                addScore = -(int) (player.getCurrentQuestion().getScore() * 0.2);
+                addScore = -(int) (player.getTrackState().getScore() * 0.2);
                 if (player.getCurrentScore() + addScore < 0)
                     addScore = 0;
                 if (player.getTrackState().equals(PlayerTrackState.REGULAR)) {

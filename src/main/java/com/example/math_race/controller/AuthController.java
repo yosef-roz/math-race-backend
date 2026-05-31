@@ -56,13 +56,6 @@ public class AuthController {
         return ApiResponse.success(null);
     }
 
-    // http://localhost:8085/api/auth/change-password
-    @PostMapping("/change-password")
-    public ApiResponse<Void> changePassword(@Valid @RequestBody ChangePasswordRequest request, RequestMetadata metadata) {
-        authService.userChangePassword(request,metadata);
-        return ApiResponse.success(null);
-    }
-
     @PostMapping("/create-guestToken")
     public ApiResponse<CreateGuestTokenResponse> createGuestId(RequestMetadata metadata) {
         CreateGuestTokenResponse createGuestIdResponse = authService.createGuestToken();

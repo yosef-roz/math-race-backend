@@ -22,16 +22,12 @@ class MathRaceApplicationTests {
 
     @Test
     void contextLoads() {
-
-//        String tex = "[HUMAN:g=!m:*:#1] [#1:g]";
-//        System.out.println(questionEngine.evaluateTemplate(tex,new HashMap<>()));
-
-
         List<QuestionTemplate> allTemplates = new ArrayList<>();
 
         allTemplates.addAll(questionTemplateService.getTemplatesByDifficulty("easy"));
         allTemplates.addAll(questionTemplateService.getTemplatesByDifficulty("medium"));
         allTemplates.addAll(questionTemplateService.getTemplatesByDifficulty("hard"));
+
 
         for (QuestionTemplate questionTemplate : allTemplates) {
             MathQuestion mathQuestion = questionEngine.processTemplate(questionTemplate);
@@ -46,8 +42,6 @@ class MathRaceApplicationTests {
                 System.out.println(op);
             }
 
-            System.out.println("score : " + mathQuestion.getScore());
-            System.out.println("seconds : " + mathQuestion.getTimeLimitSeconds());
             System.out.println("===============================================");
         }
     }

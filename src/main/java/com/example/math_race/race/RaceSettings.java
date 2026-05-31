@@ -16,7 +16,7 @@ public class RaceSettings {
     private final long totalDurationTimeMs;
 
     public RaceSettings() {
-       this("",RaceValidator.MIN_SCORES,true);
+       this("",400,true);
        setDefaultName();
     }
 

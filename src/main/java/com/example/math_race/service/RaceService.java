@@ -28,7 +28,6 @@ import static com.example.math_race.service.WebSocketService.*;
 @Service
 public class RaceService {
 
-    private final RaceValidator raceValidator;
     private final AuthService authService;
     private final WebSocketService webSocketService;
     private final RaceEngineService raceEngineService;
@@ -36,8 +35,7 @@ public class RaceService {
     private final Map<String, String> accountIdToOpenRoomCode = new ConcurrentHashMap<>();
 
     @Autowired
-    public RaceService(RaceValidator raceValidator, AuthService authService, WebSocketService webSocketService, RaceEngineService raceEngineService) {
-        this.raceValidator = raceValidator;
+    public RaceService(AuthService authService, WebSocketService webSocketService, RaceEngineService raceEngineService) {
         this.authService = authService;
         this.webSocketService = webSocketService;
         this.raceEngineService = raceEngineService;
@@ -56,7 +54,6 @@ public class RaceService {
 
 
         RaceSettings raceSettings = new RaceSettings(request.getName(), request.getTargetScore(),request.isPrivate());
-        raceValidator.validate(raceSettings);
 
         String joinToken = UUID.randomUUID().toString().substring(0, 10);
 
@@ -132,10 +129,12 @@ public class RaceService {
             accountIdToOpenRoomCode.put(accountId, raceManager.getRoomCode());
 
         } else if (raceManager.getRoomCode().equals(roomCode)){
-
             RaceAccount account = raceManager.getAccount(accountId);
 
-            account.setNickname(nickname);
+            if (StringUtils.hasText(request.getNickname())) {
+                account.setNickname(nickname);
+            }
+
             account.setJoinToken(joinToken);
             isHost = raceManager.isHost(accountId);
 

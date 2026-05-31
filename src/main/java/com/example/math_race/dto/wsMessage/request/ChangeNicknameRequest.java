@@ -13,8 +13,8 @@ import javax.validation.constraints.Size;
 @NoArgsConstructor
 public class ChangeNicknameRequest {
 
-    @NotBlank(message = "nickname is required")
-    @Size(max = 20, message = "nickname cannot exceed 20 characters")
-    @Pattern(regexp = "^(?:.*\\S){3}.*$", message = "nickname must contain at least 3 actual characters (not spaces)")
+    @Size(max = 15, message = "nickname cannot exceed 15 characters")
+    @Pattern(regexp = "^(?:.*\\S){3}.*$", message = "nickname must contain at least 3 actual characters")
+    @Pattern(regexp = "^\\S.*\\S$", message = "nickname must not start or end with a space")
     private String nickname;
 }

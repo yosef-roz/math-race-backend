@@ -1,5 +1,6 @@
 package com.example.math_race.service;
 
+import com.example.math_race.dto.http.request.ChangePasswordRequest;
 import com.example.math_race.dto.http.request.RequestMetadata;
 import com.example.math_race.dto.http.request.UpdateUsernameRequest;
 import com.example.math_race.dto.http.response.ProfileResponse;
@@ -15,10 +16,13 @@ import com.example.math_race.repositories.UserProfileRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.util.StringUtils;
 
 import java.util.Date;
 import java.util.List;
 import java.util.UUID;
+
+import static com.example.math_race.entities.TokenEntity.TokenType.SESSION;
 
 
 @Service
@@ -78,6 +82,37 @@ public class UserProfileService {
 
         user.setUsername(request.getUsername());
         userProfileRepository.save(user);
+    }
+
+    @Transactional
+    public void userChangePassword(ChangePasswordRequest request, RequestMetadata metadata) {
+        TokenEntity token = null;
+        if (StringUtils.hasText(metadata.getAuthorization())) {
+            token = tokenRepository.findByToken(metadata.getAuthorization());
+        }
+
+        if (token == null || !token.isValid() || token.isDeleted() || token.getType() != SESSION) {
+            throw new LogicException(ErrorCode.INVALID_TOKEN);
+        }
+
+        UserEntity user = token.getUser();
+        if (user.isDeleted()) {
+            throw new LogicException(ErrorCode.ACCOUNT_NOT_FOUND);
+        }
+
+        if (authService.checkPassword(request.getNewPassword(), user.getPassword())) {
+            throw new LogicException(ErrorCode.PASSWORD_SAME_AS_OLD);
+        }
+
+        if (!authService.checkPassword(request.getOldPassword(), user.getPassword())) {
+            throw new LogicException(ErrorCode.INCORRECT_PASSWORD);
+        }
+
+        user.setPassword(authService.hashPassword(request.getNewPassword()));
+        tokenRepository.save(user);
+
+        tokenService.updateTokenSessionExpiresDate(token);
+        emailService.sendPasswordChangedEmail(user);
     }
 
     @Transactional
